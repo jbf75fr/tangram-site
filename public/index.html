@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>tangram.cx | Analyse IA des commentaires clients</title>
+<meta name="description" content="tangram.cx classe les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.">
+<link rel="canonical" href="https://tangram.cx/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="tangram.cx">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="tangram.cx | Analyse IA des commentaires clients">
+<meta property="og:description" content="tangram.cx classe les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.">
+<meta property="og:url" content="https://tangram.cx/">
+<meta property="og:image" content="https://tangram.cx/partage.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="tangram.cx : vos clients vous parlent, passez à l'action.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#1e1033">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/figtree.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Figtree';font-style:normal;font-weight:300 900;font-display:swap;src:url('/fonts/figtree.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+body{margin:0;background:#f3f1fa}
+a{color:#1e1033}a:hover{color:#000000}
+/* Mouvements : seulement ceux qui montrent ce que fait le produit */
+@keyframes v2-souligne{from{background-size:0 4px}to{background-size:100% 4px}}
+.v2-souligne{background-repeat:no-repeat;background-position:0 100%;background-size:100% 4px;animation:v2-souligne .9s cubic-bezier(.2,.7,.2,1) both}
+.v2-souligne-1{animation-delay:.5s}.v2-souligne-2{animation-delay:1.2s}
+@keyframes v2-etiquette{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.v2-etiquette{animation:v2-etiquette .5s cubic-bezier(.2,.7,.2,1) both}
+.v2-e1{animation-delay:.25s}.v2-e2{animation-delay:.45s}.v2-e3{animation-delay:.65s}.v2-e4{animation-delay:2.3s}.v2-e5{animation-delay:2.5s}
+@keyframes v2-pose{from{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}to{opacity:1;transform:none}}
+
+.v2-piece{transform-box:fill-box;transform-origin:center;animation:v2-pose linear both;animation-delay:0ms;animation-duration:975ms}
+
+@keyframes v2-derive{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(0,-8px) rotate(5deg)}}
+.v2-derive{animation:v2-derive 9s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.v2-derive-2{animation-duration:12s;animation-direction:reverse}
+.v2-derive-3{animation-duration:15s}
+/* Visuel d'accueil : photo et cartes d'ecran */
+.v2-compo{position:relative;display:flex;flex-direction:column;gap:12px}
+.v2-carte{background:#ffffff;border:1px solid #e2e1ea;border-radius:16px;box-shadow:0 14px 36px rgba(30,16,51,.14);padding:14px 16px;font-size:14px;line-height:1.4}
+@media (min-width: 900px){
+.v2-compo{display:block;padding:0 0 56px 40px}
+.v2-compo .v2-carte{position:absolute}
+.v2-c-note{top:28px;left:44%;width:210px}
+.v2-c-themes{left:0;bottom:0;width:300px}
+.v2-c-fait{right:16px;bottom:30px;width:250px}
+.v2-credit{position:absolute;right:0;bottom:0}
+}
+/* Illustration du probleme : les commentaires se rangent au defilement */
+@keyframes v2-teinte{0%,45%{background-color:#f3f1fa;border-color:#e2e1ea;color:#3a3350}75%,100%{background-color:var(--fond);border-color:var(--bord);color:var(--texte)}}
+@keyframes v2-range{0%,8%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));animation-timing-function:cubic-bezier(.45,0,.2,1)}75%,100%{transform:none}}
+@keyframes v2-apparait{0%,60%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:none}}
+@keyframes v2-cadre{0%,55%{background-color:rgba(255,255,255,0);border-color:rgba(226,225,234,0);box-shadow:0 14px 34px rgba(30,16,51,0)}100%{background-color:#ffffff;border-color:#e2e1ea;box-shadow:0 14px 34px rgba(30,16,51,.08)}}
+
+
+.v2-tri-bout{animation:v2-range linear both,v2-teinte linear both;animation-delay:0ms;animation-duration:2450ms;box-shadow:0 4px 12px rgba(30,16,51,.06)}
+.v2-tri-titre{animation:v2-apparait linear both;animation-delay:0ms;animation-duration:2450ms}
+.v2-tri-cadre{animation:v2-cadre linear both;animation-delay:0ms;animation-duration:2450ms}
+
+/* Illustrations des etapes, jouees au defilement */
+@keyframes v2-et-arrive{0%{opacity:0;transform:translateY(-14px)}100%{opacity:1;transform:none}}
+@keyframes v2-et-puce{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
+@keyframes v2-et-barre{0%{transform:scaleX(0)}100%{transform:none}}
+@keyframes v2-et-coche{0%{stroke-dashoffset:1}100%{stroke-dashoffset:0}}
+
+
+.v2-et-arrive,.v2-et-puce,.v2-et-barre,.v2-et-coche{animation-timing-function:cubic-bezier(.3,.7,.3,1);animation-fill-mode:both;}
+.v2-et-arrive{animation-name:v2-et-arrive}.v2-et-puce{animation-name:v2-et-puce}.v2-et-barre{animation-name:v2-et-barre;transform-origin:left}.v2-et-coche{animation-name:v2-et-coche}
+.v2-et-1{animation-delay:0ms;animation-duration:800ms}.v2-et-2{animation-delay:660ms;animation-duration:555ms}.v2-et-3{animation-delay:940ms;animation-duration:550ms}.v2-et-4{animation-delay:1215ms;animation-duration:465ms}
+
+/* Animations au defilement (meme famille que l'accueil) */
+@keyframes an-monte{0%{opacity:0;transform:translateY(18px)}100%{opacity:1;transform:none}}
+@keyframes an-pop{0%{opacity:0;transform:scale(.85)}100%{opacity:1;transform:none}}
+@keyframes an-glisse{0%{opacity:0;transform:translateX(40px)}100%{opacity:1;transform:none}}
+@keyframes an-barre{0%{transform:scaleX(0)}100%{transform:none}}
+@keyframes an-trace{0%{stroke-dashoffset:1}100%{stroke-dashoffset:0}}
+
+.an-monte,.an-pop,.an-glisse,.an-barre,.an-trace{animation-timing-function:cubic-bezier(.3,.7,.3,1);animation-fill-mode:both;animation-delay:0ms;animation-duration:660ms}
+.an-monte{animation-name:an-monte}.an-pop{animation-name:an-pop}.an-glisse{animation-name:an-glisse}.an-barre{animation-name:an-barre;transform-origin:left}.an-trace{animation-name:an-trace;stroke-dasharray:1}
+.an-d2{animation-delay:110ms;animation-duration:660ms}.an-d3{animation-delay:220ms;animation-duration:660ms}.an-d4{animation-delay:330ms;animation-duration:660ms}.an-d5{animation-delay:440ms;animation-duration:660ms}.an-d6{animation-delay:550ms;animation-duration:660ms}.an-d7{animation-delay:660ms;animation-duration:660ms}.an-d8{animation-delay:770ms;animation-duration:660ms}
+
+/* Tableau de bord modulaire : les blocs viennent se placer au defilement */
+@keyframes v2-mod-place{0%{opacity:.35;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}70%,100%{opacity:1;transform:none}}
+@keyframes v2-mod-ajout{0%,70%{opacity:0}100%{opacity:1}}
+
+
+.v2-mod-bloc{animation:v2-mod-place linear both;box-shadow:0 8px 20px rgba(30,16,51,.12)}
+.v2-mod-a{animation-delay:90ms;animation-duration:1200ms}.v2-mod-b{animation-delay:390ms;animation-duration:1110ms}.v2-mod-c{animation-delay:690ms;animation-duration:990ms}.v2-mod-d{animation-delay:990ms;animation-duration:900ms}.v2-mod-e{animation-delay:1290ms;animation-duration:750ms}
+.v2-mod-ajout{animation:v2-mod-ajout linear both;animation-delay:2000ms;animation-duration:450ms}
+
+/* Tableau Sujets qui pesent : lignes, barres segment par segment, score net */
+@keyframes st-ligne{0%{opacity:0;transform:translateX(-24px)}100%{opacity:1;transform:none}}
+@keyframes st-seg{0%{transform:scaleX(0)}100%{transform:none}}
+@keyframes st-pop{0%{opacity:0;transform:scale(.6)}70%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:none}}
+
+
+.st-a{animation-timing-function:cubic-bezier(.3,.7,.3,1);animation-fill-mode:both;}
+.st-ligne{animation-name:st-ligne}.st-seg{animation-name:st-seg;transform-origin:left}.st-pop{animation-name:st-pop;transform-origin:right center}
+.st-r0{animation-delay:0ms;animation-duration:600ms}
+.st-s0-0{animation-delay:150ms;animation-duration:420ms}
+.st-s0-1{animation-delay:270ms;animation-duration:420ms}
+.st-s0-2{animation-delay:390ms;animation-duration:420ms}
+.st-p0{animation-delay:510ms;animation-duration:360ms}
+.st-r1{animation-delay:240ms;animation-duration:600ms}
+.st-s1-0{animation-delay:390ms;animation-duration:420ms}
+.st-s1-1{animation-delay:510ms;animation-duration:420ms}
+.st-s1-2{animation-delay:630ms;animation-duration:420ms}
+.st-p1{animation-delay:750ms;animation-duration:360ms}
+.st-r2{animation-delay:480ms;animation-duration:600ms}
+.st-s2-0{animation-delay:630ms;animation-duration:420ms}
+.st-s2-1{animation-delay:750ms;animation-duration:420ms}
+.st-s2-2{animation-delay:870ms;animation-duration:420ms}
+.st-p2{animation-delay:990ms;animation-duration:360ms}
+.st-r3{animation-delay:720ms;animation-duration:600ms}
+.st-s3-0{animation-delay:870ms;animation-duration:420ms}
+.st-s3-1{animation-delay:990ms;animation-duration:420ms}
+.st-s3-2{animation-delay:1110ms;animation-duration:420ms}
+.st-p3{animation-delay:1230ms;animation-duration:360ms}
+.st-r4{animation-delay:960ms;animation-duration:600ms}
+.st-s4-0{animation-delay:1110ms;animation-duration:420ms}
+.st-s4-1{animation-delay:1230ms;animation-duration:420ms}
+.st-s4-2{animation-delay:1350ms;animation-duration:420ms}
+.st-p4{animation-delay:1470ms;animation-duration:360ms}
+
+/* En-tete reduit sur telephone : logo et bouton Menu */
+.menu-mob{display:none}
+@media (max-width: 899px){
+.entete{position:sticky;top:0;z-index:50;background:rgba(243,241,250,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 1px 0 #e2e1ea;padding:12px 16px !important}
+.entete .nav-principale,.entete .entete-actions{display:none !important}
+.entete-ligne{flex-wrap:nowrap !important}
+.menu-mob{display:block}
+section[id]{scroll-margin-top:72px}
+}
+.menu-mob>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid #d4d3de;background:#ffffff;font-size:15px;font-weight:600;color:#1e1033}
+.menu-mob>summary::-webkit-details-marker{display:none}
+.menu-mob .ic-fermer{display:none}.menu-mob[open] .ic-fermer{display:block}.menu-mob[open] .ic-ouvrir{display:none}
+.menu-mob-panneau{position:absolute;left:0;right:0;top:100%;max-height:calc(100vh - 70px);overflow-y:auto;background:#ffffff;border-bottom:1px solid #e2e1ea;box-shadow:0 18px 40px rgba(30,16,51,.12);padding:8px 16px 20px;display:flex;flex-direction:column}
+.menu-mob-panneau>a,.menu-mob-panneau summary{display:flex;align-items:center;justify-content:space-between;min-height:48px;border-bottom:1px solid #e5e4ee;text-decoration:none;color:#1e1033;font-size:17px;font-weight:500}
+.menu-mob-panneau details>summary{list-style:none;cursor:pointer}.menu-mob-panneau details>summary::-webkit-details-marker{display:none}
+.menu-mob-panneau details[open]>summary svg{transform:rotate(180deg)}
+.menu-mob-secteurs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px;padding:8px 0 12px}
+.menu-mob-secteurs a{padding:8px 0;color:#4a4260;text-decoration:none;font-size:15px}
+.menu-mob-actions{display:flex;flex-direction:column;gap:12px;padding-top:16px}
+/* En-tete fixe en haut de l'ecran (ordinateur et tablette) */
+@media (min-width: 900px){
+.entete{position:sticky;top:0;z-index:50;background:rgba(243,241,250,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+section[id]{scroll-margin-top:96px}
+@keyframes entete-ombre{from{box-shadow:0 1px 0 rgba(30,16,51,0)}to{box-shadow:0 1px 0 #e2e1ea,0 8px 24px rgba(30,16,51,.06)}}
+@supports (animation-timeline: scroll()){.entete{animation:entete-ombre linear both;animation-timeline:scroll();animation-range:0 60px}}
+}
+/* Frise du parcours : defilement horizontal sur petit ecran, fondu a droite */
+@media (max-width: 760px){.frise-cadre{position:relative}.frise-cadre::after{content:'';position:absolute;top:0;right:0;bottom:0;width:40px;pointer-events:none;background:linear-gradient(to right,rgba(255,255,255,0),#ffffff)}}
+/* Frise du parcours : remplissage progressif au defilement (timeline nommee sur le cadre, partagee par toute la frise) */
+.fr-revele,.fr-point,.fr-pastille,.fr-barre,.fr-etape{animation-fill-mode:both;animation-duration:1ms}.fr-revele{animation-name:fr-revele;animation-timing-function:cubic-bezier(.45,.05,.35,1)}.fr-point{animation-name:fr-point;animation-timing-function:linear}.fr-pastille{animation-name:fr-pastille;animation-timing-function:cubic-bezier(.2,.8,.3,1)}.fr-barre{animation-name:fr-barre;animation-timing-function:cubic-bezier(.2,.8,.3,1)}.fr-etape{animation-name:fr-etape;animation-timing-function:linear}@keyframes fr-revele{0%{clip-path:inset(-20px 100% -20px -20px)}100%{clip-path:inset(-20px -20px -20px -20px)}}@keyframes fr-point{0%{opacity:0;transform:scale(0)}60%{opacity:1;transform:scale(1.3)}80%{transform:scale(.92)}100%{opacity:1;transform:scale(1)}}@keyframes fr-pastille{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}@keyframes fr-barre{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}@keyframes fr-etape{0%{fill:#eeeef4}100%{fill:#ffe45c}}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none !important;transition:none !important}}
+/* Menu deroulant Secteurs */
+.menu-sect{position:relative}
+.menu-sect>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.menu-sect>summary::-webkit-details-marker{display:none}
+.menu-sect>summary svg{transition:transform .2s}
+.menu-sect[open]>summary svg{transform:rotate(180deg)}
+.menu-sect-panneau{position:absolute;top:calc(100% + 14px);left:-20px;z-index:30;width:440px;max-width:calc(100vw - 32px);box-sizing:border-box;padding:12px;border-radius:16px;background:#ffffff;border:1px solid #e2e1ea;box-shadow:0 18px 40px rgba(30,16,51,.14);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
+.menu-sect-panneau a{display:block;padding:9px 12px;border-radius:10px;text-decoration:none;color:#1e1033;font-weight:500}
+.menu-sect-panneau a:hover,.menu-sect-panneau a:focus-visible{background:#fff3a6}
+@media (max-width: 700px){.menu-sect{flex:1 1 100%;min-width:0}.menu-sect-panneau{position:static;width:100%;max-width:none;margin-top:8px;box-shadow:none}}
+/* Animations pilotees par le defilement (fonctionne aussi dans la maquette) */
+.anim-pret [data-scene]:not([data-vu]),.anim-pret [data-scene]:not([data-vu]) *{animation-play-state:paused !important}
+/* Menu Secteurs : entree Autre secteur */
+.menu-sect-panneau .menu-sect-autre{grid-column:1/-1;margin-top:4px;border-top:1px solid #e5e4ee;border-radius:0 0 10px 10px;color:#3a0ca3;font-weight:600}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://tangram.cx/#organisation","name":"tangram.cx","url":"https://tangram.cx/","logo":"https://tangram.cx/icon-512.png","email":"contact@tangram.cx","description":"Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction, d'avis et de réclamations.","areaServed":"FR","knowsLanguage":"fr","contactPoint":{"@type":"ContactPoint","contactType":"sales","email":"contact@tangram.cx","availableLanguage":["fr","en"]}},{"@type":"WebSite","@id":"https://tangram.cx/#site","name":"tangram.cx","url":"https://tangram.cx/","inLanguage":"fr","publisher":{"@id":"https://tangram.cx/#organisation"}},{"@type":"SoftwareApplication","@id":"https://tangram.cx/#logiciel","name":"tangram.cx","url":"https://tangram.cx/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Analyse par IA des commentaires d'enquêtes de satisfaction, d'avis en ligne et de réclamations : classement par thème, tonalité et émotion, croisements, personas, risque de départ, plan d'action et alertes.","inLanguage":"fr","publisher":{"@id":"https://tangram.cx/#organisation"},"featureList":["Collecte automatique des réponses depuis vos outils d'enquête et votre CRM","Classement des commentaires par thème, sous-thème, tonalité et émotion","Score net par sujet et suivi dans le temps","Croisement des sujets avec vos données (région, canal, profil)","Personas et repérage des clients sur le départ","Idées d'actions et plan d'action mesurable","Alertes par e-mail selon vos propres seuils","Données personnelles masquées avant analyse, hébergement dans l'Union européenne"],"offers":[{"@type":"Offer","name":"Essai gratuit","price":"0","priceCurrency":"EUR","description":"Jusqu'à 500 commentaires, après un premier échange."},{"@type":"Offer","name":"Abonnement annuel","price":"2900","priceCurrency":"EUR","priceSpecification":{"@type":"UnitPriceSpecification","price":"2900","priceCurrency":"EUR","unitCode":"ANN","valueAddedTaxIncluded":false},"description":"À partir de 2 900 € HT par an, selon le volume de commentaires."},{"@type":"Offer","name":"Abonnement mensuel","price":"270","priceCurrency":"EUR","priceSpecification":{"@type":"UnitPriceSpecification","price":"270","priceCurrency":"EUR","unitCode":"MON","valueAddedTaxIncluded":false},"description":"À partir de 270 € HT par mois, sans engagement."}]}]}</script>
+<script src="/js/site.js" defer></script>
+</head>
+<body>
+<div id="racine" style="background: #f3f1fa; color: #1e1033; font-family: Figtree, ui-sans-serif, system-ui, sans-serif; font-size: 17px; line-height: 1.6;">
+
+<!-- En-tête -->
+<header class="entete" style="padding: 20px 24px;">
+<div class="entete-ligne" style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+<a href="#accueil" aria-label="tangram.cx, accueil" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+<svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><g transform="translate(1 1)" stroke="#f3f1fa" stroke-width="1.2" stroke-linejoin="round"><polygon points="0,0 32,0 16,16" fill="#ffe45c"></polygon><polygon points="0,0 16,16 0,32" fill="#1e1033"></polygon><polygon points="32,16 32,32 16,32" fill="#1e1033"></polygon><polygon points="32,0 32,16 24,8" fill="#3a0ca3"></polygon><polygon points="16,16 24,24 8,24" fill="#3a0ca3"></polygon><polygon points="16,16 24,8 32,16 24,24" fill="#fff3a6"></polygon><polygon points="0,32 8,24 24,24 16,32" fill="#ffe45c"></polygon></g></svg>
+<span style="font-family: Figtree, sans-serif; font-weight: 800; font-size: 24px; letter-spacing: -0.01em; color: #1e1033;">tangram<span style="color: #3a0ca3;">.cx</span></span>
+</a>
+<nav class="nav-principale" aria-label="Navigation principale" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; font-size: 15px; font-weight: 500;">
+<a href="/fonctionnalites" style="text-decoration: none; color: #4a4260;">Fonctionnalités</a>
+<details class="menu-sect"><summary style="color: #4a4260;">Secteurs<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></summary><div class="menu-sect-panneau"><a href="/secteurs/secteur-public">Secteur public</a><a href="/secteurs/banque">Banque</a><a href="/secteurs/assurance">Assurance</a><a href="/secteurs/tourisme-hotellerie">Tourisme et hôtellerie</a><a href="/secteurs/distribution">Distribution</a><a href="/secteurs/transport-mobilite">Transport et mobilité</a><a href="/secteurs/telecoms">Télécoms</a><a href="/secteurs/energie">Énergie</a><a href="/secteurs/logement-social">Logement social</a><a href="/secteurs/enseignement">Enseignement</a><a href="#essai" class="menu-sect-autre">Autre secteur ? Parlons-en</a></div></details>
+<a href="/enquetes-rh" style="text-decoration: none; color: #4a4260;">Enquêtes RH</a>
+<a href="/securite" style="text-decoration: none; color: #4a4260;">Sécurité</a>
+<a href="/tarifs" style="text-decoration: none; color: #4a4260;">Tarifs</a>
+</nav>
+<div class="entete-actions" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px;">
+<a href="https://app.tangram.cx" style="font-size: 15px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Se connecter</a>
+<a href="#essai" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 22px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 15px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
+</div>
+<details class="menu-mob"><summary aria-label="Ouvrir le menu"><svg class="ic-ouvrir" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round"></path></svg><svg class="ic-fermer" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round"></path></svg>Menu</summary><nav aria-label="Navigation principale (mobile)" class="menu-mob-panneau"><a href="/fonctionnalites">Fonctionnalités</a><details><summary>Secteurs<svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg></summary><div class="menu-mob-secteurs"><a href="/secteurs/secteur-public">Secteur public</a><a href="/secteurs/banque">Banque</a><a href="/secteurs/assurance">Assurance</a><a href="/secteurs/tourisme-hotellerie">Tourisme et hôtellerie</a><a href="/secteurs/distribution">Distribution</a><a href="/secteurs/transport-mobilite">Transport et mobilité</a><a href="/secteurs/telecoms">Télécoms</a><a href="/secteurs/energie">Énergie</a><a href="/secteurs/logement-social">Logement social</a><a href="/secteurs/enseignement">Enseignement</a><a href="#essai">Autre secteur ?</a></div></details><a href="/enquetes-rh">Enquêtes RH</a><a href="/securite">Sécurité</a><a href="/tarifs">Tarifs</a><div class="menu-mob-actions"><a href="#essai" style="display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a><a href="https://app.tangram.cx" style="text-align: center; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Se connecter</a></div></nav></details>
+</div>
+</header>
+
+<main id="accueil">
+
+<!-- Accroche -->
+<section style="padding: 72px 24px 104px;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 40px 64px;">
+<div style="flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 24px;">
+<h1 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(40px, 4.6vw, 64px); line-height: 1; letter-spacing: -0.025em;">Vos clients vous parlent. Passez à l'action.</h1>
+<p style="margin: 0; max-width: 620px; font-size: 20px; color: #4a4260;">tangram.cx se connecte à vos outils, analyse commentaires, avis et réclamations, et vous guide pour agir.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px;">
+<a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
+<a href="/fonctionnalites" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
+</div>
+</div>
+<div class="v2-compo" style="flex: 1.3 1 520px; min-width: 0;">
+<img fetchpriority="high" src="/img/hero.webp" alt="Un vendeur sourit à une cliente qui paie avec son téléphone au comptoir d'une boutique" style="display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 40% 50%; border-radius: 24px; background: #ebebf1;">
+<div class="v2-carte v2-c-note v2-etiquette v2-e1"><p style="margin: 0; color: #68607e;">Recommandation (NPS)</p><p style="margin: 2px 0 0; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;"><span style="font-family: Figtree, sans-serif; font-weight: 700; font-size: 34px; line-height: 1;">+24</span><svg width="84" height="30" viewBox="0 0 84 30" aria-hidden="true"><polyline points="2,24 16,22 30,25 44,17 58,15 72,10 82,6" fill="none" stroke="#2e9e5b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></p><p style="margin: 6px 0 0; font-weight: 600; color: #1c7a43;">+6 points en 3 mois</p></div>
+<div class="v2-carte v2-c-themes v2-etiquette v2-e2"><p style="margin: 0 0 10px; color: #68607e;">Sujets les plus cités</p><ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;"><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Accueil et conseil</span><span style="color: #68607e;">78 % / 22 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 78%; background: #2e9e5b;"></span><span style="width: 22%; background: #e5584d;"></span></span></li><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Délais de livraison</span><span style="color: #68607e;">18 % / 82 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 18%; background: #2e9e5b;"></span><span style="width: 82%; background: #e5584d;"></span></span></li><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Prix</span><span style="color: #68607e;">41 % / 59 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 41%; background: #2e9e5b;"></span><span style="width: 59%; background: #e5584d;"></span></span></li></ul></div>
+<div class="v2-carte v2-c-fait v2-etiquette v2-e3" style="background: #fff3a6; border-color: #f5df6e;"><p style="margin: 0; font-weight: 600; color: #3a0ca3;">Fait marquant</p><p style="margin: 4px 0 0;">Les délais de livraison sont deux fois plus cités que le mois dernier.</p></div>
+</div>
+</div>
+</section>
+
+<!-- Le besoin -->
+<section style="padding: 96px 24px; background: #ffffff; overflow-x: clip;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 48px 72px;">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em;">Vos retours s'accumulent plus vite qu'on ne peut les lire.</h2>
+<ul style="margin: 0; padding: 0; list-style: none;">
+<li class="an-monte" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-top: 1px solid #d4d3de;"><svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="1,15 15,15 1,1" fill="#1e1033"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Enquêtes de satisfaction</p></div></li>
+<li class="an-monte an-d2" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-top: 1px solid #d4d3de;"><svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="8,1 15,8 8,15 1,8" fill="#ffe45c"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Avis en ligne</p></div></li>
+<li class="an-monte an-d3" style="display: flex; gap: 14px; align-items: flex-start; padding: 18px 0; border-top: 1px solid #d4d3de;"><svg width="24" height="22" viewBox="0 0 18 16" aria-hidden="true" style="flex: none;"><polygon points="5,2 17,2 13,14 1,14" fill="#3a0ca3"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Réclamations</p></div></li>
+</ul>
+<p style="margin: 0; font-weight: 600;">Les classifier à la main prend des jours, crée des biais et coûte cher.<br>Les résumer par IA ne permet pas de suivi dans le temps ni de croiser les informations.</p>
+</div>
+<figure class="v2-tri" style="flex: 1.4 1 480px; min-width: 0; margin: 0;" aria-label="Des commentaires épars se rangent par sujet, avec le nombre de commentaires de chaque sujet">
+<div class="v2-tri-cadre" style="container-type: inline-size; display: flex; flex-direction: column; gap: 22px; padding: 24px; border-radius: 20px; background: #ffffff; border: 1px solid #e2e1ea; box-shadow: 0 14px 34px rgba(30,16,51,.08);">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<p class="v2-tri-titre" style="margin: 0; display: flex; align-items: center; gap: 10px;"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="1,15 15,15 1,1" fill="#1e1033"></polygon></svg><span style="flex: 1; font-weight: 600;">Délais de livraison</span><span style="font-family: Figtree, sans-serif; font-weight: 700; font-size: 20px;">1 284</span></p>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #fce6e3; --bord: #f6bcb5; --texte: #b42318; --dx: 10.5cqw; --dy: 65px; --r: -6deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Livré avec cinq jours de retard. Prévenez au moins quand ça arrive ! »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #fce6e3; color: #b42318; font-size: 12px; font-weight: 600;">Frustration</span><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #ffffff; border: 1px dashed #b6b4c3; color: #4a4260; font-size: 12px; font-weight: 600;">Suggestion : prévenir en cas de retard</span></div>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #fce6e3; --bord: #f6bcb5; --texte: #b42318; --dx: -6.2cqw; --dy: 160px; --r: 5deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Toujours pas reçu ma commande. »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #fce6e3; color: #b42318; font-size: 12px; font-weight: 600;">Inquiétude</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<p class="v2-tri-titre" style="margin: 0; display: flex; align-items: center; gap: 10px;"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="8,1 15,8 8,15 1,8" fill="#ffe45c"></polygon></svg><span style="flex: 1; font-weight: 600;">Accueil et conseil</span><span style="font-family: Figtree, sans-serif; font-weight: 700; font-size: 20px;">962</span></p>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #e3f4ea; --bord: #b9e2c8; --texte: #1c7a43; --dx: 37.7cqw; --dy: -169px; --r: 7deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Le vendeur a pris le temps de me conseiller. »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #e3f4ea; color: #1c7a43; font-size: 12px; font-weight: 600;">Gratitude</span></div>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #e3f4ea; --bord: #b9e2c8; --texte: #1c7a43; --dx: 31.7cqw; --dy: 126px; --r: -4deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Accueil souriant, rien à redire. »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #e3f4ea; color: #1c7a43; font-size: 12px; font-weight: 600;">Satisfaction</span></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<p class="v2-tri-titre" style="margin: 0; display: flex; align-items: center; gap: 10px;"><svg width="18" height="16" viewBox="0 0 18 16" aria-hidden="true" style="flex: none;"><polygon points="5,2 17,2 13,14 1,14" fill="#3a0ca3"></polygon></svg><span style="flex: 1; font-weight: 600;">Prix et frais</span><span style="font-family: Figtree, sans-serif; font-weight: 700; font-size: 20px;">640</span></p>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #fce6e3; --bord: #f6bcb5; --texte: #b42318; --dx: -4.7cqw; --dy: -343px; --r: -8deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Un peu cher pour la qualité. »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #fce6e3; color: #b42318; font-size: 12px; font-weight: 600;">Déception</span></div>
+<div style="margin-left: 26px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px;"><p class="v2-tri-bout" style="--fond: #fce6e3; --bord: #f6bcb5; --texte: #b42318; --dx: 43.8cqw; --dy: -177px; --r: 4deg; margin: 0; padding: 8px 12px; border-radius: 10px; background: var(--fond); border: 1px solid var(--bord); font-size: 14px; line-height: 1.35; color: var(--texte); font-weight: 500;">« Les frais de port font tout augmenter, offrez-les dès 50 €. »</p><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #fce6e3; color: #b42318; font-size: 12px; font-weight: 600;">Frustration</span><span class="v2-tri-titre" style="padding: 2px 9px; border-radius: 999px; background: #ffffff; border: 1px dashed #b6b4c3; color: #4a4260; font-size: 12px; font-weight: 600;">Suggestion : frais de port offerts dès 50 €</span></div>
+</div>
+</div>
+</figure>
+</div>
+</section>
+
+<!-- Analyser, puis decider -->
+<section id="produit" style="padding: 96px 24px;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px;">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 72px; align-items: flex-end;">
+<h2 style="flex: 1 1 460px; min-width: 0; margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em;">De la réponse brute à la décision.</h2>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 32px 48px;">
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Une lecture complète, en quelques minutes</h3><p style="margin: 0; color: #4a4260;">Toutes vos réponses sont analysées et classifiées selon vos référentiels.</p></div>
+<div style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Des priorités claires</h3><p style="margin: 0; color: #4a4260;">Les sujets qui impactent la satisfaction remontent immédiatement, des alertes vous préviennent.</p></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<div class="st" style="flex: none; background: #ffffff; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 20px;">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px;"><span style="font-family: Figtree, sans-serif; font-size: 20px; font-weight: 700">Sujets qui influencent la satisfaction</span></div>
+<div style="overflow-x: auto;">
+<table style="width: 100%; min-width: 520px; border-collapse: collapse; font-size: 15px;">
+<thead>
+<tr style="text-align: left; font-size: 12px; color: #68607e;">
+<th scope="col" style="padding: 0 12px 10px 0; font-weight: 600;">Sujet</th>
+<th scope="col" style="padding: 0 12px 10px; font-weight: 600; text-align: right;">Mentions</th>
+<th scope="col" style="padding: 0 12px 10px; font-weight: 600; width: 40%;">Négatif, neutre, positif</th>
+<th scope="col" style="padding: 0 12px 10px; font-weight: 600; text-align: right;">Score net</th>
+<th scope="col" style="padding: 0 0 10px 12px; font-weight: 600; text-align: right;">NPS</th>
+</tr>
+</thead>
+<tbody style="font-variant-numeric: tabular-nums;">
+<tr class="st-a st-ligne st-r0" style="border-top: 1px solid #e2e1ea;">
+<th scope="row" style="padding: 12px 12px 12px 0; text-align: left; font-weight: 600;">Information sur l'avancement du dossier</th>
+<td style="padding: 12px; text-align: right;">187</td>
+<td style="padding: 12px;"><span style="display: flex; height: 12px; gap: 2px;"><span class="st-a st-seg st-s0-0" style="flex: 63; background: #e5584d; border-radius: 999px 0 0 999px;"></span><span class="st-a st-seg st-s0-1" style="flex: 25; background: #d4d3de;"></span><span class="st-a st-seg st-s0-2" style="flex: 12; background: #2e9e5b; border-radius: 0 999px 999px 0;"></span></span></td>
+<td class="st-a st-pop st-p0" style="padding: 12px; text-align: right; font-weight: 600; color: #b42318;">-51</td>
+<td style="padding: 12px 0 12px 12px; text-align: right;">-34</td>
+</tr>
+<tr class="st-a st-ligne st-r1" style="border-top: 1px solid #e2e1ea;">
+<th scope="row" style="padding: 12px 12px 12px 0; text-align: left; font-weight: 600;">Délais de traitement</th>
+<td style="padding: 12px; text-align: right;">356</td>
+<td style="padding: 12px;"><span style="display: flex; height: 12px; gap: 2px;"><span class="st-a st-seg st-s1-0" style="flex: 60; background: #e5584d; border-radius: 999px 0 0 999px;"></span><span class="st-a st-seg st-s1-1" style="flex: 25; background: #d4d3de;"></span><span class="st-a st-seg st-s1-2" style="flex: 15; background: #2e9e5b; border-radius: 0 999px 999px 0;"></span></span></td>
+<td class="st-a st-pop st-p1" style="padding: 12px; text-align: right; font-weight: 600; color: #b42318;">-45</td>
+<td style="padding: 12px 0 12px 12px; text-align: right;">-29</td>
+</tr>
+<tr class="st-a st-ligne st-r2" style="border-top: 1px solid #e2e1ea;">
+<th scope="row" style="padding: 12px 12px 12px 0; text-align: left; font-weight: 600;">Prise de rendez-vous</th>
+<td style="padding: 12px; text-align: right;">412</td>
+<td style="padding: 12px;"><span style="display: flex; height: 12px; gap: 2px;"><span class="st-a st-seg st-s2-0" style="flex: 55; background: #e5584d; border-radius: 999px 0 0 999px;"></span><span class="st-a st-seg st-s2-1" style="flex: 28; background: #d4d3de;"></span><span class="st-a st-seg st-s2-2" style="flex: 17; background: #2e9e5b; border-radius: 0 999px 999px 0;"></span></span></td>
+<td class="st-a st-pop st-p2" style="padding: 12px; text-align: right; font-weight: 600; color: #b42318;">-38</td>
+<td style="padding: 12px 0 12px 12px; text-align: right;">-21</td>
+</tr>
+<tr class="st-a st-ligne st-r3" style="border-top: 1px solid #e2e1ea;">
+<th scope="row" style="padding: 12px 12px 12px 0; text-align: left; font-weight: 600;">Démarches en ligne</th>
+<td style="padding: 12px; text-align: right;">241</td>
+<td style="padding: 12px;"><span style="display: flex; height: 12px; gap: 2px;"><span class="st-a st-seg st-s3-0" style="flex: 38; background: #e5584d; border-radius: 999px 0 0 999px;"></span><span class="st-a st-seg st-s3-1" style="flex: 36; background: #d4d3de;"></span><span class="st-a st-seg st-s3-2" style="flex: 26; background: #2e9e5b; border-radius: 0 999px 999px 0;"></span></span></td>
+<td class="st-a st-pop st-p3" style="padding: 12px; text-align: right; font-weight: 600; color: #b42318;">-12</td>
+<td style="padding: 12px 0 12px 12px; text-align: right;">-6</td>
+</tr>
+<tr class="st-a st-ligne st-r4" style="border-top: 1px solid #e2e1ea;">
+<th scope="row" style="padding: 12px 12px 12px 0; text-align: left; font-weight: 600;">Accueil au guichet</th>
+<td style="padding: 12px; text-align: right;">298</td>
+<td style="padding: 12px;"><span style="display: flex; height: 12px; gap: 2px;"><span class="st-a st-seg st-s4-0" style="flex: 14; background: #e5584d; border-radius: 999px 0 0 999px;"></span><span class="st-a st-seg st-s4-1" style="flex: 20; background: #d4d3de;"></span><span class="st-a st-seg st-s4-2" style="flex: 66; background: #2e9e5b; border-radius: 0 999px 999px 0;"></span></span></td>
+<td class="st-a st-pop st-p4" style="padding: 12px; text-align: right; font-weight: 600; color: #1c7a43;">+52</td>
+<td style="padding: 12px 0 12px 12px; text-align: right;">+38</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+<a href="/fonctionnalites" style="align-self: flex-start; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
+</div>
+</div>
+</section>
+
+<!-- Interconnexion -->
+<section id="outils" style="padding: 96px 24px; background: #1e1033; color: #d9d8e2;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 72px; align-items: center;">
+<div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em; color: #ffffff;">Gardez votre outil d'enquête et votre CRM. Ajoutez-y une véritable analyse.</h2>
+<p style="margin: 0;">Une plateforme d'enquête ou un CRM sont excellents pour collecter. Lire finement des milliers de commentaires et en tirer des informations utiles nécessite un outil adapté.</p>
+<p style="margin: 0;">Connectez facilement vos flux et les nouvelles réponses arrivent chaque jour.</p>
+</div>
+<div style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+<ul aria-label="Outils compatibles" style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;">
+<li class="an-pop" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="#ffffff"><path d="M20.14 5.518l-2.695 9.538h-.034l-2.89-9.538H8.125l-2.19 3.893-2.318-3.893H.368l3.78 6.116L0 18.486h2.993l2.66-4.534 2.755 4.534h4.906v-8.99h.034q.102.564.195.966.093.402.175.744c.057.228.118.445.184.65.065.206.132.43.2.677l1.926 5.949h2.523l1.942-5.95q.213-.718.398-1.385a14.544 14.544 0 0 0 .32-1.506h.035v8.845H24V5.514zM7.373 11.651l3.383-5.616v11.118z"></path></svg>Qualtrics</li>
+<li class="an-pop an-d2" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;">Medallia</li>
+<li class="an-pop an-d3" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;">Alchemer</li>
+<li class="an-pop an-d4" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;">SurveySparrow</li>
+<li class="an-pop an-d5" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="#ffffff"><path d="M10.006 5.415a4.195 4.195 0 013.045-1.306c1.56 0 2.954.9 3.69 2.205.63-.3 1.35-.45 2.1-.45 2.85 0 5.159 2.34 5.159 5.22s-2.31 5.22-5.176 5.22c-.345 0-.69-.044-1.02-.104a3.75 3.75 0 01-3.3 1.95c-.6 0-1.155-.15-1.65-.375A4.314 4.314 0 018.88 20.4a4.302 4.302 0 01-4.05-2.82c-.27.062-.54.076-.825.076-2.204 0-4.005-1.8-4.005-4.05 0-1.5.811-2.805 2.01-3.51-.255-.57-.39-1.2-.39-1.846 0-2.58 2.1-4.65 4.65-4.65 1.53 0 2.85.705 3.72 1.8"></path></svg>Salesforce</li>
+<li class="an-pop an-d6" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;">Microsoft Dynamics 365</li>
+<li class="an-pop an-d7" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; background: #2e2247; border-radius: 12px; font-weight: 700; font-size: 17px; color: #ffffff;"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true" fill="#ffffff"><path d="M18.164 7.93V5.084a2.198 2.198 0 001.267-1.978v-.067A2.2 2.2 0 0017.238.845h-.067a2.2 2.2 0 00-2.193 2.193v.067a2.196 2.196 0 001.252 1.973l.013.006v2.852a6.22 6.22 0 00-2.969 1.31l.012-.01-7.828-6.095A2.497 2.497 0 104.3 4.656l-.012.006 7.697 5.991a6.176 6.176 0 00-1.038 3.446c0 1.343.425 2.588 1.147 3.607l-.013-.02-2.342 2.343a1.968 1.968 0 00-.58-.095h-.002a2.033 2.033 0 102.033 2.033 1.978 1.978 0 00-.1-.595l.005.014 2.317-2.317a6.247 6.247 0 104.782-11.134l-.036-.005zm-.964 9.378a3.206 3.206 0 113.215-3.207v.002a3.206 3.206 0 01-3.207 3.207z"></path></svg>HubSpot</li>
+<li class="an-pop an-d8" style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 18px; border: 1px dashed #6f6787; border-radius: 12px; font-weight: 600; font-size: 16px; color: #d9d8e2;">Et un simple fichier</li>
+</ul>
+<p style="margin: 0; font-size: 13px; color: #a19eaf;">Les marques citées appartiennent à leurs propriétaires respectifs.</p>
+</div>
+</div>
+</section>
+
+<!-- Pour qui -->
+<section id="pour-qui" style="padding: 96px 24px;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px;">
+<div style="display: flex; flex-wrap: wrap; gap: 16px 72px; align-items: flex-end;">
+<h2 style="flex: 1 1 460px; min-width: 0; margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em;">Le même outil, des questions différentes.</h2>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+<li class="an-monte" style="display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 24px; background: #ffffff;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Grandes entreprises et ETI</h3><p style="margin: 0; font-weight: 600;">« Les résultats diffèrent-ils d'une marque, d'un canal ou d'une région à l'autre ? »</p></li>
+<li class="an-monte an-d2" style="display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 24px; background: #ffffff;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">PME</h3><p style="margin: 0; font-weight: 600;">« Par quoi commencer pour améliorer la satisfaction ? »</p></li>
+<li class="an-monte an-d3" style="display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 24px; background: #ffffff;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Administrations et collectivités</h3><p style="margin: 0; font-weight: 600;">« À quelle étape de la démarche perdons-nous nos usagers ? »</p><a href="/secteurs/secteur-public" style="margin-top: auto; font-weight: 600; text-underline-offset: 4px;">Le secteur public</a></li>
+<li class="an-monte an-d4" style="display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 24px; background: #ffffff;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Instituts d'études et cabinets</h3><p style="margin: 0; font-weight: 600;">« Comment livrer à nos clients un codage fiable et vérifiable ? »</p></li>
+<li class="an-monte an-d5" style="display: flex; flex-direction: column; gap: 12px; padding: 24px; border-radius: 24px; background: #ffffff;"><h3 style="margin: 0; font-family: Figtree, sans-serif; font-size: 21px; font-weight: 700; line-height: 1.2;">Ressources humaines</h3><p style="margin: 0; font-weight: 600;">« Que disent vraiment nos salariés dans le baromètre social ? »</p><a href="/enquetes-rh" style="margin-top: auto; font-weight: 600; text-underline-offset: 4px;">Enquêtes RH</a></li>
+</ul>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #68607e;">Par secteur</h3>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px;"><li><a href="/secteurs/secteur-public" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Secteur public</a></li><li><a href="/secteurs/banque" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Banque</a></li><li><a href="/secteurs/assurance" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Assurance</a></li><li><a href="/secteurs/tourisme-hotellerie" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Tourisme et hôtellerie</a></li><li><a href="/secteurs/distribution" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Distribution</a></li><li><a href="/secteurs/transport-mobilite" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Transport et mobilité</a></li><li><a href="/secteurs/telecoms" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Télécoms</a></li><li><a href="/secteurs/energie" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Énergie</a></li><li><a href="/secteurs/logement-social" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Logement social</a></li><li><a href="/secteurs/enseignement" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600;">Enseignement</a></li><li><a href="#essai" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px dashed #8a849c; text-decoration: none; font-size: 15px; font-weight: 600; color: #3a0ca3;">Autre secteur ? Parlons-en</a></li></ul>
+</div>
+</div>
+</section>
+
+<!-- Confiance -->
+<section style="padding: 96px 24px; background: #ffffff;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 72px; align-items: flex-start;">
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em;">Vos données en lieu sûr.</h2>
+<a href="/securite" style="align-self: flex-start; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Sécurité et souveraineté</a>
+</div>
+<ul style="flex: 1.4 1 520px; min-width: 0; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 40px;">
+<li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 0; border-top: 1px solid #d4d3de;"><svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="1,15 15,15 1,1" fill="#1e1033"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Hébergé dans l'Union européenne</p></div></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 0; border-top: 1px solid #d4d3de;"><svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><polygon points="8,1 15,8 8,15 1,8" fill="#ffe45c"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Aucun entrainement de modèles d'IA</p></div></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 0; border-top: 1px solid #d4d3de;"><svg width="24" height="22" viewBox="0 0 18 16" aria-hidden="true" style="flex: none;"><polygon points="5,2 17,2 13,14 1,14" fill="#3a0ca3"></polygon></svg><div><p style="margin: 0; font-weight: 700;">Anonymisation des données</p></div></li>
+<li style="display: flex; gap: 14px; align-items: flex-start; padding: 16px 0; border-top: 1px solid #d4d3de;"><svg width="22" height="22" viewBox="0 0 16 16" aria-hidden="true" style="flex: none;"><rect x="2" y="2" width="12" height="12" fill="#1e1033"></rect></svg><div><p style="margin: 0; font-weight: 700;">Accès cloisonnés</p></div></li>
+</ul>
+</div>
+</section>
+
+<!-- Essai gratuit -->
+<section id="essai" style="padding: 96px 24px;">
+<div style="max-width: 1200px; margin: 0 auto; background: #fff3a6; border-radius: 24px; padding: clamp(28px, 5vw, 56px); display: flex; flex-wrap: wrap; gap: 40px 56px;">
+<div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; letter-spacing: -0.015em;">Essayez tangram.cx sur vos propres réponses.</h2>
+<p style="margin: 0; font-size: 19px; color: #3a3350;">Un échange, une démonstration, puis un essai gratuit jusqu'à 500 commentaires.</p>
+<div style="margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding-top: 20px; border-top: 1px solid rgba(30,16,51,.18);"><p style="margin: 0; font-weight: 600;">Vous préférez choisir directement un créneau ?</p><a href="https://calendly.com/tangramcx/30min" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 24px; border: 2px solid #1e1033; border-radius: 999px; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="flex: none;"><g fill="none" stroke="#1e1033" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M3 10h18M8 3v4M16 3v4"></path></g></svg>Réserver 30 minutes<span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;"> (nouvel onglet)</span></a></div>
+</div>
+<form action="/api/contact" method="post" data-contact="" style="flex: 1 1 460px; min-width: 0; background: #ffffff; border-radius: 24px; padding: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 15px;">
+<label aria-hidden="true" style="position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;">Ne pas remplir<input type="text" name="site_web" tabindex="-1" autocomplete="off"></label><label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600;">Nom et prénom<input type="text" name="nom" required autocomplete="name" style="min-height: 44px; padding: 0 14px; border: 1px solid #8a849c; border-radius: 12px; background: #ffffff; font: inherit; font-weight: 400;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600;">E-mail professionnel<input type="email" name="email" required autocomplete="email" style="min-height: 44px; padding: 0 14px; border: 1px solid #8a849c; border-radius: 12px; background: #ffffff; font: inherit; font-weight: 400;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600;">Organisation<input type="text" name="organisation" required autocomplete="organization" style="min-height: 44px; padding: 0 14px; border: 1px solid #8a849c; border-radius: 12px; background: #ffffff; font: inherit; font-weight: 400;"></label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600;">Vous êtes<select name="type" style="min-height: 44px; padding: 0 14px; border: 1px solid #8a849c; border-radius: 12px; background: #ffffff; font: inherit; font-weight: 400;"><option>Grande entreprise ou ETI</option><option>PME</option><option>Administration ou collectivité</option><option>Institut d'études ou cabinet</option><option>Autre</option></select></label>
+<label style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600;">Votre besoin (facultatif)<textarea name="message" rows="3" style="padding: 10px 14px; border: 1px solid #8a849c; border-radius: 12px; background: #ffffff; font: inherit; font-weight: 400; resize: vertical;"></textarea></label>
+<div style="grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+<p style="margin: 0; flex: 1 1 280px; font-size: 13px; line-height: 1.5; color: #4a4260;">Vos informations servent uniquement à répondre à votre demande. Elles sont conservées trois ans au plus après notre dernier échange, puis supprimées. Pour y accéder, les corriger ou les faire supprimer : <a href="mailto:dpo@tangram.cx">dpo@tangram.cx</a>. <a href="https://app.tangram.cx/confidentialite">Politique de confidentialité</a></p>
+<button type="submit" style="min-height: 48px; padding: 0 28px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-weight: 600; cursor: pointer;">Demander mon essai</button>
+</div>
+<p data-contact-message="" role="status" aria-live="polite" style="grid-column: 1 / -1; margin: 0; font-weight: 600;"></p>
+</form>
+</div>
+</section>
+
+</main>
+
+<footer style="padding: 32px 24px 48px; border-top: 1px solid #e2e1ea;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; font-size: 14px; color: #4a4260;">
+<span><strong style="font-family: Figtree, sans-serif; font-size: 18px; color: #1e1033;">tangram<span style="color: #3a0ca3;">.cx</span></strong> <span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="10" viewBox="0 0 3 2" role="img" aria-label="Drapeau français" style="flex: none; border-radius: 2px; box-shadow: 0 0 0 1px #d4d3de;"><rect width="1" height="2" fill="#000091"></rect><rect x="1" width="1" height="2" fill="#ffffff"></rect><rect x="2" width="1" height="2" fill="#e1000f"></rect></svg>Conçu en France.</span></span>
+<nav aria-label="Pied de page" style="display: flex; flex-wrap: wrap; gap: 8px 24px;">
+<a href="/fonctionnalites" style="color: #4a4260;">Fonctionnalités</a>
+<a href="/enquetes-rh" style="color: #4a4260;">Enquêtes RH</a>
+<a href="/tarifs" style="color: #4a4260;">Tarifs</a>
+<a href="/securite" style="color: #4a4260;">Sécurité et souveraineté</a>
+<a href="mailto:contact@tangram.cx" style="color: #4a4260;">contact@tangram.cx</a>
+<a href="https://app.tangram.cx" style="color: #4a4260;">Se connecter</a>
+<a href="https://app.tangram.cx/confidentialite" style="color: #4a4260;">Confidentialité</a>
+<a href="/mentions-legales" style="color: #4a4260;">Mentions légales</a>
+</nav>
+</div>
+</footer>
+
+</div>
+</body>
+</html>
