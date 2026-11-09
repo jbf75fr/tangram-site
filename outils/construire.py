@@ -29,8 +29,8 @@ AUJOURDHUI = datetime.date.today().isoformat()
 
 # Page de la maquette -> (adresse, titre, description, fil d'Ariane)
 PAGES = {
-    'V2': ('/', "tangram.cx | Analyse IA des commentaires clients",
-           "tangram.cx classe les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, "
+    'V2': ('/', "tangram.cx | Analyse d'enquêts et d'avis clients",
+           "tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, "
            "et vous guide pour agir. Hébergé en Europe. Essai gratuit.", None),
     'Solution': ('/fonctionnalites', "Fonctionnalités | tangram.cx",
                  "Collecte automatique, classement par thème, tonalité et émotion, croisements, personas, idées d'actions, "
