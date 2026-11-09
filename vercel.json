@@ -5,12 +5,12 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/:page(actions|admin|aide|auth|confidentialite|connexion|croisements|dashboard|decision|evolution|rapport|themes|alertes|churn-config|consommation|copilote-config|design|echelles-notes|journal|prompts|reglages|resume-ia)",
+      "source": "/:page(actions|admin|aide|auth|connexion|croisements|dashboard|decision|evolution|rapport|themes|alertes|churn-config|consommation|copilote-config|design|echelles-notes|journal|prompts|reglages|resume-ia)",
       "destination": "https://app.tangram.cx/:page",
       "permanent": true
     },
     {
-      "source": "/:page(actions|admin|aide|auth|confidentialite|connexion|croisements|dashboard|decision|evolution|rapport|themes|alertes|churn-config|consommation|copilote-config|design|echelles-notes|journal|prompts|reglages|resume-ia)/:reste*",
+      "source": "/:page(actions|admin|aide|auth|connexion|croisements|dashboard|decision|evolution|rapport|themes|alertes|churn-config|consommation|copilote-config|design|echelles-notes|journal|prompts|reglages|resume-ia)/:reste*",
       "destination": "https://app.tangram.cx/:page/:reste*",
       "permanent": true
     },
