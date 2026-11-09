@@ -13,17 +13,39 @@ Site vitrine de tangram.cx, publié sur https://tangram.cx. L'application est su
 | `api/contact.js` | Envoi du formulaire de demande d'essai par e-mail (Brevo) |
 | `vercel.json` | Adresses propres, redirections vers l'application, en-têtes de sécurité |
 
-## Changer un texte
+## Changer un texte (sans Claude)
 
-Le plus simple : modifier le texte directement dans la maquette Claude Design, puis demander à Claude de mettre le site à jour (il recopie les pages dans `maquette/`, refabrique le site et ouvre une pull request à valider).
+1. Sur GitHub, ouvrir le dossier `maquette/`, puis la page à corriger (voir le tableau ci-dessous).
+2. Cliquer sur le crayon (« Edit this file ») en haut à droite du fichier.
+3. Retrouver la phrase avec Ctrl+F (Cmd+F sur Mac), la corriger, sans toucher aux balises qui l'entourent (`<p ...>`, `</p>`...).
+4. Cliquer sur « Commit changes... », laisser « Commit directly to the main branch », puis « Commit changes ».
+5. Le site se refabrique tout seul (onglet « Actions », environ une minute), puis Vercel le met en ligne.
 
-Ne pas modifier les fichiers de `public/` sur GitHub : ils sont refabriqués à chaque mise à jour, la modification serait perdue. Les titres et descriptions qui apparaissent dans Google sont dans `outils/construire.py` (liste `PAGES` et `SECTEURS`).
+Si la fabrication échoue (croix rouge dans « Actions », e-mail de GitHub), le site en ligne ne change pas : le message d'erreur dit pourquoi (par exemple un tiret long ou un point médian interdit).
+
+| Page du site | Fichier |
+|---|---|
+| Accueil | `maquette/V2.dc.html` |
+| Fonctionnalités | `maquette/Solution.dc.html` |
+| Enquêtes RH | `maquette/EnquetesRH.dc.html` |
+| Tarifs | `maquette/Tarifs.dc.html` |
+| Sécurité | `maquette/Securite.dc.html` |
+| Mentions légales | `maquette/MentionsLegales.dc.html` |
+| Secteurs | `maquette/SecteurPublic.dc.html`, `Banque`, `Assurance`, `Tourisme`, `Distribution`, `Transport`, `Telecoms`, `Energie`, `Logement`, `Enseignement` |
+
+Les titres et descriptions qui apparaissent dans Google sont dans `outils/construire.py` (listes `PAGES` et `SECTEURS`), modifiables de la même façon.
+
+Ne jamais modifier `public/` : il est refabriqué à chaque changement, la modification serait perdue.
+
+Pour les changements plus importants (mise en page, nouvelle section), passer par la maquette Claude Design puis demander à Claude de mettre le site à jour.
 
 ## Mettre à jour le site
 
 1. Copier les pages modifiées de la maquette dans `maquette/` (et les nouvelles photos dans `maquette/img/`).
 2. Lancer `python3 outils/construire.py` (il faut Python 3 et Pillow).
 3. Vérifier, puis proposer une pull request. Le merge sur `main` met le site en ligne.
+
+Automatisme : à chaque modification de `maquette/`, `outils/` ou `ressources/` sur `main`, l'action GitHub `Fabriquer le site` (`.github/workflows/construire.yml`) relance `construire.py` et enregistre `public/`. Vercel ne déploie que les commits qui changent `public/`, `api/` ou `vercel.json` (`ignoreCommand`), donc un seul déploiement par modification.
 
 Une nouvelle page de la maquette doit être déclarée dans `PAGES` ou `SECTEURS` de `outils/construire.py`, avec son adresse, son titre et sa description.
 

@@ -4,6 +4,7 @@ Mode d'emploi du dépôt : `README.md`. Règles du contenu et du design du site 
 
 - Je ne suis pas développeur : explique simplement, en français. Tu gères branches, commits et pull requests.
 - Avant chaque push, vérifier que la pull request de la branche n'est pas déjà mergée (`git fetch origin main` puis `git log origin/main..HEAD`) ; si oui, repartir de `origin/main` et ouvrir une nouvelle pull request.
+- L'utilisateur peut corriger des textes directement dans `maquette/` sur GitHub : avant de recopier des pages depuis Claude Design, comparer `maquette/` (après `git pull`) avec la maquette Claude Design et reporter ses corrections des deux côtés.
 - Ne jamais modifier `public/` à la main : modifier la maquette (`maquette/`) ou `outils/construire.py`, puis relancer `python3 outils/construire.py`.
 - Interdits partout : le tiret long et le point médian (le script bloque la fabrication s'il en trouve). Pas de « ça », pas de phrase commençant par « Ce que » ou « Ce qui », ne jamais nommer un fournisseur d'IA ni Vocaza, aucun chiffre inventé.
 - Chaque page : un seul titre `h1`, une description de 150 caractères environ, des images avec texte alternatif.
