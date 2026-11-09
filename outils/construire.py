@@ -47,6 +47,15 @@ PAGES = {
     'Confidentialite': ('/confidentialite', "Politique de confidentialité | tangram.cx",
                         "Données traitées par le site et l'application tangram.cx, prestataires, lieux d'hébergement, "
                         "durées de conservation et exercice de vos droits.", 'Politique de confidentialité'),
+    'CGV': ('/cgv', "Conditions générales de vente | tangram.cx",
+            "Conditions de souscription de l'abonnement tangram.cx par les professionnels : commande, prix, facturation, "
+            "durée, résiliation, données et responsabilité.", 'Conditions générales de vente'),
+    'CGU': ('/cgu', "Conditions générales d'utilisation | tangram.cx",
+            "Règles d'utilisation du site tangram.cx et de l'application : accès, engagements des utilisateurs, résultats "
+            "produits par l'IA, sécurité.", "Conditions générales d'utilisation"),
+    'TraitementDonnees': ('/traitement-des-donnees', "Accord de traitement des données (RGPD) | tangram.cx",
+                          "Accord de sous-traitance au sens de l'article 28 du RGPD : description du traitement, mesures de "
+                          "sécurité, sous-traitants, violation de données, fin du contrat.", 'Accord de traitement des données'),
     'MentionsLegales': ('/mentions-legales', "Mentions légales | tangram.cx",
                         "Éditeur, hébergement, propriété intellectuelle, crédits photos et données personnelles du site "
                         "tangram.cx.", 'Mentions légales'),
@@ -316,7 +325,7 @@ def page_introuvable(css_modele, corps_modele):
 def plan_du_site():
     lignes = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for nom, (chemin, *_rest) in PAGES.items():
-        priorite = '1.0' if chemin == '/' else ('0.3' if nom in ('MentionsLegales', 'Confidentialite') else '0.8')
+        priorite = '1.0' if chemin == '/' else ('0.3' if nom in ('MentionsLegales', 'Confidentialite', 'CGV', 'CGU', 'TraitementDonnees') else '0.8')
         lignes.append(f'<url><loc>{SITE}{"/" if chemin == "/" else chemin}</loc><lastmod>{AUJOURDHUI}</lastmod>'
                       f'<priority>{priorite}</priority></url>')
     lignes.append('</urlset>')
@@ -357,7 +366,9 @@ def llms(descriptions):
         chemin, _, _, libelle = PAGES[nom]
         lignes.append(f'- [{libelle}]({SITE}{chemin}): {descriptions[nom]}')
     lignes += ['', '## Autres', '', f'- [Mentions légales]({SITE}/mentions-legales)',
-               f'- [Politique de confidentialité]({SITE}/confidentialite)']
+               f'- [Politique de confidentialité]({SITE}/confidentialite)',
+               f'- [Conditions générales de vente]({SITE}/cgv)', f'- [Conditions générales d\'utilisation]({SITE}/cgu)',
+               f'- [Accord de traitement des données]({SITE}/traitement-des-donnees)']
     return '\n'.join(lignes) + '\n'
 
 
