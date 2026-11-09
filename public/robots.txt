@@ -1,0 +1,6 @@
+# tangram.cx : tout le site peut être lu et cité, par les moteurs de recherche comme par les assistants IA.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://tangram.cx/sitemap.xml

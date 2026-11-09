@@ -1,0 +1,38 @@
+# tangram.cx
+
+> tangram.cx est un logiciel français qui analyse par IA les commentaires libres des enquêtes de satisfaction, des avis en ligne et des réclamations. Il classe chaque commentaire par thème, tonalité et émotion, calcule des indicateurs suivis dans le temps et aide à décider des actions à mener.
+
+Points clés :
+- Les chiffres affichés sont calculés, jamais rédigés par l'IA : l'IA classe, le calcul compte.
+- Les réponses arrivent automatiquement depuis les outils d'enquête et le CRM, ou par simple dépôt de fichier.
+- Fonctionnalités : classement par thème, sous-thème, tonalité et émotion ; score net par sujet ; croisements avec les données de l'enquête ; personas ; repérage des clients sur le départ ; idées d'actions et plan d'action ; alertes par e-mail.
+- Données hébergées dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées.
+- Essai gratuit jusqu'à 500 commentaires ; abonnement à partir de 2 900 € HT par an ou 270 € HT par mois, selon le volume.
+- Usages : expérience client, expérience usager (secteur public), enquêtes RH et eNPS.
+- Contact : contact@tangram.cx
+
+## Pages principales
+
+- [tangram.cx](https://tangram.cx/): tangram.cx classe les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.
+- [Fonctionnalités](https://tangram.cx/fonctionnalites): Collecte automatique, classement par thème, tonalité et émotion, croisements, personas, idées d'actions, plan d'action et alertes : les fonctionnalités de tangram.cx.
+- [Tarifs](https://tangram.cx/tarifs): Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois selon votre volume. Tout est compris.
+- [Sécurité et souveraineté](https://tangram.cx/securite): Hébergement dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.
+- [Enquêtes RH, eNPS et baromètres sociaux](https://tangram.cx/enquetes-rh): Baromètres sociaux, eNPS, expérience collaborateur : toutes les réponses ouvertes de vos salariés analysées, du recrutement au départ.
+
+## Secteurs
+
+- [Secteur public](https://tangram.cx/secteurs/secteur-public): Enquêtes usagers, avis sur les démarches, réclamations : les points de blocage, l'étape concernée et les publics touchés, démarche par démarche.
+- [Banque](https://tangram.cx/secteurs/banque): Conseiller, frais, application, crédit : ce qui pèse dans les commentaires de vos clients, agence par agence, et qui envisage de partir.
+- [Assurance](https://tangram.cx/secteurs/assurance): Déclaration, gestion du sinistre, indemnisation : l'analyse des commentaires de vos assurés montre où l'attente se transforme en défiance.
+- [Tourisme et hôtellerie](https://tangram.cx/secteurs/tourisme-hotellerie): Avis en ligne et questionnaires de séjour lus dans toutes les langues, établissement par établissement, de la réservation au départ.
+- [Distribution](https://tangram.cx/secteurs/distribution): En magasin comme en ligne, de la commande au retour : tous les commentaires de vos clients analysés dans un même parcours.
+- [Transport et mobilité](https://tangram.cx/secteurs/transport-mobilite): Ponctualité, information, confort : les commentaires de vos voyageurs analysés ligne par ligne, gare par gare.
+- [Télécoms](https://tangram.cx/secteurs/telecoms): Réseau, facture, service client : ce qui pousse vos abonnés à résilier, sujet par sujet, à partir de leurs commentaires.
+- [Énergie](https://tangram.cx/secteurs/energie): Électricité, gaz, eau : ce qui pèse sur la confiance de vos clients, de la facture au service client, à partir de leurs commentaires.
+- [Logement social](https://tangram.cx/secteurs/logement-social): Propreté, interventions, voisinage : la voix de vos locataires analysée résidence par résidence.
+- [Enseignement](https://tangram.cx/secteurs/enseignement): Inscription, cours, accompagnement, diplôme : les commentaires de vos étudiants analysés pour que chaque formation sache quoi améliorer.
+
+## Autres
+
+- [Mentions légales](https://tangram.cx/mentions-legales)
+- [Politique de confidentialité](https://app.tangram.cx/confidentialite)
