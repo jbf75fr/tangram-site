@@ -13,6 +13,12 @@ Site vitrine de tangram.cx, publié sur https://tangram.cx. L'application est su
 | `api/contact.js` | Envoi du formulaire de demande d'essai par e-mail (Brevo) |
 | `vercel.json` | Adresses propres, redirections vers l'application, en-têtes de sécurité |
 
+## Changer un texte
+
+Le plus simple : modifier le texte directement dans la maquette Claude Design, puis demander à Claude de mettre le site à jour (il recopie les pages dans `maquette/`, refabrique le site et ouvre une pull request à valider).
+
+Ne pas modifier les fichiers de `public/` sur GitHub : ils sont refabriqués à chaque mise à jour, la modification serait perdue. Les titres et descriptions qui apparaissent dans Google sont dans `outils/construire.py` (liste `PAGES` et `SECTEURS`).
+
 ## Mettre à jour le site
 
 1. Copier les pages modifiées de la maquette dans `maquette/` (et les nouvelles photos dans `maquette/img/`).
