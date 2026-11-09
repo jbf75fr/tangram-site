@@ -31,6 +31,7 @@ Si la fabrication échoue (croix rouge dans « Actions », e-mail de GitHub), le
 | Tarifs | `maquette/Tarifs.dc.html` |
 | Sécurité | `maquette/Securite.dc.html` |
 | Mentions légales | `maquette/MentionsLegales.dc.html` |
+| CGV, CGU, accord de traitement des données | `maquette/CGV.dc.html`, `CGU.dc.html`, `TraitementDonnees.dc.html` (à faire relire par un juriste ; à mettre à jour à chaque nouveau prestataire) |
 | Politique de confidentialité | `maquette/Confidentialite.dc.html` (à tenir à jour à chaque nouveau traitement de données de l'application ou du site) |
 | Secteurs | `maquette/SecteurPublic.dc.html`, `Banque`, `Assurance`, `Tourisme`, `Distribution`, `Transport`, `Telecoms`, `Energie`, `Logement`, `Enseignement` |
 

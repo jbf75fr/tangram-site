@@ -36,3 +36,6 @@ Points clés :
 
 - [Mentions légales](https://tangram.cx/mentions-legales)
 - [Politique de confidentialité](https://tangram.cx/confidentialite)
+- [Conditions générales de vente](https://tangram.cx/cgv)
+- [Conditions générales d'utilisation](https://tangram.cx/cgu)
+- [Accord de traitement des données](https://tangram.cx/traitement-des-donnees)
