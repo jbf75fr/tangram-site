@@ -35,4 +35,4 @@ Points clés :
 ## Autres
 
 - [Mentions légales](https://tangram.cx/mentions-legales)
-- [Politique de confidentialité](https://app.tangram.cx/confidentialite)
+- [Politique de confidentialité](https://tangram.cx/confidentialite)

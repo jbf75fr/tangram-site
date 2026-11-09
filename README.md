@@ -31,6 +31,7 @@ Si la fabrication échoue (croix rouge dans « Actions », e-mail de GitHub), le
 | Tarifs | `maquette/Tarifs.dc.html` |
 | Sécurité | `maquette/Securite.dc.html` |
 | Mentions légales | `maquette/MentionsLegales.dc.html` |
+| Politique de confidentialité | `maquette/Confidentialite.dc.html` (à tenir à jour à chaque nouveau traitement de données de l'application ou du site) |
 | Secteurs | `maquette/SecteurPublic.dc.html`, `Banque`, `Assurance`, `Tourisme`, `Distribution`, `Transport`, `Telecoms`, `Energie`, `Logement`, `Enseignement` |
 
 Les titres et descriptions qui apparaissent dans Google sont dans `outils/construire.py` (listes `PAGES` et `SECTEURS`), modifiables de la même façon.
