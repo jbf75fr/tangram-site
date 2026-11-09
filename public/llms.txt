@@ -13,7 +13,7 @@ Points clés :
 
 ## Pages principales
 
-- [tangram.cx](https://tangram.cx/): tangram.cx classe les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.
+- [tangram.cx](https://tangram.cx/): tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.
 - [Fonctionnalités](https://tangram.cx/fonctionnalites): Collecte automatique, classement par thème, tonalité et émotion, croisements, personas, idées d'actions, plan d'action et alertes : les fonctionnalités de tangram.cx.
 - [Tarifs](https://tangram.cx/tarifs): Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois selon votre volume. Tout est compris.
 - [Sécurité et souveraineté](https://tangram.cx/securite): Hébergement dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.
