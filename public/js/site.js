@@ -140,7 +140,7 @@ fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/
 .then(function (r) {
 if (!r.ok) throw new Error('envoi');
 form.reset();
-dire('Merci, votre demande est bien envoyée. Nous vous répondons sous deux jours ouvrés.', false);
+dire('Merci, votre demande est bien envoyée. Nous revenons vers vous rapidement.', false);
 })
 .catch(function () {
 dire("L'envoi n'a pas abouti. Écrivez-nous à contact@tangram.cx ou choisissez un créneau ci-contre.", true);

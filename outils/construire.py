@@ -85,7 +85,7 @@ def remplacer_liens(corps):
         if nom not in PAGES:
             raise SystemExit(f'Lien vers une page inconnue : {nom}.dc.html')
         return f'href="{adresse(nom)}{ancre}"'
-    corps = re.sub(r'href="([A-Za-z]+)\.dc\.html(#[\w-]+)?"', lien, corps)
+    corps = re.sub(r'href="([A-Za-z0-9]+)\.dc\.html(#[\w-]+)?"', lien, corps)
     corps = re.sub(r'src="img/([\w-]+)\.jpg"', r'src="/img/\1.webp"', corps)
     return corps
 
@@ -280,6 +280,11 @@ def verifier(nom, page):
     for interdit in ('—', '·'):
         if interdit in texte(page):
             raise SystemExit(f'{nom} : caractère interdit {interdit!r}')
+    if '.dc.html' in page or 'href="img/' in page or 'src="img/' in page:
+        raise SystemExit(f'{nom} : lien de la maquette non converti')
+    for lien in re.findall(r'href="([^"#]*)', page):
+        if lien and not lien.startswith(('/', 'https://', 'mailto:')):
+            raise SystemExit(f'{nom} : lien inattendu {lien}')
     if page.count('<h1') != 1:
         raise SystemExit(f'{nom} : il faut exactement un titre <h1>')
     for img in re.findall(r'<img [^>]*>', page):
