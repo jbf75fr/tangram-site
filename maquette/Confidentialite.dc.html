@@ -131,94 +131,34 @@ const scenes = Array.from(racine.querySelectorAll('.an-monte,.an-pop,.an-glisse,
 scenes.forEach((el) => el.setAttribute('data-scene', ''));
 const toutMontrer = () => scenes.forEach((el) => el.setAttribute('data-vu', ''));
 if (!('IntersectionObserver' in window) || !racine.getAnimations) { toutMontrer(); return; }
-// L'avancement de chaque illustration suit le defilement : il depend de la hauteur deja
-// remontee au-dessus du bas de l'ecran (voir les reperes plus bas).
-// En remontant, l'illustration se defait au meme rythme ; sortie par le haut, elle reste construite.
-// Les animations sont relues a chaque pas : la feuille de style peut arriver apres le montage.
-const animsDe = (scene) => scene.getAnimations({ subtree: true }).filter((a) => {
-const cible = a.effect && a.effect.target;
-return cible && cible.closest('[data-scene]') === scene;
-});
-const etats = new Map();
-scenes.forEach((scene) => etats.set(scene, { t: 0, p: 0, basCoupe: null, fini: false }));
-let precedent = null;
-const avancer = () => {
-this.boucle = null;
-const maintenant = performance.now();
-const dt = precedent === null ? 16 : Math.min(maintenant - precedent, 50);
-precedent = maintenant;
-let enCours = false;
-etats.forEach((s, scene) => {
-if (s.fini) return;
+// Animations discretes et rapides : chaque illustration se joue d'un coup, en une demi-seconde
+// au plus, juste avant d'entrer a l'ecran (marge de 15 % sous le bas de l'ecran).
+// Ce qui est deja visible a l'ouverture de la page est montre construit, sans animation.
+const DUREE_MAX = 500;
+// Une illustration et tout ce qu'elle contient se jouent ensemble.
+const animsDe = (scene) => scene.getAnimations({ subtree: true }).filter((a) => a.effect && a.effect.getComputedTiming().endTime !== Infinity);
+const jouer = (scene, instantane) => {
+if (scene.hasAttribute('data-vu')) return;
+const groupe = [scene, ...scene.querySelectorAll('[data-scene]')];
+groupe.forEach((el) => { el.setAttribute('data-vu', ''); if (this.observateur) this.observateur.unobserve(el); });
 const anims = animsDe(scene);
-const finies = anims.filter((a) => a.effect.getComputedTiming().endTime !== Infinity);
-anims.forEach((a) => { if (!finies.includes(a) && a.playState !== 'running') a.play(); });
-if (!finies.length) { if (s.p > 0) scene.setAttribute('data-vu', ''); s.fini = true; return; }
-const fin = finies.reduce((m, a) => Math.max(m, a.effect.getComputedTiming().endTime), 0);
-const cible = s.p * fin;
-const ecart = cible - s.t;
-s.t = Math.abs(ecart) < 2 ? cible : s.t + ecart * Math.min(1, dt / 90);
-finies.forEach((a) => { if (a.playState !== 'paused') a.pause(); a.currentTime = s.t; });
-if (s.t === cible) s.fini = true; else enCours = true;
-});
-if (enCours) this.boucle = setTimeout(avancer, 16); else precedent = null;
+if (instantane) { anims.forEach((a) => a.finish()); return; }
+const fin = anims.reduce((m, a) => Math.max(m, a.effect.getComputedTiming().endTime), 0);
+const vitesse = Math.max(1, fin / DUREE_MAX);
+anims.forEach((a) => { a.playbackRate = vitesse; a.play(); });
 };
-const relancer = () => { if (!this.boucle) this.boucle = setTimeout(avancer, 0); };
-const seuils = [];
-for (let i = 0; i <= 100; i++) seuils.push(i / 100);
-// Un repere invisible par illustration : il part du haut de l'illustration et descend
-// 700 px plus bas. Sa partie visible mesure de combien le haut de l'illustration est
-// remonte au-dessus du bas de l'ecran, seule mesure fiable dans le cadre de la maquette.
-// Depart des que le bloc apparait, fin 150 px plus loin : l illustration est construite quand on la voit.
-const DEBUT = 0, COURSE = 150, MARGE = 700;
-if (getComputedStyle(racine).position === 'static') racine.style.position = 'relative';
-const calque = document.createElement('div');
-calque.setAttribute('aria-hidden', 'true');
-calque.style.cssText = 'position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;';
-racine.appendChild(calque);
-const reperes = new Map();
-scenes.forEach((scene) => {
-const r = document.createElement('div');
-r.style.cssText = 'position:absolute;left:0;width:1px;opacity:0;';
-calque.appendChild(r);
-reperes.set(r, scene);
-});
-const placer = () => {
-const haut = racine.getBoundingClientRect().top;
-const total = racine.scrollHeight;
-reperes.forEach((scene, r) => {
-const b = (scene.parentElement.closest('ul,ol,figure,.il,.st') || scene).getBoundingClientRect(); // toute l'illustration demarre ensemble
-const y = b.top - haut;
-r.style.top = y + 'px';
-r.style.height = Math.max(1, Math.min(b.height + MARGE, total - y)) + 'px';
-});
-};
-placer();
-this.redim = new ResizeObserver(placer);
-this.redim.observe(racine);
-this.observateur = new IntersectionObserver((entrees) => {
+let premier = true;
+this.observateur = new IntersectionObserver((entrees, obs) => {
 entrees.forEach((e) => {
-const s = etats.get(reperes.get(e.target));
-if (!s) return;
-const h = e.boundingClientRect.height || 1;
-let p = s.p;
-if (e.isIntersecting) {
-const visible = e.intersectionRect.height;
-s.basCoupe = visible >= h - 1 ? null : Math.abs(e.intersectionRect.top - e.boundingClientRect.top) < 2;
-// Photos de tete (.ph) : depart plus tot, elles sont souvent en bas du premier ecran.
-const debut = reperes.get(e.target).classList.contains('ph') ? 0 : DEBUT;
-p = s.basCoupe === true ? Math.max(0, Math.min(1, (visible - debut) / COURSE)) : 1;
-} else if (s.basCoupe === true) p = 0;
-// Deja visible a l'ouverture de la page : construite d'emblee et laissee construite.
-if (!s.vu) { s.vu = true; if (p > 0) s.fixe = true; }
-if (s.fixe) p = 1;
-if (p !== s.p) { s.p = p; s.fini = false; relancer(); }
+if (!e.isIntersecting) return;
+obs.unobserve(e.target);
+jouer(e.target, premier && e.boundingClientRect.top < window.innerHeight);
 });
-}, { threshold: seuils });
-reperes.forEach((scene, r) => this.observateur.observe(r));
-relancer();
+premier = false;
+}, { rootMargin: '0px 0px 15% 0px' });
+scenes.forEach((scene) => this.observateur.observe(scene));
 }
-componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); if (this.redim) this.redim.disconnect(); if (this.boucle) clearTimeout(this.boucle); }
+componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); }
 renderVals() {
 return { poserRacine: this.poserRacine,};
 }
