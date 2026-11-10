@@ -52,8 +52,8 @@ for (let i = 0; i <= 100; i++) seuils.push(i / 100);
 // Un repere invisible par illustration : il part du haut de l'illustration et descend
 // 700 px plus bas. Sa partie visible mesure de combien le haut de l'illustration est
 // remonte au-dessus du bas de l'ecran, seule mesure fiable dans le cadre de la maquette.
-// Depart a 120 px, fin 240 px plus loin.
-const DEBUT = 120, COURSE = 240, MARGE = 700;
+// Depart des que le bloc apparait, fin 150 px plus loin : l illustration est construite quand on la voit.
+const DEBUT = 0, COURSE = 150, MARGE = 700;
 if (getComputedStyle(racine).position === 'static') racine.style.position = 'relative';
 const calque = document.createElement('div');
 calque.setAttribute('aria-hidden', 'true');
@@ -70,7 +70,7 @@ const placer = () => {
 const haut = racine.getBoundingClientRect().top;
 const total = racine.scrollHeight;
 reperes.forEach((scene, r) => {
-const b = scene.getBoundingClientRect();
+const b = (scene.parentElement.closest('ul,ol,figure,.il,.st') || scene).getBoundingClientRect(); // toute l'illustration demarre ensemble
 const y = b.top - haut;
 r.style.top = y + 'px';
 r.style.height = Math.max(1, Math.min(b.height + MARGE, total - y)) + 'px';
@@ -89,7 +89,7 @@ if (e.isIntersecting) {
 const visible = e.intersectionRect.height;
 s.basCoupe = visible >= h - 1 ? null : Math.abs(e.intersectionRect.top - e.boundingClientRect.top) < 2;
 // Photos de tete (.ph) : depart plus tot, elles sont souvent en bas du premier ecran.
-const debut = reperes.get(e.target).classList.contains('ph') ? 80 : DEBUT;
+const debut = reperes.get(e.target).classList.contains('ph') ? 0 : DEBUT;
 p = s.basCoupe === true ? Math.max(0, Math.min(1, (visible - debut) / COURSE)) : 1;
 } else if (s.basCoupe === true) p = 0;
 // Deja visible a l'ouverture de la page : construite d'emblee et laissee construite.
