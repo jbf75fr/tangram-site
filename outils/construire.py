@@ -26,6 +26,10 @@ RESSOURCES = RACINE / 'ressources'
 SITE = 'https://tangram.cx'
 APP = 'https://app.tangram.cx'
 AUJOURDHUI = datetime.date.today().isoformat()
+# Empreinte du script commun, ajoutée à son adresse : un navigateur qui garde l'ancienne
+# version en cache la recharge dès qu'elle change.
+import hashlib
+VERSION_JS = hashlib.sha256((RESSOURCES / 'js' / 'site.js').read_bytes()).hexdigest()[:10]
 
 # Page de la maquette -> (adresse, titre, description, fil d'Ariane)
 PAGES = {
@@ -269,7 +273,7 @@ def tete(nom, titre, description, chemin, css, ld, indexer=True):
 <style>
 {css}
 </style>
-{ld}<script src="/js/site.js" defer></script>
+{ld}<script src="/js/site.js?v={VERSION_JS}" defer></script>
 </head>
 <body>
 '''
