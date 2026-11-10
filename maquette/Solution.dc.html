@@ -420,10 +420,10 @@ const scenes = Array.from(racine.querySelectorAll('.an-monte,.an-pop,.an-glisse,
 scenes.forEach((el) => el.setAttribute('data-scene', ''));
 const toutMontrer = () => scenes.forEach((el) => el.setAttribute('data-vu', ''));
 if (!('IntersectionObserver' in window) || !racine.getAnimations) { toutMontrer(); return; }
-// Animations discretes et rapides : chaque illustration se joue d'un coup, en une demi-seconde
-// au plus, juste avant d'entrer a l'ecran (marge de 15 % sous le bas de l'ecran).
+// Animations discretes et rapides : chaque illustration se joue d'un coup, en 0,3 seconde
+// au plus, quand son haut est remonte de 12 % de la hauteur de l'ecran au-dessus du bas.
 // Ce qui est deja visible a l'ouverture de la page est montre construit, sans animation.
-const DUREE_MAX = 500;
+const DUREE_MAX = 300;
 // Une illustration et tout ce qu'elle contient se jouent ensemble.
 const animsDe = (scene) => scene.getAnimations({ subtree: true }).filter((a) => a.effect && a.effect.getComputedTiming().endTime !== Infinity);
 const jouer = (scene, instantane) => {
@@ -444,7 +444,7 @@ obs.unobserve(e.target);
 jouer(e.target, premier && e.boundingClientRect.top < window.innerHeight);
 });
 premier = false;
-}, { rootMargin: '0px 0px 15% 0px' });
+}, { rootMargin: '0px 0px -12% 0px' });
 scenes.forEach((scene) => this.observateur.observe(scene));
 }
 componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); }
