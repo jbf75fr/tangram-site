@@ -279,8 +279,8 @@ for (let i = 0; i <= 100; i++) seuils.push(i / 100);
 // Un repere invisible par illustration : il part du haut de l'illustration et descend
 // 700 px plus bas. Sa partie visible mesure de combien le haut de l'illustration est
 // remonte au-dessus du bas de l'ecran, seule mesure fiable dans le cadre de la maquette.
-// Depart a 260 px, fin 360 px plus loin.
-const DEBUT = 260, COURSE = 360, MARGE = 700;
+// Depart a 120 px, fin 240 px plus loin.
+const DEBUT = 120, COURSE = 240, MARGE = 700;
 if (getComputedStyle(racine).position === 'static') racine.style.position = 'relative';
 const calque = document.createElement('div');
 calque.setAttribute('aria-hidden', 'true');
