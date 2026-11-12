@@ -153,6 +153,7 @@ ORGANISATION = {
     'logo': SITE + '/icon-512.png', 'email': 'contact@tangram.cx',
     'description': "Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction, d'avis et de réclamations.",
     'areaServed': 'FR', 'knowsLanguage': 'fr',
+    'sameAs': ['https://www.linkedin.com/company/tangram-cx/'],
     'contactPoint': {'@type': 'ContactPoint', 'contactType': 'sales', 'email': 'contact@tangram.cx', 'availableLanguage': ['fr', 'en']},
 }
 LOGICIEL = {
@@ -412,6 +413,9 @@ def principal():
     for icone in (RESSOURCES / 'icones').iterdir():
         shutil.copy(icone, SORTIE / icone.name)
     shutil.copy(RESSOURCES / 'partage.png', SORTIE / 'partage.png')
+    # Images des signatures mail : adresses écrites dans les mails déjà envoyés, ne jamais les renommer ni les supprimer.
+    for image in (RESSOURCES / 'signature').iterdir():
+        shutil.copy(image, SORTIE / image.name)
     photos()
     print(f'{len(PAGES)} pages fabriquées dans {SORTIE}')
 
