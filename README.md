@@ -8,7 +8,7 @@ Site vitrine de tangram.cx, publié sur https://tangram.cx. L'application est su
 |---|---|
 | `maquette/` | Pages de la maquette Claude Design (source du contenu et du design) et photos d'origine |
 | `outils/construire.py` | Fabrique le site publié à partir de la maquette |
-| `ressources/` | Police Figtree, icônes, image d'aperçu pour les réseaux sociaux, script du site (`js/site.js`) |
+| `ressources/` | Police Figtree, icônes, image d'aperçu pour les réseaux sociaux, script du site (`js/site.js`), images des signatures mail (`signature/`, servies à la racine : `tangram.cx/signature-carre.png` et `tangram.cx/logo-signature.png`, à ne jamais renommer ni supprimer, les mails déjà envoyés les chargent) |
 | `public/` | Site publié (fabriqué, ne pas modifier à la main) |
 | `api/contact.js` | Envoi du formulaire de demande d'essai par e-mail (Brevo) |
 | `vercel.json` | Adresses propres, redirections vers l'application, en-têtes de sécurité |

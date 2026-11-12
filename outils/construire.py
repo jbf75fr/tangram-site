@@ -412,6 +412,9 @@ def principal():
     for icone in (RESSOURCES / 'icones').iterdir():
         shutil.copy(icone, SORTIE / icone.name)
     shutil.copy(RESSOURCES / 'partage.png', SORTIE / 'partage.png')
+    # Images des signatures mail : adresses écrites dans les mails déjà envoyés, ne jamais les renommer ni les supprimer.
+    for image in (RESSOURCES / 'signature').iterdir():
+        shutil.copy(image, SORTIE / image.name)
     photos()
     print(f'{len(PAGES)} pages fabriquées dans {SORTIE}')
 
