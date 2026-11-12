@@ -153,6 +153,7 @@ ORGANISATION = {
     'logo': SITE + '/icon-512.png', 'email': 'contact@tangram.cx',
     'description': "Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction, d'avis et de réclamations.",
     'areaServed': 'FR', 'knowsLanguage': 'fr',
+    'sameAs': ['https://www.linkedin.com/company/tangram-cx/'],
     'contactPoint': {'@type': 'ContactPoint', 'contactType': 'sales', 'email': 'contact@tangram.cx', 'availableLanguage': ['fr', 'en']},
 }
 LOGICIEL = {
