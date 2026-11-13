@@ -438,27 +438,33 @@ if (!('IntersectionObserver' in window) || !racine.getAnimations) { toutMontrer(
 // Ce qui est deja visible a l'ouverture de la page est montre construit, sans animation.
 const DUREE_MAX = 300;
 // Une illustration et tout ce qu'elle contient se jouent ensemble.
+// En remontant, quand l'illustration repasse sous le bas de l'ecran, elle se rejoue a l'envers.
 const animsDe = (scene) => scene.getAnimations({ subtree: true }).filter((a) => a.effect && a.effect.getComputedTiming().endTime !== Infinity);
-const jouer = (scene, instantane) => {
-if (scene.hasAttribute('data-vu')) return;
-const groupe = [scene, ...scene.querySelectorAll('[data-scene]')];
-groupe.forEach((el) => { el.setAttribute('data-vu', ''); if (this.observateur) this.observateur.unobserve(el); });
+const jouer = (scene, sens, instantane) => {
+if (!scene.hasAttribute('data-vu')) [scene, ...scene.querySelectorAll('[data-scene]')].forEach((el) => el.setAttribute('data-vu', ''));
 const anims = animsDe(scene);
 if (instantane) { anims.forEach((a) => a.finish()); return; }
 const fin = anims.reduce((m, a) => Math.max(m, a.effect.getComputedTiming().endTime), 0);
 const vitesse = Math.max(1, fin / DUREE_MAX);
-anims.forEach((a) => { a.playbackRate = vitesse; a.play(); });
+anims.forEach((a) => { a.playbackRate = sens * vitesse; a.play(); });
 };
+const affichees = new WeakSet();
 let premier = true;
-this.observateur = new IntersectionObserver((entrees, obs) => {
+this.observateur = new IntersectionObserver((entrees) => {
 entrees.forEach((e) => {
-if (!e.isIntersecting) return;
-obs.unobserve(e.target);
-jouer(e.target, premier && e.boundingClientRect.top < window.innerHeight);
+const scene = e.target;
+if (e.isIntersecting) {
+if (affichees.has(scene)) return;
+affichees.add(scene);
+jouer(scene, 1, premier && e.boundingClientRect.top < window.innerHeight);
+} else if (affichees.has(scene) && e.rootBounds && e.boundingClientRect.top >= e.rootBounds.bottom) {
+affichees.delete(scene);
+jouer(scene, -1, false);
+}
 });
 premier = false;
 }, { rootMargin: '0px 0px -12% 0px' });
-scenes.forEach((scene) => this.observateur.observe(scene));
+scenes.filter((s) => !s.parentElement.closest('[data-scene]')).forEach((scene) => this.observateur.observe(scene));
 }
 componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); }
 renderVals() {
