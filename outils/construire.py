@@ -42,6 +42,9 @@ PAGES = {
     'EnquetesRH': ('/enquetes-rh', "Enquêtes RH, eNPS et baromètres sociaux | tangram.cx",
                    "Baromètres sociaux, eNPS, expérience collaborateur : toutes les réponses ouvertes de vos salariés "
                    "analysées, du recrutement au départ.", 'Enquêtes RH'),
+    'Accompagnement': ('/accompagnement', "Accompagnement : une équipe à vos côtés | tangram.cx",
+                       "Linguistes et experts de l'expérience vous accompagnent, de la mise en place à vos décisions, par e-mail, "
+                       "téléphone, visioconférence ou dans vos locaux. Compris dans l'abonnement.", 'Accompagnement'),
     'Tarifs': ('/tarifs', "Tarifs | tangram.cx",
                "Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois "
                "selon votre volume. Tout est compris.", 'Tarifs'),
@@ -359,10 +362,11 @@ def llms(descriptions):
               "d'action ; alertes par e-mail.",
               "- Données hébergées dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées.",
               "- Essai gratuit jusqu'à 500 commentaires ; abonnement à partir de 2 900 € HT par an ou 270 € HT par mois, selon le volume.",
+              "- Accompagnement par des linguistes et des experts de l'expérience, compris dans l'abonnement : par e-mail, téléphone, visioconférence ou sur place.",
               "- Usages : expérience client, expérience usager (secteur public), enquêtes RH et eNPS.",
               "- Contact : contact@tangram.cx", '',
               '## Pages principales', '']
-    principales = ['V2', 'Solution', 'Tarifs', 'Securite', 'EnquetesRH']
+    principales = ['V2', 'Solution', 'Accompagnement', 'Tarifs', 'Securite', 'EnquetesRH']
     for nom in principales:
         chemin, titre, *_ = PAGES[nom]
         lignes.append(f'- [{titre.split(" | ")[0]}]({SITE}{chemin if chemin != "/" else "/"}): {descriptions[nom]}')

@@ -8,6 +8,7 @@ Points clés :
 - Fonctionnalités : classement par thème, sous-thème, tonalité et émotion ; score net par sujet ; croisements avec les données de l'enquête ; personas ; repérage des clients sur le départ ; idées d'actions et plan d'action ; alertes par e-mail.
 - Données hébergées dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées.
 - Essai gratuit jusqu'à 500 commentaires ; abonnement à partir de 2 900 € HT par an ou 270 € HT par mois, selon le volume.
+- Accompagnement par des linguistes et des experts de l'expérience, compris dans l'abonnement : par e-mail, téléphone, visioconférence ou sur place.
 - Usages : expérience client, expérience usager (secteur public), enquêtes RH et eNPS.
 - Contact : contact@tangram.cx
 
@@ -15,6 +16,7 @@ Points clés :
 
 - [tangram.cx](https://tangram.cx/): tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.
 - [Fonctionnalités](https://tangram.cx/fonctionnalites): Collecte automatique, classement par thème, tonalité et émotion, croisements, personas, idées d'actions, plan d'action et alertes : les fonctionnalités de tangram.cx.
+- [Accompagnement : une équipe à vos côtés](https://tangram.cx/accompagnement): Linguistes et experts de l'expérience vous accompagnent, de la mise en place à vos décisions, par e-mail, téléphone, visioconférence ou dans vos locaux. Compris dans l'abonnement.
 - [Tarifs](https://tangram.cx/tarifs): Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois selon votre volume. Tout est compris.
 - [Sécurité et souveraineté](https://tangram.cx/securite): Hébergement dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.
 - [Enquêtes RH, eNPS et baromètres sociaux](https://tangram.cx/enquetes-rh): Baromètres sociaux, eNPS, expérience collaborateur : toutes les réponses ouvertes de vos salariés analysées, du recrutement au départ.
