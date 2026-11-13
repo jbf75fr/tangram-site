@@ -48,9 +48,9 @@ PAGES = {
     'Tarifs': ('/tarifs', "Tarifs | tangram.cx",
                "Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois "
                "selon votre volume. Tout est compris.", 'Tarifs'),
-    'Securite': ('/securite', "Sécurité et souveraineté | tangram.cx",
+    'Securite': ('/securite', "Sécurité | tangram.cx",
                  "Hébergement dans l'Union européenne, données personnelles masquées avant analyse, organisations "
-                 "cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.", 'Sécurité et souveraineté'),
+                 "cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.", 'Sécurité'),
     'Confidentialite': ('/confidentialite', "Politique de confidentialité | tangram.cx",
                         "Données traitées par le site et l'application tangram.cx, prestataires, lieux d'hébergement, "
                         "durées de conservation et exercice de vos droits.", 'Politique de confidentialité'),
