@@ -1,6 +1,6 @@
 # tangram.cx
 
-> tangram.cx est un logiciel français qui analyse par IA les commentaires libres des enquêtes de satisfaction, des avis en ligne et des réclamations. Il classe chaque commentaire par thème, tonalité et émotion, calcule des indicateurs suivis dans le temps et aide à décider des actions à mener.
+> tangram.cx est un logiciel français qui analyse par IA les commentaires libres des enquêtes de satisfaction (questions ouvertes), des avis en ligne et des réclamations. Il classe chaque commentaire par thème, tonalité et émotion, calcule des indicateurs suivis dans le temps et aide à décider des actions à mener.
 
 Points clés :
 - Les chiffres affichés sont calculés, jamais rédigés par l'IA : l'IA classe, le calcul compte.
