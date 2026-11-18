@@ -33,12 +33,12 @@ VERSION_JS = hashlib.sha256((RESSOURCES / 'js' / 'site.js').read_bytes()).hexdig
 
 # Page de la maquette -> (adresse, titre, description, fil d'Ariane)
 PAGES = {
-    'V2': ('/', "tangram.cx | Analyse d'enquêts et d'avis clients",
+    'V2': ('/', "tangram.cx | Analyse d'enquêtes et d'avis clients",
            "tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, "
            "et vous guide pour agir. Hébergé en Europe. Essai gratuit.", None),
     'Solution': ('/fonctionnalites', "Fonctionnalités | tangram.cx",
-                 "Collecte automatique, classement par thème, tonalité et émotion, croisements, personas, idées d'actions, "
-                 "plan d'action et alertes : les fonctionnalités de tangram.cx.", 'Fonctionnalités'),
+                 "Collecte automatique, classement par thème, tonalité et émotion, croisements, profils, alertes, idées "
+                 "des clients et plan d'action : les fonctionnalités de tangram.cx.", 'Fonctionnalités'),
     'EnquetesRH': ('/enquetes-rh', "Enquêtes RH, eNPS et baromètres sociaux | tangram.cx",
                    "Baromètres sociaux, eNPS, expérience collaborateur : toutes les réponses ouvertes de vos salariés "
                    "analysées, du recrutement au départ.", 'Enquêtes RH'),
@@ -170,6 +170,7 @@ LOGICIEL = {
                     'Score net par sujet et suivi dans le temps',
                     'Croisement des sujets avec vos données (région, canal, profil)',
                     'Personas et repérage des clients sur le départ',
+                    'Repérage et regroupement des suggestions des clients',
                     "Idées d'actions et plan d'action mesurable",
                     'Alertes par e-mail selon vos propres seuils',
                     'Données personnelles masquées avant analyse, hébergement dans l\'Union européenne'],
@@ -358,8 +359,8 @@ def llms(descriptions):
               "- Les chiffres affichés sont calculés, jamais rédigés par l'IA : l'IA classe, le calcul compte.",
               "- Les réponses arrivent automatiquement depuis les outils d'enquête et le CRM, ou par simple dépôt de fichier.",
               "- Fonctionnalités : classement par thème, sous-thème, tonalité et émotion ; score net par sujet ; croisements "
-              "avec les données de l'enquête ; personas ; repérage des clients sur le départ ; idées d'actions et plan "
-              "d'action ; alertes par e-mail.",
+              "avec les données de l'enquête ; personas ; repérage des clients sur le départ ; suggestions des clients repérées et "
+              "regroupées par famille ; idées d'actions et plan d'action ; alertes par e-mail.",
               "- Données hébergées dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées.",
               "- Essai gratuit jusqu'à 500 commentaires ; abonnement à partir de 2 900 € HT par an ou 270 € HT par mois, selon le volume.",
               "- Accompagnement par des linguistes et des experts de l'expérience, compris dans l'abonnement : par e-mail, téléphone, visioconférence ou sur place.",
