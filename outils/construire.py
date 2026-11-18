@@ -154,7 +154,7 @@ def json_ld(objets):
 ORGANISATION = {
     '@type': 'Organization', '@id': SITE + '/#organisation', 'name': 'tangram.cx', 'url': SITE + '/',
     'logo': SITE + '/icon-512.png', 'email': 'contact@tangram.cx',
-    'description': "Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction, d'avis et de réclamations.",
+    'description': "Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction (questions ouvertes), d'avis et de réclamations.",
     'areaServed': 'FR', 'knowsLanguage': 'fr',
     'sameAs': ['https://www.linkedin.com/company/tangram-cx/'],
     'contactPoint': {'@type': 'ContactPoint', 'contactType': 'sales', 'email': 'contact@tangram.cx', 'availableLanguage': ['fr', 'en']},
@@ -351,7 +351,7 @@ Sitemap: {SITE}/sitemap.xml
 
 def llms(descriptions):
     lignes = ['# tangram.cx', '',
-              "> tangram.cx est un logiciel français qui analyse par IA les commentaires libres des enquêtes de satisfaction, "
+              "> tangram.cx est un logiciel français qui analyse par IA les commentaires libres des enquêtes de satisfaction (questions ouvertes), "
               "des avis en ligne et des réclamations. Il classe chaque commentaire par thème, tonalité et émotion, calcule "
               "des indicateurs suivis dans le temps et aide à décider des actions à mener.", '',
               "Points clés :",
