@@ -15,7 +15,7 @@ export const DUREE = 49;
 
 // Passages où la voix parle : la musique baisse dessous (voir voix/texte.txt).
 const VOIX: [number, number][] = [
-  [0.6, 3.0],
+  [0.25, 3.0],
   [3.5, 10.1],
   [9.5, 18.7],
   [21.0, 28.0],
@@ -35,9 +35,8 @@ const volumeMusique = (f: number) => {
 // Bruitages : [instant, fichier, volume].
 // Les instants des bruitages sont en temps « sans l'accueil », sauf ceux de l'accueil (BRUITS_ACCUEIL).
 const BRUITS_ACCUEIL: [number, string, number][] = [
-  [0.1, "whoosh", 0.3],
-  [0.65, "pop", 0.4],
-  [1.95, "pop", 0.35],
+  [0.05, "whoosh", 0.3],
+  [2.0, "pop", 0.35],
 ];
 const BRUITS: [number, string, number][] = [
   [0.35, "clic", 0.5],

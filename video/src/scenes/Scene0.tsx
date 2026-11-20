@@ -1,17 +1,51 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Marque, PIECES_LOGO, POLICE, entre, hasard, ressort } from "../commun";
+import { C, PIECES_LOGO, POLICE, entre, hasard, ressort } from "../commun";
 
-// Scène d'accueil (0 à 3 s) : « Bonjour, et bienvenue chez tangram.cx ! »
-const TAILLE = 260;
+// Scène d'accueil (0 à 3 s) : « Et si vos priorités venaient de vos clients ? »
+// Chaque mot apparaît quand la voix le dit (voix/texte.txt).
+const TAILLE = 180;
+
+const LIGNE_1 = [
+  { mot: "Et", t: 0.4 },
+  { mot: "si", t: 0.65 },
+  { mot: "vos", t: 0.88 },
+  { mot: "priorités", t: 1.08 },
+];
+const LIGNE_2 = [
+  { mot: "venaient", t: 2.0 },
+  { mot: "de", t: 2.28 },
+  { mot: "vos", t: 2.42, accent: true },
+  { mot: "clients ?", t: 2.6, accent: true },
+];
+
+const Ligne: React.FC<{ t: number; mots: { mot: string; t: number; accent?: boolean }[] }> = ({ t, mots }) => (
+  <div>
+    {mots.map((m, i) => {
+      const a = ressort(t, m.t, 12);
+      return (
+        <span
+          key={i}
+          style={{
+            display: "inline-block",
+            whiteSpace: "pre",
+            marginRight: "0.24em",
+            color: m.accent ? C.iris : C.encre,
+            opacity: Math.min(1, a * 2),
+            transform: `translateY(${(1 - a) * 50}px) scale(${0.7 + 0.3 * a})`,
+          }}
+        >
+          {m.mot}
+        </span>
+      );
+    })}
+  </div>
+);
 
 export const Scene0: React.FC<{ t: number }> = ({ t }) => {
-  if (t > 3.1) return null;
-  const bonjour = ressort(t, 0.65, 11);
-  const bienvenue = ressort(t, 1.5, 12);
-  const marque = ressort(t, 1.95, 11);
-  // Sortie : on plonge vers la scène suivante.
-  const sortie = entre(t, 2.7, 3.05, 0, 1, (n) => n * n);
+  if (t > 3.35) return null;
+  // Sortie : on plonge vers la scène suivante, une fois la question posée.
+  const sortie = entre(t, 2.95, 3.3, 0, 1, (n) => n * n);
   return (
     <AbsoluteFill
       style={{
@@ -22,9 +56,9 @@ export const Scene0: React.FC<{ t: number }> = ({ t }) => {
         transformOrigin: "960px 540px",
       }}
     >
-      <svg width={TAILLE} height={TAILLE} viewBox="-1 -1 34 34" style={{ position: "absolute", left: 960 - TAILLE / 2, top: 120, overflow: "visible" }}>
+      <svg width={TAILLE} height={TAILLE} viewBox="-1 -1 34 34" style={{ position: "absolute", left: 960 - TAILLE / 2, top: 250, overflow: "visible" }}>
         {PIECES_LOGO.map((p, i) => {
-          const a = ressort(t, 0.05 + i * 0.07, 13);
+          const a = ressort(t, 0.02 + i * 0.05, 13);
           const angle = hasard(i + 40) * Math.PI * 2;
           const r = (hasard(i + 60) - 0.5) * 540;
           return (
@@ -41,16 +75,9 @@ export const Scene0: React.FC<{ t: number }> = ({ t }) => {
           );
         })}
       </svg>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 440, textAlign: "center", color: C.encre, fontWeight: 800 }}>
-        <div style={{ fontSize: 120, letterSpacing: -3, opacity: Math.min(1, bonjour * 2), transform: `translateY(${(1 - bonjour) * 40}px) scale(${0.7 + 0.3 * bonjour})` }}>
-          Bonjour !
-        </div>
-        <div style={{ marginTop: 26, fontSize: 64, letterSpacing: -1.5, display: "flex", justifyContent: "center", alignItems: "baseline", gap: 22 }}>
-          <span style={{ opacity: Math.min(1, bienvenue * 2), transform: `translateY(${(1 - bienvenue) * 30}px)`, display: "inline-block" }}>Bienvenue chez</span>
-          <span style={{ opacity: Math.min(1, marque * 2), transform: `translateY(${(1 - marque) * 30}px) scale(${0.8 + 0.2 * marque})`, display: "inline-block" }}>
-            <Marque taille={72} />
-          </span>
-        </div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 480, textAlign: "center", fontSize: 104, fontWeight: 800, letterSpacing: -2.5, lineHeight: 1.12 }}>
+        <Ligne t={t} mots={LIGNE_1} />
+        <Ligne t={t} mots={LIGNE_2} />
       </div>
     </AbsoluteFill>
   );
