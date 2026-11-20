@@ -47,7 +47,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
 
   return (
     <AbsoluteFill style={{ background: C.encre, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 8.9, 9.0, 0, 1) }}>
-      <div style={{ position: "absolute", inset: 0, transform: `translateY(${-sortie * 1100}px)`, filter: sortie > 0.05 ? `blur(${sortie * 12}px)` : undefined }}>
+      <div style={{ position: "absolute", inset: 0, transform: `translateY(${-sortie * 1100}px)` }}>
         <Camera t={t} cles={CLES} extra={secousse(t, ETIQUETTES.map((e) => e.debut + 0.2), 0.02)}>
           <div style={{ position: "absolute", left: 150, top: 300, width: 940 }}>
             <div

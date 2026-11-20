@@ -23,7 +23,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
   const cles: Cle[] = [
     [20.3, 960, 540, 3.2],
     [20.8, 960, 540, 3.0],
-    [22.6, 960, 540, 0.36],
+    [22.6, 960, 540, 0.55],
   ];
   const range = entre(t, 22.55, 23.15, 0, 1, (n) => n * n * n);
   if (t > 23.2) return null;

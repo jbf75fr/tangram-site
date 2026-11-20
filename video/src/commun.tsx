@@ -50,7 +50,7 @@ export const ressort = (t: number, debut: number, amorti = 15) =>
     config: { damping: amorti, mass: 0.55, stiffness: 240 },
   });
 
-// Caméra : suite de clés [instant, x visé, y visé, zoom]. Le flou suit la vitesse.
+// Caméra : suite de clés [instant, x visé, y visé, zoom]. Image toujours nette (pas de flou de mouvement).
 export type Cle = [number, number, number, number];
 const vif = Easing.bezier(0.76, 0, 0.24, 1);
 export const camera = (t: number, cles: Cle[]) => {
@@ -73,9 +73,6 @@ export const secousse = (t: number, instants: number[], force = 0.025) =>
 
 export const Camera: React.FC<{ t: number; cles: Cle[]; extra?: number; children: React.ReactNode }> = ({ t, cles, extra = 0, children }) => {
   const c = camera(t, cles);
-  const p = camera(t - 1 / FPS, cles);
-  const vitesse = Math.hypot(c.x - p.x, c.y - p.y) * c.z + Math.abs(Math.log(c.z / p.z)) * 900;
-  const flou = Math.min(14, Math.max(0, vitesse - 6) * 0.25);
   const z = c.z * (1 + extra);
   return (
     <div
@@ -87,7 +84,6 @@ export const Camera: React.FC<{ t: number; cles: Cle[]; extra?: number; children
         height: 1080,
         transformOrigin: "0 0",
         transform: `translate(960px, 540px) scale(${z}) translate(${-c.x}px, ${-c.y}px)`,
-        filter: flou > 0.3 ? `blur(${flou}px)` : undefined,
       }}
     >
       {children}
