@@ -118,6 +118,34 @@ def comparateur(corps):
     return corps
 
 
+def video(corps):
+    """Vidéo de l'accueil : le lecteur de la maquette devient du HTML simple, piloté par site.js."""
+    if 'ref="{{poserVideo}}"' not in corps:
+        return corps
+    remplacements = [
+        ('ref="{{poserVideo}}" src="video/introduction.mp4" poster="video/affiche.jpg" playsInline="{{ true }}"',
+         'data-video="" src="/video/introduction.mp4" poster="/video/affiche.jpg" muted playsinline'),
+        (' onEnded="{{finVideo}}" onPlay="{{surLecture}}" onPause="{{surPause}}"', ''),
+        ('src="video/sous-titres.vtt"', 'src="/video/sous-titres.vtt"'),
+        ('<sc-if value="{{pasFini}}" hint-placeholder-val="{{ true }}">', '<div data-video-commandes="">'),
+        ('<sc-if value="{{fini}}" hint-placeholder-val="{{ false }}">', '<div data-video-fin="" hidden>'),
+        ('onClick="{{basculerSon}}"', 'data-video-son=""'),
+        ('{{libelleSon}}', 'Activer le son'),
+        ('onClick="{{basculerLecture}}"', 'data-video-lecture=""'),
+        ('{{libelleLecture}}', 'Lecture'),
+        ('onClick="{{basculerSousTitres}}" aria-pressed="{{sousTitres}}"', 'data-video-st="" aria-pressed="false"'),
+        ('onClick="{{revoir}}"', 'data-video-revoir=""'),
+    ]
+    for avant, apres in remplacements:
+        if avant not in corps:
+            raise SystemExit('Vidéo : élément de la maquette introuvable : ' + avant)
+        corps = corps.replace(avant, apres)
+    debut = corps.index('<section id="video"')
+    fin = corps.index('</section>', debut)
+    corps = corps[:debut] + corps[debut:fin].replace('</sc-if>', '</div>') + corps[fin:]
+    return corps
+
+
 def formulaire(corps):
     """Formulaire de demande d'essai : envoi vers /api/contact."""
     if '<form ' not in corps:
@@ -290,6 +318,7 @@ def lire_page(nom):
     corps = source[source.index('</helmet>') + 9:source.index('</x-dc>')].strip()
     corps = corps.replace('ref="{{poserRacine}}"', 'id="racine"')
     corps = comparateur(corps)
+    corps = video(corps)
     if '{{' in corps:
         raise SystemExit(f'{nom} : valeur de la maquette non remplacée : ' + re.search(r'.{60}\{\{.{60}', corps).group(0))
     if 'claudeusercontent' in corps:
@@ -415,6 +444,8 @@ def principal():
     (SORTIE / 'llms.txt').write_text(llms(descriptions), encoding='utf-8')
     shutil.copytree(RESSOURCES / 'fonts', SORTIE / 'fonts')
     shutil.copytree(RESSOURCES / 'js', SORTIE / 'js')
+    # Vidéo de l'accueil, fabriquée dans video/ (Remotion) puis déposée dans la maquette.
+    shutil.copytree(MAQUETTE / 'video', SORTIE / 'video')
     for icone in (RESSOURCES / 'icones').iterdir():
         shutil.copy(icone, SORTIE / icone.name)
     shutil.copy(RESSOURCES / 'partage.png', SORTIE / 'partage.png')
