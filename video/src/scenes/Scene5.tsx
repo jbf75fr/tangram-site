@@ -6,15 +6,15 @@ import { C, Camera, Curseur, Marque, PIECES_LOGO, POLICE, entre, hasard, ressort
 const vif = (t: number, a: number, b: number) => entre(t, a, b, 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2));
 
 const MOTS_1 = [
-  { mot: "Vos", t: 39.1 },
-  { mot: "clients", t: 39.25 },
-  { mot: "vous", t: 39.45 },
-  { mot: "parlent.", t: 39.65 },
+  { mot: "Vos", t: 39.15 },
+  { mot: "clients", t: 39.3 },
+  { mot: "vous", t: 39.6 },
+  { mot: "parlent.", t: 39.82 },
 ];
 const MOTS_2 = [
-  { mot: "Passez", t: 40.45 },
-  { mot: "à", t: 40.6 },
-  { mot: "l'action.", t: 40.75 },
+  { mot: "Passez", t: 40.57 },
+  { mot: "à", t: 40.8 },
+  { mot: "l'action.", t: 40.93 },
 ];
 
 const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, mots }) => (
@@ -38,9 +38,9 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   const cx = 960 + (775 - 960) * range;
   const cy = 470 + (170 - 470) * range;
   const marque = ressort(t, 39.05, 13);
-  const bouton = ressort(t, 41.85, 10);
-  const clic = 43.5;
-  const vers = entre(t, 42.55, 43.3, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
+  const bouton = ressort(t, 41.9, 10);
+  const clic = 43.2;
+  const vers = entre(t, 42.3, 43.0, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const onde = entre(t, clic, clic + 0.6, 0, 1);
 
   return (
@@ -51,7 +51,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
           [37.6, 960, 540, 1.08],
           [46, 960, 540, 1.0],
         ]}
-        extra={secousse(t, [38.45, 41.85, clic], 0.03)}
+        extra={secousse(t, [38.45, 41.9, clic], 0.03)}
       >
         <svg width={taille} height={taille} viewBox="-1 -1 34 34" style={{ position: "absolute", left: cx - taille / 2, top: cy - taille / 2, overflow: "visible" }}>
           {PIECES_LOGO.map((p, i) => {
@@ -88,7 +88,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
                 backgroundImage: `linear-gradient(${C.beurre}, ${C.beurre})`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 90%",
-                backgroundSize: `${entre(t, 40.9, 41.3, 0, 100)}% 20px`,
+                backgroundSize: `${entre(t, 41.05, 41.45, 0, 100)}% 20px`,
               }}
             >
               <Mots t={t} mots={MOTS_2} />
@@ -104,10 +104,10 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
             </div>
           </div>
         </div>
-        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 42.4, 42.7, 0, 1), transform: `translateY(${entre(t, 42.4, 42.7, 20, 0)}px)` }}>
-          Essai gratuit sur <span style={{ color: C.iris }}>tangram.cx</span>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 42.3, 42.6, 0, 1), transform: `translateY(${entre(t, 42.3, 42.6, 20, 0)}px)` }}>
+          <span style={{ color: C.iris }}>500 commentaires</span> analysés gratuitement
         </div>
-        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 42.5, 42.65, 0, 1)} />
+        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 42.25, 42.4, 0, 1)} />
       </Camera>
     </AbsoluteFill>
   );

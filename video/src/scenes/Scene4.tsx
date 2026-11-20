@@ -32,8 +32,8 @@ const cheminLisse = (l: number, h: number) => {
 const CLES: Cle[] = [
   [30.3, 610, 540, 2.4],
   [30.8, 610, 540, 1.3],
-  [32.0, 560, 700, 1.4],
-  [32.3, 560, 700, 1.42],
+  [31.9, 560, 700, 1.4],
+  [32.2, 560, 700, 1.42],
   [33.2, 610, 600, 1.45],
   [34.3, 620, 520, 1.42],
   [34.8, 1150, 540, 1.0],
@@ -43,20 +43,20 @@ const CLES: Cle[] = [
 
 export const Scene4: React.FC<{ t: number }> = ({ t }) => {
   if (t < 30.25 || t > 37.95) return null;
-  const clic = 32.3;
+  const clic = 32.2;
   const mesure = entre(t, clic + 0.1, clic + 0.8, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const apres = -34 + 46 * mesure;
-  const ecart = ressort(t, 33.15, 10);
+  const ecart = ressort(t, 33.05, 10);
   const rapport = ressort(t, 34.5, 12);
   // Le curseur arrive sur le bouton puis s'efface.
-  const vers = entre(t, 31.5, 32.15, 0, 1);
+  const vers = entre(t, 31.4, 32.05, 0, 1);
   const curseurX = 760 + (340 - 760) * vers;
   const curseurY = 980 + (830 - 980) * vers;
   const sortie = entre(t, 37.5, 37.95, 0, 1);
 
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 30.25, 30.4, 0, 1) * (1 - sortie) }}>
-      <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.15, ...EQUIPES.map((e) => e.debut)], 0.025)}>
+      <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.05, ...EQUIPES.map((e) => e.debut)], 0.025)}>
         <Carte style={{ left: 150, top: 170, width: 920, height: 740, padding: "48px 56px", boxSizing: "border-box" }}>
           <div style={{ fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>Plan d'action</div>
           <div style={{ fontSize: 46, fontWeight: 800, marginTop: 8 }}>Réduire les délais de livraison</div>
@@ -176,7 +176,7 @@ export const Scene4: React.FC<{ t: number }> = ({ t }) => {
             </React.Fragment>
           );
         })}
-        <Curseur x={curseurX} y={curseurY} appui={t > clic && t < clic + 0.15} opacite={entre(t, 31.4, 31.55, 0, 1) * entre(t, 33.0, 33.3, 1, 0)} />
+        <Curseur x={curseurX} y={curseurY} appui={t > clic && t < clic + 0.15} opacite={entre(t, 31.3, 31.45, 0, 1) * entre(t, 33.0, 33.3, 1, 0)} />
       </Camera>
     </AbsoluteFill>
   );

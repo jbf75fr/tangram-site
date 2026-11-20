@@ -15,9 +15,10 @@ const CLES: Cle[] = [
   [3.6, 760, 540, 1.0],
   [4.25, 760, 540, 1.02],
   [4.65, 1120, 540, 0.92],
-  [8.3, 1180, 540, 0.98],
-  [8.6, 1520, 540, 1.4],
-  [9.15, 1520, 540, 45],
+  [5.8, 1160, 560, 0.95],
+  [7.75, 1420, 560, 1.35],
+  [8.05, 1520, 540, 1.6],
+  [8.7, 1520, 540, 45],
 ];
 
 // Le carré d'enquête : centré en (960, 540), 900 x 660.
@@ -212,12 +213,14 @@ const surCourbe = (u: number) => {
     y: v * v * v * P0.y + 3 * v * v * u * P1.y + 3 * v * u * u * P2.y + u * u * u * P3.y,
   };
 };
-const BULLES = Array.from({ length: 34 }, (_, i) => 4.7 + i * 0.1 + hasard(i + 30) * 0.06);
+const BULLES = Array.from({ length: 60 }, (_, i) => 4.7 + i * 0.052 + hasard(i + 30) * 0.04);
 
 const Flux: React.FC<{ t: number }> = ({ t }) => {
   const trace = entre(t, 4.3, 4.8, 0, 1);
   const tuile = ressort(t, 4.55, 11);
-  const arrivees = BULLES.map((d) => d + 0.5);
+  const arrivees = BULLES.map((d) => d + 0.38);
+  // Anneau qui se remplit à mesure que les commentaires arrivent.
+  const anneau = entre(t, 5.0, 7.9, 0, 1, (n) => n);
   return (
     <>
       <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
@@ -237,8 +240,12 @@ const Flux: React.FC<{ t: number }> = ({ t }) => {
           clipPath="url(#revele)"
         />
       </svg>
+      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+        <circle cx={1580} cy={540} r={178} fill="none" stroke={C.grisClair} strokeWidth={10} opacity={tuile} />
+        <circle cx={1580} cy={540} r={178} fill="none" stroke={C.iris} strokeWidth={10} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - anneau} transform="rotate(-90 1580 540)" />
+      </svg>
       {BULLES.map((debut, i) => {
-        const u = entre(t, debut, debut + 0.5, 0, 1, (n) => n * n * (3 - 2 * n));
+        const u = entre(t, debut, debut + 0.38, 0, 1, (n) => n * n);
         if (u <= 0 || u >= 1) return null;
         const p = surCourbe(u);
         return (
@@ -288,12 +295,38 @@ const Flux: React.FC<{ t: number }> = ({ t }) => {
       <div style={{ position: "absolute", left: 1440, top: 712, width: 280, textAlign: "center", opacity: tuile }}>
         <Marque taille={40} />
       </div>
+      {/* Souveraineté : formulation du site, sans promettre que rien ne quitte l'Union européenne. */}
+      <div style={{ position: "absolute", left: 1580 - 260, top: 790, width: 520, display: "flex", justifyContent: "center" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            background: C.encre,
+            color: C.blanc,
+            borderRadius: 999,
+            padding: "12px 26px 12px 14px",
+            fontSize: 26,
+            fontWeight: 700,
+            opacity: Math.min(1, ressort(t, 5.4, 12) * 2),
+            transform: `translateY(${(1 - ressort(t, 5.4, 12)) * 30}px) scale(${0.7 + 0.3 * ressort(t, 5.4, 12)})`,
+          }}
+        >
+          <svg width={40} height={40} viewBox="0 0 40 40">
+            <circle cx={20} cy={20} r={20} fill={C.iris} />
+            {Array.from({ length: 12 }, (_, k) => (
+              <circle key={k} cx={20 + 12 * Math.cos((k * Math.PI) / 6)} cy={20 + 12 * Math.sin((k * Math.PI) / 6)} r={2} fill={C.beurre} />
+            ))}
+          </svg>
+          Hébergé dans l'Union européenne
+        </div>
+      </div>
     </>
   );
 };
 
 export const Scene1: React.FC<{ t: number }> = ({ t }) => {
-  if (t > 9.2) return null;
+  if (t > 8.8) return null;
   return (
     <AbsoluteFill style={{ fontFamily: POLICE, overflow: "hidden" }}>
       <Camera t={t} cles={CLES} extra={secousse(t, [0.35, 2.55, 4.55], 0.03)}>

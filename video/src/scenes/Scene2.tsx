@@ -28,7 +28,7 @@ const ETIQUETTES: Etiquette[] = [
 ];
 
 const CLES: Cle[] = [
-  [9.0, 700, 520, 1.35],
+  [8.7, 700, 520, 1.35],
   [9.7, 680, 500, 1.3],
   [11.4, 720, 500, 1.36],
   [12.95, 720, 500, 1.36],
@@ -38,7 +38,7 @@ const CLES: Cle[] = [
 ];
 
 export const Scene2: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 8.9 || t > 20.75) return null;
+  if (t < 8.65 || t > 20.75) return null;
   const lu = entre(t, 9.7, 11.3, 0, TOTAL, (n) => n);
   // Sortie : la scène file vers le haut.
   const sortie = entre(t, 20.05, 20.6, 0, 1, (n) => n * n * n);
@@ -46,7 +46,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
   let mot = 0;
 
   return (
-    <AbsoluteFill style={{ background: C.encre, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 8.9, 9.0, 0, 1) }}>
+    <AbsoluteFill style={{ background: C.encre, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 8.65, 8.75, 0, 1) }}>
       <div style={{ position: "absolute", inset: 0, transform: `translateY(${-sortie * 1100}px)` }}>
         <Camera t={t} cles={CLES} extra={secousse(t, ETIQUETTES.map((e) => e.debut + 0.2), 0.02)}>
           <div style={{ position: "absolute", left: 150, top: 300, width: 940 }}>
@@ -59,7 +59,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
                 padding: "10px 22px",
                 fontSize: 26,
                 fontWeight: 800,
-                transform: `scale(${ressort(t, 9.05, 11)})`,
+                transform: `scale(${ressort(t, 8.75, 11)})`,
                 transformOrigin: "0 50%",
               }}
             >
@@ -88,7 +88,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
                     {m.texte.split(/(?<= )/).map((bout, j) => {
                       // Chaque mot claque à son tour à l'ouverture.
                       const indexMot = mot++;
-                      const arrive = ressort(t, 9.05 + indexMot * 0.035, 13);
+                      const arrive = ressort(t, 8.8 + indexMot * 0.035, 13);
                       const offset = m.texte.split(/(?<= )/).slice(0, j).join("").length;
                       return (
                         <span key={j} style={{ display: "inline-block", whiteSpace: "pre", opacity: arrive, transform: `translateY(${(1 - arrive) * 30}px)` }}>

@@ -9,11 +9,11 @@ export const SOUS_TITRES: { debut: number; fin: number; texte: string }[] = [
   { debut: 4.55, fin: 7.6, texte: "tangram.cx les récupère automatiquement." },
   { debut: 9.6, fin: 12.95, texte: "Chaque commentaire est lu en entier." },
   { debut: 13.05, fin: 19.3, texte: "Les informations clés sont repérées." },
-  { debut: 21.0, fin: 24.6, texte: "Des milliers de retours deviennent des indicateurs." },
-  { debut: 24.7, fin: 28.6, texte: "Vous voyez où agir en premier." },
-  { debut: 30.6, fin: 32.25, texte: "Vous lancez vos actions." },
-  { debut: 32.3, fin: 34.7, texte: "Vous mesurez leur effet." },
-  { debut: 34.75, fin: 37.4, texte: "Vos équipes partagent les mêmes constats." },
+  { debut: 21.0, fin: 24.1, texte: "Des milliers de retours deviennent des indicateurs." },
+  { debut: 24.15, fin: 28.4, texte: "Vous voyez où agir en premier." },
+  { debut: 30.5, fin: 32.15, texte: "Vous lancez vos actions." },
+  { debut: 32.2, fin: 34.8, texte: "Vous mesurez leur effet." },
+  { debut: 34.85, fin: 37.4, texte: "Vos équipes partagent les mêmes constats." },
 ];
 
 export const SousTitres: React.FC<{ t: number }> = ({ t }) => {
@@ -21,7 +21,7 @@ export const SousTitres: React.FC<{ t: number }> = ({ t }) => {
   if (!s) return null;
   const a = ressort(t, s.debut, 14);
   const sortie = entre(t, s.fin - 0.12, s.fin, 1, 0);
-  const sombre = t > 8.9 && t < 20.3;
+  const sombre = t > 8.65 && t < 20.3;
   return (
     <div style={{ position: "absolute", left: 0, right: 0, bottom: 58, display: "flex", justifyContent: "center", pointerEvents: "none" }}>
       <div
