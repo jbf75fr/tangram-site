@@ -1,38 +1,50 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Carte, Logo, Marque, POLICE, entre, ressort, hasard } from "../commun";
+import { C, Camera, Carte, Cle, Logo, Marque, POLICE, entre, fmt, hasard, ressort, secousse } from "../commun";
 
-// Scène 1 (0 à 9 s) : le client écrit, le commentaire arrive dans le CRM puis dans tangram.cx.
+// Scène 1 (0 à 9 s) : le client écrit, les réponses affluent dans le CRM, tangram.cx les récupère.
 export const COMMENTAIRE = "Conseiller très à l'écoute, mais trois semaines pour être livré. Je ne recommanderai pas.";
 
+const CLES: Cle[] = [
+  [0, 960, 420, 2.4],
+  [0.55, 960, 420, 2.3],
+  [0.85, 820, 640, 1.9],
+  [2.3, 1040, 650, 1.75],
+  [2.75, 960, 540, 1.0],
+  [3.0, 900, 540, 0.98],
+  [3.6, 760, 540, 1.0],
+  [4.25, 760, 540, 1.02],
+  [4.65, 1120, 540, 0.92],
+  [8.3, 1180, 540, 0.98],
+  [8.6, 1520, 540, 1.4],
+  [9.15, 1520, 540, 45],
+];
+
+// Le carré d'enquête : centré en (960, 540), 900 x 660.
 const Enquete: React.FC<{ t: number }> = ({ t }) => {
-  const apparition = ressort(t, 0);
-  const tapes = Math.floor(entre(t, 0.9, 2.6, 0, COMMENTAIRE.length, (n) => n));
-  const appui = t > 2.75 && t < 2.95 ? 0.94 : 1;
-  // Après l'envoi, la carte rapetisse et file dans le CRM.
-  const depart = entre(t, 3.0, 3.6, 0, 1);
-  const echelle = (0.85 + 0.15 * apparition) * (1 - 0.72 * depart);
+  const tapes = Math.floor(entre(t, 0.9, 2.3, 0, COMMENTAIRE.length, (n) => n));
+  const appui = t > 2.5 && t < 2.68 ? 0.9 : 1;
+  const depart = entre(t, 2.8, 3.25, 0, 1, (n) => n * n);
   const x = 960 + (530 - 960) * depart;
   const y = 540 + (330 - 540) * depart;
-  const opacite = entre(t, 0, 0.3, 0, 1) * entre(t, 3.45, 3.7, 1, 0);
   return (
     <Carte
       style={{
         width: 900,
+        height: 660,
         left: x - 450,
         top: y - 330,
-        height: 660,
         padding: 56,
         boxSizing: "border-box",
-        transform: `scale(${echelle})`,
-        opacity: opacite,
+        transform: `scale(${1 - 0.8 * depart})`,
+        opacity: 1 - entre(t, 3.15, 3.3, 0, 1),
       }}
     >
       <div style={{ fontSize: 24, color: C.encreDouce, fontWeight: 600 }}>Votre avis compte</div>
       <div style={{ fontSize: 34, fontWeight: 700, marginTop: 10 }}>Recommanderiez-vous notre enseigne à un proche ?</div>
       <div style={{ display: "flex", gap: 10, marginTop: 28 }}>
         {Array.from({ length: 11 }, (_, i) => {
-          const choisi = i === 6 && t > 0.55;
+          const choisi = i === 6 && t > 0.35;
           return (
             <div
               key={i}
@@ -47,7 +59,7 @@ const Enquete: React.FC<{ t: number }> = ({ t }) => {
                 fontWeight: 700,
                 background: choisi ? C.iris : C.grisClair,
                 color: choisi ? C.blanc : C.encre,
-                transform: `scale(${choisi ? 1 + 0.12 * (1 - ressort(t, 0.55, 9)) : 1})`,
+                transform: `scale(${choisi ? 1 + 0.25 * (1 - ressort(t, 0.35, 8)) : 1})`,
               }}
             >
               {i}
@@ -61,7 +73,7 @@ const Enquete: React.FC<{ t: number }> = ({ t }) => {
           marginTop: 12,
           height: 150,
           borderRadius: 16,
-          border: `2px solid ${t > 0.85 ? C.iris : C.gris}`,
+          border: `2px solid ${t > 0.8 ? C.iris : C.gris}`,
           padding: "18px 22px",
           fontSize: 30,
           lineHeight: 1.4,
@@ -69,19 +81,10 @@ const Enquete: React.FC<{ t: number }> = ({ t }) => {
         }}
       >
         {COMMENTAIRE.slice(0, tapes)}
-        <span style={{ opacity: t > 0.85 && t < 2.8 && Math.floor(t * 3) % 2 === 0 ? 1 : 0, color: C.iris }}>|</span>
+        <span style={{ opacity: t > 0.8 && t < 2.5 && Math.floor(t * 4) % 2 === 0 ? 1 : 0, color: C.iris }}>|</span>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 26 }}>
-        <div
-          style={{
-            background: C.beurre,
-            borderRadius: 999,
-            padding: "16px 40px",
-            fontSize: 26,
-            fontWeight: 700,
-            transform: `scale(${appui})`,
-          }}
-        >
+        <div style={{ background: C.beurre, borderRadius: 999, padding: "16px 40px", fontSize: 26, fontWeight: 700, transform: `scale(${appui})` }}>
           Envoyer
         </div>
       </div>
@@ -89,44 +92,42 @@ const Enquete: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-const LIGNES_CRM = [
-  { nom: 0.55, sujet: 0.8 },
-  { nom: 0.42, sujet: 0.6 },
-  { nom: 0.6, sujet: 0.7 },
-  { nom: 0.38, sujet: 0.85 },
-  { nom: 0.5, sujet: 0.55 },
-];
+// Réponses qui affluent de tous les bords vers le CRM.
+const ARRIVEES = Array.from({ length: 34 }, (_, i) => {
+  const angle = hasard(i) * Math.PI * 2;
+  return {
+    debut: 3.0 + i * 0.038 + hasard(i + 50) * 0.25,
+    x0: 530 + Math.cos(angle) * 1500,
+    y0: 400 + Math.sin(angle) * 1000,
+    couleur: [C.vert, C.rouge, C.iris, C.beurre][i % 4],
+  };
+});
 
 const Crm: React.FC<{ t: number }> = ({ t }) => {
-  const a = ressort(t, 2.9);
-  const nouvelle = ressort(t, 3.55, 12);
+  const a = ressort(t, 2.8);
+  const arrivees = ARRIVEES.filter((r) => t > r.debut + 0.45).length;
+  const total = 1204 + arrivees * 1 + Math.floor(entre(t, 3.3, 8, 0, 36, (n) => n));
   return (
-    <Carte
-      style={{
-        left: 150,
-        top: 190,
-        width: 760,
-        height: 700,
-        overflow: "hidden",
-        opacity: a,
-        transform: `translateX(${(1 - a) * -80}px)`,
-      }}
-    >
-      <div style={{ height: 70, background: C.encre, display: "flex", alignItems: "center", padding: "0 28px", gap: 12 }}>
-        {[C.rouge, C.beurre, C.vert].map((c) => (
-          <div key={c} style={{ width: 14, height: 14, borderRadius: 7, background: c, opacity: 0.85 }} />
-        ))}
-        <div style={{ color: C.blanc, fontSize: 26, fontWeight: 700, marginLeft: 18 }}>Votre CRM</div>
-      </div>
-      <div style={{ padding: 28 }}>
-        <div
-          style={{
-            height: 104 * nouvelle,
-            opacity: nouvelle,
-            overflow: "hidden",
-            marginBottom: 14 * nouvelle,
-          }}
-        >
+    <>
+      <Carte
+        style={{
+          left: 150,
+          top: 190,
+          width: 760,
+          height: 700,
+          overflow: "hidden",
+          opacity: a,
+          transform: `translateX(${(1 - a) * -200}px) scale(${1 + secousse(t, ARRIVEES.map((r) => r.debut + 0.45), 0.004)})`,
+        }}
+      >
+        <div style={{ height: 70, background: C.encre, display: "flex", alignItems: "center", padding: "0 28px", gap: 12 }}>
+          {[C.rouge, C.beurre, C.vert].map((c) => (
+            <div key={c} style={{ width: 14, height: 14, borderRadius: 7, background: c, opacity: 0.85 }} />
+          ))}
+          <div style={{ color: C.blanc, fontSize: 26, fontWeight: 700, marginLeft: 18 }}>Votre CRM</div>
+          <div style={{ marginLeft: "auto", color: C.beurre, fontSize: 24, fontWeight: 700 }}>{fmt(total)} réponses</div>
+        </div>
+        <div style={{ padding: 28 }}>
           <div
             style={{
               background: C.beurrePale,
@@ -137,34 +138,73 @@ const Crm: React.FC<{ t: number }> = ({ t }) => {
               alignItems: "center",
               padding: "0 22px",
               gap: 18,
+              marginBottom: 14,
+              transform: `scale(${0.6 + 0.4 * ressort(t, 3.15)})`,
+              opacity: entre(t, 3.15, 3.25, 0, 1),
             }}
           >
-            <div style={{ width: 52, height: 52, borderRadius: 26, background: C.iris, color: C.blanc, fontSize: 22, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>6</div>
+            <div style={{ width: 52, height: 52, borderRadius: 26, background: C.iris, color: C.blanc, fontSize: 22, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", flex: "none" }}>6</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 22, fontWeight: 700 }}>Nouvelle réponse</div>
               <div style={{ fontSize: 20, color: C.encreDouce, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{COMMENTAIRE}</div>
             </div>
           </div>
-        </div>
-        {LIGNES_CRM.map((l, i) => (
-          <div key={i} style={{ height: 88, display: "flex", alignItems: "center", gap: 18, borderBottom: `2px solid ${C.grisClair}`, padding: "0 22px" }}>
-            <div style={{ width: 46, height: 46, borderRadius: 23, background: C.grisClair }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ height: 14, width: `${l.nom * 100}%`, background: C.gris, borderRadius: 7 }} />
-              <div style={{ height: 12, width: `${l.sujet * 100}%`, background: C.grisClair, borderRadius: 6, marginTop: 12 }} />
-            </div>
+          {/* La liste défile vers le bas à chaque arrivée. */}
+          <div style={{ height: 500, overflow: "hidden", position: "relative" }}>
+            {Array.from({ length: 40 }, (_, k) => {
+              const y = (k - arrivees) * 84 + 0;
+              if (y < -84 || y > 520) return null;
+              const neuve = k >= arrivees - 1 && k <= arrivees;
+              return (
+                <div key={k} style={{ position: "absolute", left: 0, right: 0, top: y + entre(t, 0, 1, 0, 0), height: 84, display: "flex", alignItems: "center", gap: 18, borderBottom: `2px solid ${C.grisClair}`, padding: "0 22px" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 22, background: neuve ? C.irisPale : C.grisClair }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ height: 14, width: `${30 + hasard(k) * 40}%`, background: C.gris, borderRadius: 7 }} />
+                    <div style={{ height: 12, width: `${50 + hasard(k + 9) * 40}%`, background: [C.vertFond, C.rougeFond, C.grisClair][k % 3], borderRadius: 6, marginTop: 12 }} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
-    </Carte>
+        </div>
+      </Carte>
+      {ARRIVEES.map((r, i) => {
+        const u = entre(t, r.debut, r.debut + 0.45, 0, 1, (n) => n * n);
+        if (u <= 0 || u >= 1) return null;
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: r.x0 + (530 - r.x0) * u - 60,
+              top: r.y0 + (420 - r.y0) * u - 34,
+              width: 120,
+              height: 68,
+              borderRadius: 14,
+              background: C.blanc,
+              boxShadow: "0 8px 20px rgba(30,16,51,0.15)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 8,
+              padding: "0 16px",
+              boxSizing: "border-box",
+              transform: `scale(${1 - 0.5 * u}) rotate(${(1 - u) * (hasard(i + 3) - 0.5) * 60}deg)`,
+            }}
+          >
+            <div style={{ height: 7, borderRadius: 4, background: r.couleur, width: "85%" }} />
+            <div style={{ height: 7, borderRadius: 4, background: C.gris, width: "55%" }} />
+          </div>
+        );
+      })}
+    </>
   );
 };
 
-// Courbe entre le CRM et la tuile tangram.cx.
 const P0 = { x: 910, y: 540 };
-const P1 = { x: 1130, y: 380 };
-const P2 = { x: 1260, y: 700 };
-const P3 = { x: 1440, y: 540 };
+const P1 = { x: 1130, y: 360 };
+const P2 = { x: 1270, y: 720 };
+const P3 = { x: 1450, y: 540 };
 const surCourbe = (u: number) => {
   const v = 1 - u;
   return {
@@ -172,47 +212,20 @@ const surCourbe = (u: number) => {
     y: v * v * v * P0.y + 3 * v * v * u * P1.y + 3 * v * u * u * P2.y + u * u * u * P3.y,
   };
 };
+const BULLES = Array.from({ length: 34 }, (_, i) => 4.7 + i * 0.1 + hasard(i + 30) * 0.06);
 
 const Flux: React.FC<{ t: number }> = ({ t }) => {
-  const trace = entre(t, 4.4, 5.2, 0, 1);
-  const tuile = ressort(t, 4.9);
-  const bulles = Array.from({ length: 16 }, (_, i) => {
-    const debut = 5.2 + i * 0.16 + hasard(i) * 0.1;
-    const u = entre(t, debut, debut + 0.9, 0, 1, (n) => n * n * (3 - 2 * n));
-    if (u <= 0 || u >= 1) return null;
-    const p = surCourbe(u);
-    const couleur = [C.iris, C.beurre, C.vert, C.rouge][i % 4];
-    return (
-      <div
-        key={i}
-        style={{
-          position: "absolute",
-          left: p.x - 30,
-          top: p.y - 20,
-          width: 60,
-          height: 40,
-          borderRadius: 12,
-          background: C.blanc,
-          boxShadow: "0 6px 16px rgba(30,16,51,0.12)",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: 6,
-          padding: "0 12px",
-          boxSizing: "border-box",
-          transform: `scale(${0.6 + 0.4 * Math.sin(Math.PI * u)})`,
-        }}
-      >
-        <div style={{ height: 5, borderRadius: 3, background: couleur, width: "90%" }} />
-        <div style={{ height: 5, borderRadius: 3, background: C.gris, width: "60%" }} />
-      </div>
-    );
-  });
-  // La tuile palpite à chaque arrivée.
-  const pouls = 1 + 0.04 * Math.max(0, Math.sin((t - 5.9) * 10)) * entre(t, 5.9, 6.2, 0, 1) * entre(t, 8, 8.4, 1, 0);
+  const trace = entre(t, 4.3, 4.8, 0, 1);
+  const tuile = ressort(t, 4.55, 11);
+  const arrivees = BULLES.map((d) => d + 0.5);
   return (
     <>
       <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+        <defs>
+          <clipPath id="revele">
+            <rect x={P0.x - 10} y={0} width={(P3.x - P0.x + 20) * trace} height={1080} />
+          </clipPath>
+        </defs>
         <path
           d={`M${P0.x},${P0.y} C${P1.x},${P1.y} ${P2.x},${P2.y} ${P3.x},${P3.y}`}
           fill="none"
@@ -220,17 +233,40 @@ const Flux: React.FC<{ t: number }> = ({ t }) => {
           strokeWidth={4}
           strokeDasharray="2 14"
           strokeLinecap="round"
-          pathLength={1000}
-          style={{ strokeDashoffset: 0, opacity: trace * 0.7 }}
+          opacity={0.7}
           clipPath="url(#revele)"
         />
-        <defs>
-          <clipPath id="revele">
-            <rect x={P0.x - 10} y={0} width={(P3.x - P0.x + 20) * trace} height={1080} />
-          </clipPath>
-        </defs>
       </svg>
-      {bulles}
+      {BULLES.map((debut, i) => {
+        const u = entre(t, debut, debut + 0.5, 0, 1, (n) => n * n * (3 - 2 * n));
+        if (u <= 0 || u >= 1) return null;
+        const p = surCourbe(u);
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: p.x - 30,
+              top: p.y - 20,
+              width: 60,
+              height: 40,
+              borderRadius: 12,
+              background: C.blanc,
+              boxShadow: "0 6px 16px rgba(30,16,51,0.14)",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: 6,
+              padding: "0 12px",
+              boxSizing: "border-box",
+              transform: `scale(${0.6 + 0.5 * Math.sin(Math.PI * u)})`,
+            }}
+          >
+            <div style={{ height: 5, borderRadius: 3, background: [C.iris, C.vert, C.rouge, C.beurre][i % 4], width: "90%" }} />
+            <div style={{ height: 5, borderRadius: 3, background: C.gris, width: "60%" }} />
+          </div>
+        );
+      })}
       <div
         style={{
           position: "absolute",
@@ -240,11 +276,11 @@ const Flux: React.FC<{ t: number }> = ({ t }) => {
           height: 280,
           borderRadius: 48,
           background: C.blanc,
-          boxShadow: "0 24px 60px rgba(30,16,51,0.14)",
+          boxShadow: "0 24px 60px rgba(30,16,51,0.16)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transform: `scale(${tuile * pouls})`,
+          transform: `scale(${tuile * (1 + secousse(t, arrivees, 0.05))})`,
         }}
       >
         <Logo taille={190} />
@@ -257,21 +293,14 @@ const Flux: React.FC<{ t: number }> = ({ t }) => {
 };
 
 export const Scene1: React.FC<{ t: number }> = ({ t }) => {
-  if (t > 9.4) return null;
-  // Sortie : on plonge vers la tuile tangram.cx.
-  const sortie = entre(t, 8.2, 9.2, 0, 1, (n) => n * n);
+  if (t > 9.2) return null;
   return (
-    <AbsoluteFill
-      style={{
-        fontFamily: POLICE,
-        transformOrigin: "1580px 540px",
-        transform: `scale(${1 + sortie * 2.2})`,
-        opacity: 1 - sortie,
-      }}
-    >
-      <Crm t={t} />
-      <Flux t={t} />
-      <Enquete t={t} />
+    <AbsoluteFill style={{ fontFamily: POLICE, overflow: "hidden" }}>
+      <Camera t={t} cles={CLES} extra={secousse(t, [0.35, 2.55, 4.55], 0.03)}>
+        <Crm t={t} />
+        <Flux t={t} />
+        <Enquete t={t} />
+      </Camera>
     </AbsoluteFill>
   );
 };

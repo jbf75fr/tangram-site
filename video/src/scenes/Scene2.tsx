@@ -1,144 +1,159 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Carte, POLICE, Triangle, entre, ressort } from "../commun";
+import { C, Camera, Cle, POLICE, Triangle, entre, ressort, secousse } from "../commun";
 
-// Scène 2 (9 à 21 s) : le commentaire est lu en entier et décortiqué.
-type Morceau = { texte: string; surligne?: { fond: string; trait: string; debut: number } };
+// Scène 2 (9 à 21 s), sur fond nuit : le commentaire est lu en entier et décortiqué.
+type Morceau = { texte: string; surligne?: { fond: string; couleur: string; debut: number } };
+
+const VERT_CLAIR = "#7be0a4";
+const ROUGE_CLAIR = "#ff9c93";
 
 const MORCEAUX: Morceau[] = [
-  { texte: "Conseiller très à l'écoute,", surligne: { fond: C.vertFond, trait: C.vert, debut: 13.1 } },
+  { texte: "Conseiller très à l'écoute,", surligne: { fond: "rgba(46,158,91,0.32)", couleur: VERT_CLAIR, debut: 13.05 } },
   { texte: " mais " },
-  { texte: "trois semaines pour être livré.", surligne: { fond: C.rougeFond, trait: C.rouge, debut: 13.3 } },
+  { texte: "trois semaines pour être livré.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 13.2 } },
   { texte: " " },
-  { texte: "Je ne recommanderai pas.", surligne: { fond: C.rougeFond, trait: C.rouge, debut: 16.6 } },
+  { texte: "Je ne recommanderai pas.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 16.55 } },
 ];
 const TOTAL = MORCEAUX.reduce((n, m) => n + m.texte.length, 0);
 
-type Etiquette = { debut: number; libelle: string; valeur: React.ReactNode; couleur: string; rotation: number };
+type Etiquette = { debut: number; libelle: string; valeur: string; fond: string; encre: string; piece: string; rotation: number; de: [number, number] };
 
 const ETIQUETTES: Etiquette[] = [
-  {
-    debut: 13.1,
-    libelle: "Étape du parcours",
-    valeur: (
-      <span>
-        <span style={{ color: C.vertTexte }}>Accueil</span>
-        <span style={{ color: C.encreDouce, fontWeight: 500 }}> et </span>
-        <span style={{ color: C.rougeTexte }}>Livraison</span>
-      </span>
-    ),
-    couleur: C.iris,
-    rotation: 0,
-  },
-  { debut: 14.55, libelle: "Tonalité", valeur: <span style={{ color: C.rougeTexte }}>Négative</span>, couleur: C.rouge, rotation: 90 },
-  { debut: 15.55, libelle: "Émotion", valeur: "Déception", couleur: C.beurre, rotation: 180 },
-  { debut: 16.6, libelle: "Risque de départ", valeur: <span style={{ color: C.rougeTexte }}>Élevé</span>, couleur: C.encre, rotation: 270 },
-  { debut: 17.85, libelle: "Suggestion", valeur: "Livrer plus vite", couleur: C.vert, rotation: 45 },
+  { debut: 13.1, libelle: "Étape du parcours", valeur: "Accueil et Livraison", fond: C.iris, encre: C.blanc, piece: C.beurre, rotation: 0, de: [600, 420] },
+  { debut: 14.55, libelle: "Tonalité", valeur: "Négative", fond: C.rouge, encre: C.blanc, piece: C.encre, rotation: 90, de: [700, 500] },
+  { debut: 15.55, libelle: "Émotion", valeur: "Déception", fond: C.beurre, encre: C.encre, piece: C.iris, rotation: 180, de: [700, 500] },
+  { debut: 16.6, libelle: "Risque de départ", valeur: "Élevé", fond: C.blanc, encre: C.rougeTexte, piece: C.rouge, rotation: 270, de: [520, 610] },
+  { debut: 17.85, libelle: "Suggestion", valeur: "Livrer plus vite", fond: C.vert, encre: C.blanc, piece: C.beurrePale, rotation: 45, de: [600, 520] },
+];
+
+const CLES: Cle[] = [
+  [9.0, 700, 520, 1.35],
+  [9.7, 680, 500, 1.3],
+  [11.4, 720, 500, 1.36],
+  [12.95, 720, 500, 1.36],
+  [13.45, 960, 540, 1.0],
+  [18.9, 990, 540, 1.05],
+  [19.5, 990, 540, 1.05],
 ];
 
 export const Scene2: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 8.6 || t > 21.3) return null;
-  const entree = ressort(t, 8.7, 16);
-  const sortie = entre(t, 20.0, 21.0, 0, 1, (n) => n * n);
-  // Lecture : les lettres passent du gris à l'encre, de gauche à droite.
-  const lu = entre(t, 9.7, 11.4, 0, TOTAL, (n) => n);
+  if (t < 8.9 || t > 20.75) return null;
+  const lu = entre(t, 9.7, 11.3, 0, TOTAL, (n) => n);
+  // Sortie : la scène file vers le haut.
+  const sortie = entre(t, 20.05, 20.6, 0, 1, (n) => n * n * n);
   let position = 0;
+  let mot = 0;
 
   return (
-    <AbsoluteFill style={{ fontFamily: POLICE, opacity: 1 - sortie * 0.0 }}>
-      <Carte
-        style={{
-          left: 150,
-          top: 250,
-          width: 960,
-          padding: "52px 60px 60px",
-          boxSizing: "border-box",
-          transformOrigin: "1580px 290px",
-          transform: `translate(${(1 - entree) * 420}px, ${sortie * -60}px) scale(${0.4 + 0.6 * entree})`,
-          opacity: entre(t, 8.7, 9.1, 0, 1) * (1 - sortie),
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 24, color: C.encreDouce, fontWeight: 600 }}>
-          <span style={{ background: C.irisPale, color: C.iris, borderRadius: 999, padding: "8px 18px", fontWeight: 700 }}>Note : 6 / 10</span>
-          <span>Enquête après livraison</span>
-        </div>
-        <div style={{ fontSize: 50, lineHeight: 1.42, fontWeight: 600, marginTop: 30 }}>
-          {MORCEAUX.map((m, i) => {
-            const debutMorceau = position;
-            position += m.texte.length;
-            const s = m.surligne;
-            const largeur = s ? entre(t, s.debut, s.debut + 0.6, 0, 100) : 0;
-            return (
-              <span
-                key={i}
-                style={
-                  s
-                    ? {
-                        backgroundImage: `linear-gradient(${s.fond}, ${s.fond}), linear-gradient(${s.trait}, ${s.trait})`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "0 0, 0 100%",
-                        backgroundSize: `${largeur}% 100%, ${largeur}% 5px`,
-                        borderRadius: 6,
-                      }
-                    : undefined
-                }
-              >
-                {m.texte.split("").map((c, j) => (
-                  <span key={j} style={{ color: debutMorceau + j < lu ? C.encre : "#b7b1c6" }}>
-                    {c}
+    <AbsoluteFill style={{ background: C.encre, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 8.9, 9.0, 0, 1) }}>
+      <div style={{ position: "absolute", inset: 0, transform: `translateY(${-sortie * 1100}px)`, filter: sortie > 0.05 ? `blur(${sortie * 12}px)` : undefined }}>
+        <Camera t={t} cles={CLES} extra={secousse(t, ETIQUETTES.map((e) => e.debut + 0.2), 0.02)}>
+          <div style={{ position: "absolute", left: 150, top: 300, width: 940 }}>
+            <div
+              style={{
+                display: "inline-block",
+                background: C.beurre,
+                color: C.encre,
+                borderRadius: 999,
+                padding: "10px 22px",
+                fontSize: 26,
+                fontWeight: 800,
+                transform: `scale(${ressort(t, 9.05, 11)})`,
+                transformOrigin: "0 50%",
+              }}
+            >
+              Note : 6 / 10
+            </div>
+            <div style={{ fontSize: 60, lineHeight: 1.36, fontWeight: 700, marginTop: 30, color: C.blanc }}>
+              {MORCEAUX.map((m, i) => {
+                const debutMorceau = position;
+                position += m.texte.length;
+                const s = m.surligne;
+                const largeur = s ? entre(t, s.debut, s.debut + 0.3, 0, 100) : 0;
+                return (
+                  <span
+                    key={i}
+                    style={
+                      s
+                        ? {
+                            backgroundImage: `linear-gradient(${s.fond}, ${s.fond})`,
+                            backgroundRepeat: "no-repeat",
+                            backgroundSize: `${largeur}% 100%`,
+                            borderRadius: 8,
+                          }
+                        : undefined
+                    }
+                  >
+                    {m.texte.split(/(?<= )/).map((bout, j) => {
+                      // Chaque mot claque à son tour à l'ouverture.
+                      const indexMot = mot++;
+                      const arrive = ressort(t, 9.05 + indexMot * 0.035, 13);
+                      const offset = m.texte.split(/(?<= )/).slice(0, j).join("").length;
+                      return (
+                        <span key={j} style={{ display: "inline-block", whiteSpace: "pre", opacity: arrive, transform: `translateY(${(1 - arrive) * 30}px)` }}>
+                          {bout.split("").map((c, k) => {
+                            const n = debutMorceau + offset + k;
+                            const couleur = s && largeur > 0 ? s.couleur : n < lu ? C.blanc : "rgba(255,255,255,0.35)";
+                            return (
+                              <span key={k} style={{ color: couleur }}>
+                                {c}
+                              </span>
+                            );
+                          })}
+                        </span>
+                      );
+                    })}
                   </span>
-                ))}
-              </span>
+                );
+              })}
+            </div>
+            {/* Trait jaune qui balaie la lecture. */}
+            <div style={{ height: 8, borderRadius: 4, marginTop: 34, background: "rgba(255,255,255,0.12)", width: 940, opacity: entre(t, 9.6, 9.75, 0, 1) * entre(t, 11.5, 11.9, 1, 0) }}>
+              <div style={{ height: 8, borderRadius: 4, background: C.beurre, width: `${(lu / TOTAL) * 100}%` }} />
+            </div>
+          </div>
+
+          {ETIQUETTES.map((e, i) => {
+            const a = ressort(t, e.debut, 13);
+            const vol = entre(t, e.debut, e.debut + 0.35, 0, 1);
+            const xFinal = 1200;
+            const yFinal = 160 + i * 156;
+            const x = e.de[0] + (xFinal - e.de[0]) * vol;
+            const y = e.de[1] + (yFinal - e.de[1]) * vol;
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: x,
+                  top: y,
+                  width: 600,
+                  height: 128,
+                  borderRadius: 24,
+                  background: e.fond,
+                  color: e.encre,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 26,
+                  padding: "0 32px",
+                  boxSizing: "border-box",
+                  opacity: t > e.debut ? 1 : 0,
+                  transform: `scale(${0.3 + 0.7 * a}) rotate(${(1 - a) * -14}deg)`,
+                  transformOrigin: "0 50%",
+                  boxShadow: "0 18px 40px rgba(0,0,0,0.3)",
+                }}
+              >
+                <Triangle couleur={e.piece} taille={50} rotation={e.rotation} />
+                <div>
+                  <div style={{ fontSize: 22, fontWeight: 700, opacity: 0.8 }}>{e.libelle}</div>
+                  <div style={{ fontSize: 40, fontWeight: 800, marginTop: 2 }}>{e.valeur}</div>
+                </div>
+              </div>
             );
           })}
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 60,
-            right: 60,
-            bottom: 26,
-            height: 6,
-            borderRadius: 3,
-            background: C.grisClair,
-            overflow: "hidden",
-            opacity: entre(t, 9.5, 9.7, 0, 1) * entre(t, 11.6, 12.0, 1, 0),
-          }}
-        >
-          <div style={{ width: `${(lu / TOTAL) * 100}%`, height: "100%", background: C.iris }} />
-        </div>
-      </Carte>
-
-      {ETIQUETTES.map((e, i) => {
-        const a = ressort(t, e.debut, 13);
-        // À la sortie, les étiquettes tombent vers les indicateurs de la scène suivante.
-        const chute = entre(t, 19.6 + i * 0.08, 20.6 + i * 0.08, 0, 1, (n) => n * n);
-        return (
-          <Carte
-            key={i}
-            style={{
-              left: 1190,
-              top: 180 + i * 148,
-              width: 580,
-              height: 120,
-              borderRadius: 22,
-              display: "flex",
-              alignItems: "center",
-              gap: 24,
-              padding: "0 30px",
-              boxSizing: "border-box",
-              opacity: Math.min(1, a * 1.4) * (1 - chute),
-              transform: `translate(${(1 - a) * -90 + chute * (i - 2) * -80}px, ${chute * 520}px) rotate(${chute * (i % 2 ? 14 : -10)}deg) scale(${0.8 + 0.2 * a})`,
-            }}
-          >
-            <Triangle couleur={e.couleur} taille={44} rotation={e.rotation} />
-            <div>
-              <div style={{ fontSize: 22, color: C.encreDouce, fontWeight: 600 }}>{e.libelle}</div>
-              <div style={{ fontSize: 34, fontWeight: 800, marginTop: 2 }}>{e.valeur}</div>
-            </div>
-          </Carte>
-        );
-      })}
+        </Camera>
+      </div>
     </AbsoluteFill>
   );
 };

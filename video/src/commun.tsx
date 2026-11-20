@@ -43,12 +43,68 @@ export const entre = (
   });
 
 // Ressort qui démarre à l'instant « debut » (en secondes).
-export const ressort = (t: number, debut: number, amorti = 14) =>
+export const ressort = (t: number, debut: number, amorti = 15) =>
   spring({
     frame: Math.max(0, (t - debut) * FPS),
     fps: FPS,
-    config: { damping: amorti, mass: 0.8, stiffness: 120 },
+    config: { damping: amorti, mass: 0.55, stiffness: 240 },
   });
+
+// Caméra : suite de clés [instant, x visé, y visé, zoom]. Le flou suit la vitesse.
+export type Cle = [number, number, number, number];
+const vif = Easing.bezier(0.76, 0, 0.24, 1);
+export const camera = (t: number, cles: Cle[]) => {
+  if (t <= cles[0][0]) return { x: cles[0][1], y: cles[0][2], z: cles[0][3] };
+  for (let i = 0; i < cles.length - 1; i++) {
+    const [t0, x0, y0, z0] = cles[i];
+    const [t1, x1, y1, z1] = cles[i + 1];
+    if (t <= t1) {
+      const u = vif((t - t0) / (t1 - t0));
+      return { x: x0 + (x1 - x0) * u, y: y0 + (y1 - y0) * u, z: z0 * Math.pow(z1 / z0, u) };
+    }
+  }
+  const d = cles[cles.length - 1];
+  return { x: d[1], y: d[2], z: d[3] };
+};
+
+// Petit à-coup de zoom à chaque instant donné (apparition d'une étiquette, clic).
+export const secousse = (t: number, instants: number[], force = 0.025) =>
+  instants.reduce((acc, i) => acc + (t >= i ? force * Math.exp(-(t - i) * 9) : 0), 0);
+
+export const Camera: React.FC<{ t: number; cles: Cle[]; extra?: number; children: React.ReactNode }> = ({ t, cles, extra = 0, children }) => {
+  const c = camera(t, cles);
+  const p = camera(t - 1 / FPS, cles);
+  const vitesse = Math.hypot(c.x - p.x, c.y - p.y) * c.z + Math.abs(Math.log(c.z / p.z)) * 900;
+  const flou = Math.min(14, Math.max(0, vitesse - 6) * 0.25);
+  const z = c.z * (1 + extra);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        top: 0,
+        width: 1920,
+        height: 1080,
+        transformOrigin: "0 0",
+        transform: `translate(960px, 540px) scale(${z}) translate(${-c.x}px, ${-c.y}px)`,
+        filter: flou > 0.3 ? `blur(${flou}px)` : undefined,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const Curseur: React.FC<{ x: number; y: number; appui?: boolean; opacite?: number }> = ({ x, y, appui, opacite = 1 }) => (
+  <svg
+    width={44}
+    height={52}
+    viewBox="0 0 22 26"
+    style={{ position: "absolute", left: x, top: y, opacity: opacite, transform: `scale(${appui ? 0.85 : 1})`, transformOrigin: "0 0", filter: "drop-shadow(0 4px 8px rgba(30,16,51,0.3))" }}
+  >
+    <path d="M1,1 L1,20 L6,15.5 L9.5,23.5 L13,22 L9.5,14.5 L16,14.5 Z" fill="#ffffff" stroke="#1e1033" strokeWidth={1.6} strokeLinejoin="round" />
+  </svg>
+);
 
 // Les sept pièces du logo, sur une grille de 32 (voir favicon.svg du site).
 export const PIECES_LOGO: { points: string; couleur: string }[] = [

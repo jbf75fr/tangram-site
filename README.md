@@ -60,3 +60,9 @@ Fabriqué automatiquement pour chaque page : titre, description, adresse canoniq
 - `BREVO_CLE_API` : clé d'API Brevo.
 - `CONTACT_DESTINATAIRE` (facultatif, par défaut `contact@tangram.cx`).
 - `CONTACT_EXPEDITEUR` (facultatif, par défaut `ne-pas-repondre@tangram.cx`, adresse à valider dans Brevo).
+
+## Vidéo d'introduction (`video/`)
+
+Vidéo de 46 s fabriquée en code avec Remotion (dossier `video/`, indépendant du site). Voix off ElevenLabs (voix « Rachel », texte dans `video/voix/texte.txt`), musique et bruitages générés par ElevenLabs, dans `video/public/`. Les temps de chaque animation suivent la voix : modifier la voix oblige à recaler les scènes (`video/src/scenes/`).
+
+Fabriquer la vidéo : `cd video && npm install`, puis `npx remotion render src/index.tsx Introduction sortie/introduction.mp4 --browser-executable=<chemin de Chromium>`. Le dossier `sortie/` n'est pas versionné.

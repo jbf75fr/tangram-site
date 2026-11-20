@@ -1,8 +1,8 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Carte, Logo, POLICE, entre, fmt, hasard, ressort, signe } from "../commun";
+import { C, Camera, Carte, Cle, Logo, POLICE, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
 
-// Scène 3 (21 à 32 s) : des milliers de retours deviennent des indicateurs.
+// Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs.
 const SUJETS = [
   { nom: "Délais de livraison", pos: 0.18, score: -34 },
   { nom: "Accueil et conseil", pos: 0.78, score: 41 },
@@ -11,65 +11,106 @@ const SUJETS = [
   { nom: "Site et application", pos: 0.52, score: 3 },
 ];
 
-const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
-  const a = ressort(t, 21.0 + i * 0.12);
+const COLONNES = 41;
+const LIGNES = 35;
+const L = 120;
+const H = 70;
+const PAS_X = 136;
+const PAS_Y = 86;
+
+// Mur de commentaires : la caméra part du nôtre, au centre, et recule.
+const Mur: React.FC<{ t: number }> = ({ t }) => {
+  const cles: Cle[] = [
+    [20.3, 960, 540, 3.2],
+    [20.8, 960, 540, 3.0],
+    [22.6, 960, 540, 0.36],
+  ];
+  const range = entre(t, 22.55, 23.15, 0, 1, (n) => n * n * n);
+  if (t > 23.2) return null;
+  const tuiles = [];
+  for (let r = 0; r < LIGNES; r++) {
+    for (let c = 0; c < COLONNES; c++) {
+      const i = r * COLONNES + c;
+      const x = 960 + (c - (COLONNES - 1) / 2) * PAS_X;
+      const y = 540 + (r - (LIGNES - 1) / 2) * PAS_Y;
+      const centre = r === (LIGNES - 1) / 2 && c === (COLONNES - 1) / 2;
+      const ton = hasard(i);
+      // Au rangement, chaque tuile file vers le centre, les plus proches d'abord.
+      const d = Math.hypot(c - (COLONNES - 1) / 2, r - (LIGNES - 1) / 2) / 25;
+      const u = Math.min(1, Math.max(0, range * 1.6 - d * 0.6));
+      tuiles.push(
+        <div
+          key={i}
+          style={{
+            position: "absolute",
+            left: x + (960 - x) * u - L / 2,
+            top: y + (540 - y) * u - H / 2,
+            width: L,
+            height: H,
+            borderRadius: 14,
+            background: centre ? C.beurrePale : C.blanc,
+            boxShadow: centre ? `0 0 0 4px ${C.beurre}` : "0 3px 8px rgba(30,16,51,0.06)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: 8,
+            padding: "0 16px",
+            boxSizing: "border-box",
+            opacity: 1 - u,
+            transform: `scale(${1 - 0.7 * u})`,
+          }}
+        >
+          <div style={{ height: 7, borderRadius: 4, width: `${60 + ton * 35}%`, background: ton < 0.45 ? C.rouge : ton < 0.8 ? C.vert : C.gris }} />
+          <div style={{ height: 7, borderRadius: 4, width: `${40 + hasard(i + 5) * 40}%`, background: C.grisClair }} />
+        </div>,
+      );
+    }
+  }
   return (
-    <Carte
+    <Camera t={t} cles={cles}>
+      {tuiles}
+    </Camera>
+  );
+};
+
+const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
+  const a = ressort(t, 23.05 + i * 0.07);
+  return (
+    <div
       style={{
-        position: "relative",
         flex: 1,
         height: 190,
         borderRadius: 22,
         padding: "26px 30px",
         boxSizing: "border-box",
-        opacity: a,
-        transform: `translateY(${(1 - a) * 40}px)`,
-        boxShadow: "none",
+        background: C.blanc,
         border: `2px solid ${C.grisClair}`,
+        opacity: Math.min(1, a * 1.5),
+        transform: `translateY(${(1 - a) * 60}px) scale(${0.85 + 0.15 * a})`,
       }}
     >
       <div style={{ fontSize: 22, color: C.encreDouce, fontWeight: 600 }}>{libelle}</div>
       {children}
-    </Carte>
+    </div>
   );
 };
 
-export const Scene3: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 20.3 || t > 32.8) return null;
-  const fenetre = ressort(t, 20.4, 16);
-  const sortie = entre(t, 31.4, 32.4, 0, 1, (n) => n * n);
-  const compte = entre(t, 21.4, 24.6, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
-  const remplissage = entre(t, 21.6, 24.6, 0, 1);
-  const priorite = ressort(t, 25.6, 12);
-  const attenue = entre(t, 26.4, 27.0, 1, 0.45);
-
-  // Pièces qui pleuvent dans les indicateurs.
-  const pluie = Array.from({ length: 70 }, (_, i) => {
-    const debut = 20.6 + hasard(i) * 3.6;
-    const u = entre(t, debut, debut + 0.7, 0, 1, (n) => n * n);
-    if (u <= 0 || u >= 1) return null;
-    const x = 220 + hasard(i + 100) * 1480;
-    return (
-      <svg
-        key={i}
-        width={30}
-        height={30}
-        viewBox="0 0 32 32"
-        style={{
-          position: "absolute",
-          left: x,
-          top: -40 + u * 420,
-          opacity: 1 - u * 0.6,
-          transform: `rotate(${hasard(i + 7) * 360 + u * 180}deg)`,
-        }}
-      >
-        <polygon points="0,0 32,0 0,32" fill={[C.iris, C.beurre, C.vert, C.rouge, C.encre][i % 5]} />
-      </svg>
-    );
-  });
-
+const Tableau: React.FC<{ t: number }> = ({ t }) => {
+  if (t < 22.9) return null;
+  const fenetre = ressort(t, 22.95, 13);
+  const compte = entre(t, 23.1, 24.3, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
+  const remplissage = entre(t, 23.2, 24.0, 0, 1);
+  const priorite = ressort(t, 26.3, 10);
+  const attenue = entre(t, 26.5, 26.9, 1, 0.4);
+  const cles: Cle[] = [
+    [23.3, 960, 540, 1.0],
+    [25.6, 960, 560, 1.03],
+    [26.1, 960, 690, 1.22],
+    [29.5, 900, 690, 1.27],
+    [30.35, 420, 531, 3.2],
+  ];
   return (
-    <AbsoluteFill style={{ fontFamily: POLICE }}>
+    <Camera t={t} cles={cles} extra={secousse(t, [26.3], 0.03)}>
       <Carte
         style={{
           left: 140,
@@ -77,9 +118,8 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
           width: 1640,
           height: 900,
           overflow: "hidden",
-          opacity: fenetre * (1 - sortie),
-          transformOrigin: "50% 75%",
-          transform: `translateY(${(1 - fenetre) * 80}px) scale(${1 + sortie * 0.25})`,
+          opacity: Math.min(1, fenetre * 2),
+          transform: `scale(${1.25 - 0.25 * fenetre})`,
         }}
       >
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
@@ -93,7 +133,7 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
               <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{fmt(compte)}</div>
             </Indicateur>
             <Indicateur t={t} i={1} libelle="Recommandation (NPS)">
-              <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 21.6, 24.6, 0, -12))}</div>
+              <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 23.2, 24.2, 0, -12))}</div>
             </Indicateur>
             <Indicateur t={t} i={2} libelle="Tonalité">
               <div style={{ display: "flex", height: 22, borderRadius: 11, overflow: "hidden", marginTop: 34, background: C.grisClair }}>
@@ -110,25 +150,16 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
             </Indicateur>
           </div>
 
-          <div
-            style={{
-              marginTop: 26,
-              border: `2px solid ${C.grisClair}`,
-              borderRadius: 22,
-              padding: "26px 34px 16px",
-              opacity: entre(t, 23.0, 23.5, 0, 1),
-            }}
-          >
-            <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 10 }}>Sujets qui influencent la satisfaction</div>
+          <div style={{ marginTop: 26, border: `2px solid ${C.grisClair}`, borderRadius: 22, padding: "26px 34px 16px" }}>
+            <div style={{ fontSize: 28, fontWeight: 800, marginBottom: 10, opacity: entre(t, 24.6, 24.8, 0, 1) }}>Sujets qui influencent la satisfaction</div>
             {SUJETS.map((s, i) => {
-              const a = ressort(t, 23.3 + i * 0.22);
-              const barre = entre(t, 23.4 + i * 0.22, 24.4 + i * 0.22, 0, 1);
+              const a = ressort(t, 24.75 + i * 0.08);
+              const barre = entre(t, 24.8 + i * 0.08, 25.3 + i * 0.08, 0, 1);
               const premier = i === 0;
               return (
                 <div
                   key={s.nom}
                   style={{
-                    position: "relative",
                     display: "flex",
                     alignItems: "center",
                     gap: 30,
@@ -136,8 +167,8 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
                     padding: "0 18px",
                     margin: "0 -18px",
                     borderRadius: 16,
-                    opacity: a * (premier ? 1 : attenue),
-                    transform: `translateX(${(1 - a) * 40}px)`,
+                    opacity: Math.min(1, a * 1.5) * (premier ? 1 : attenue),
+                    transform: `translateX(${(1 - a) * 80}px)`,
                     background: premier ? `rgba(255,243,166,${priorite})` : "transparent",
                     boxShadow: premier ? `inset 0 0 0 ${3 * priorite}px ${C.beurre}` : "none",
                   }}
@@ -147,29 +178,9 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
                     <div style={{ width: `${s.pos * 100 * barre}%`, background: C.vert }} />
                     <div style={{ width: `${(1 - s.pos) * 100 * barre}%`, background: C.rouge }} />
                   </div>
-                  <div
-                    style={{
-                      width: 90,
-                      textAlign: "right",
-                      fontSize: 30,
-                      fontWeight: 800,
-                      color: s.score < 0 ? C.rougeTexte : C.vertTexte,
-                    }}
-                  >
-                    {signe(s.score * barre)}
-                  </div>
-                  <div
-                    style={{
-                      width: 170,
-                      opacity: premier ? priorite : 0,
-                      transform: `scale(${0.7 + 0.3 * priorite})`,
-                    }}
-                  >
-                    {premier && (
-                      <span style={{ background: C.encre, color: C.beurre, borderRadius: 999, padding: "8px 18px", fontSize: 22, fontWeight: 800 }}>
-                        Priorité
-                      </span>
-                    )}
+                  <div style={{ width: 90, textAlign: "right", fontSize: 30, fontWeight: 800, color: s.score < 0 ? C.rougeTexte : C.vertTexte }}>{signe(s.score * barre)}</div>
+                  <div style={{ width: 170, opacity: premier ? priorite : 0, transform: `scale(${0.5 + 0.5 * priorite})` }}>
+                    {premier && <span style={{ background: C.encre, color: C.beurre, borderRadius: 999, padding: "8px 18px", fontSize: 22, fontWeight: 800 }}>Priorité</span>}
                   </div>
                 </div>
               );
@@ -177,7 +188,18 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
           </div>
         </div>
       </Carte>
-      {pluie}
+    </Camera>
+  );
+};
+
+export const Scene3: React.FC<{ t: number }> = ({ t }) => {
+  if (t < 20.05 || t > 30.45) return null;
+  // Entrée : la scène monte depuis le bas.
+  const entree = entre(t, 20.05, 20.6, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
+  return (
+    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateY(${entree * 1100}px)` }}>
+      <Mur t={t} />
+      <Tableau t={t} />
     </AbsoluteFill>
   );
 };
