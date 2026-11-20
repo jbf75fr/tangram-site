@@ -1,5 +1,9 @@
-Voix off de la vidéo d'introduction (46 s, fichier public/voix-off-46s.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3.
+Voix off de la vidéo d'introduction (49 s, fichier public/voix-off.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3.
 « tangram point C X » et « C R M » sont écrits ainsi pour guider la prononciation.
+
+[0,25 à 3 s] Et si vos priorités venaient de vos clients ? (ton curieux, prise à part)
+
+Les temps ci-dessous sont en temps « sans l'accueil » : ajouter 3 s (DECALAGE dans src/Introduction.tsx).
 
 [0,5 à 7 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram point C X les récupère automatiquement.
 
