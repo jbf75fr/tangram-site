@@ -44,18 +44,10 @@ const Ligne: React.FC<{ t: number; mots: { mot: string; t: number; accent?: bool
 
 export const Scene0: React.FC<{ t: number }> = ({ t }) => {
   if (t > 3.35) return null;
-  // Sortie : on plonge vers la scène suivante, une fois la question posée.
-  const sortie = entre(t, 2.95, 3.3, 0, 1, (n) => n * n);
+  // Sortie : la question file vers le haut, l'enquête arrive par le bas (même geste qu'entre les scènes 2 et 3).
+  const sortie = entre(t, 2.95, 3.3, 0, 1, (n) => n * n * n);
   return (
-    <AbsoluteFill
-      style={{
-        background: C.fond,
-        fontFamily: POLICE,
-        opacity: 1 - sortie,
-        transform: `scale(${1 + sortie * 1.5})`,
-        transformOrigin: "960px 540px",
-      }}
-    >
+    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, transform: `translateY(${-sortie * 1100}px)` }}>
       <svg width={TAILLE} height={TAILLE} viewBox="-1 -1 34 34" style={{ position: "absolute", left: 960 - TAILLE / 2, top: 250, overflow: "visible" }}>
         {PIECES_LOGO.map((p, i) => {
           const a = ressort(t, 0.02 + i * 0.05, 13);

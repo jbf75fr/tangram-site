@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Audio, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { C, FPS } from "./commun";
+import { C, FPS, entre } from "./commun";
 import { Scene0 } from "./scenes/Scene0";
 import { Scene1 } from "./scenes/Scene1";
 import { Scene2 } from "./scenes/Scene2";
@@ -37,6 +37,7 @@ const volumeMusique = (f: number) => {
 const BRUITS_ACCUEIL: [number, string, number][] = [
   [0.05, "whoosh", 0.3],
   [2.0, "pop", 0.35],
+  [2.9, "whoosh", 0.45],
 ];
 const BRUITS: [number, string, number][] = [
   [0.35, "clic", 0.5],
@@ -76,7 +77,11 @@ export const Introduction: React.FC = () => {
   const s = t - DECALAGE;
   return (
     <AbsoluteFill style={{ background: C.fond }}>
-      {s > -0.4 && <Scene1 t={s} />}
+      {s > -0.1 && (
+        <AbsoluteFill style={{ transform: `translateY(${entre(t, 2.95, 3.3, 1, 0, (n) => 1 - Math.pow(1 - n, 3)) * 1100}px)` }}>
+          <Scene1 t={s} />
+        </AbsoluteFill>
+      )}
       <Scene2 t={s} />
       <Scene3 t={s} />
       <Scene4 t={s} />
