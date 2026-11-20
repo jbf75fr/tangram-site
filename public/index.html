@@ -174,11 +174,14 @@ section[id]{scroll-margin-top:96px}
 /* Menu Secteurs : entree Autre secteur */
 .menu-sect-panneau .menu-sect-autre{grid-column:1/-1;margin-top:4px;border-top:1px solid #e5e4ee;border-radius:0 0 10px 10px;color:#3a0ca3;font-weight:600}
 .etapes3>div{flex:1 1 260px !important}@media (min-width: 1000px){.etapes3{flex-wrap:nowrap !important}.etapes3>div{flex:1 1 0 !important}}
-/* Vidéo de l'accueil : sur téléphone, l'écran de fin ne garde que les boutons. */
+/* Vidéo de l'accueil : toujours entière à l'écran sous l'en-tête ; sur téléphone, l'écran de fin ne garde que les boutons. */
+#video{scroll-margin-top:88px}
+#video [hidden]{display:none !important}
+.video-cadre{max-width:calc((100vh - 190px) * 16 / 9)}
 @media (max-width: 640px){.video-fin-phrase{display:none}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://tangram.cx/#organisation","name":"tangram.cx","url":"https://tangram.cx/","logo":"https://tangram.cx/icon-512.png","email":"contact@tangram.cx","description":"Logiciel français d'analyse par IA des commentaires libres d'enquêtes de satisfaction (questions ouvertes), d'avis et de réclamations.","areaServed":"FR","knowsLanguage":"fr","sameAs":["https://www.linkedin.com/company/tangram-cx/"],"contactPoint":{"@type":"ContactPoint","contactType":"sales","email":"contact@tangram.cx","availableLanguage":["fr","en"]}},{"@type":"WebSite","@id":"https://tangram.cx/#site","name":"tangram.cx","url":"https://tangram.cx/","inLanguage":"fr","publisher":{"@id":"https://tangram.cx/#organisation"}},{"@type":"SoftwareApplication","@id":"https://tangram.cx/#logiciel","name":"tangram.cx","url":"https://tangram.cx/","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Analyse par IA des commentaires d'enquêtes de satisfaction, d'avis en ligne et de réclamations : classement par thème, tonalité et émotion, croisements, personas, risque de départ, plan d'action et alertes.","inLanguage":"fr","publisher":{"@id":"https://tangram.cx/#organisation"},"featureList":["Collecte automatique des réponses depuis vos outils d'enquête et votre CRM","Classement des commentaires par thème, sous-thème, tonalité et émotion","Score net par sujet et suivi dans le temps","Croisement des sujets avec vos données (région, canal, profil)","Personas et repérage des clients sur le départ","Repérage et regroupement des suggestions des clients","Idées d'actions et plan d'action mesurable","Alertes par e-mail selon vos propres seuils","Données personnelles masquées avant analyse, hébergement dans l'Union européenne"],"offers":[{"@type":"Offer","name":"Essai gratuit","price":"0","priceCurrency":"EUR","description":"Jusqu'à 500 commentaires, après un premier échange."},{"@type":"Offer","name":"Abonnement annuel","price":"2900","priceCurrency":"EUR","priceSpecification":{"@type":"UnitPriceSpecification","price":"2900","priceCurrency":"EUR","unitCode":"ANN","valueAddedTaxIncluded":false},"description":"À partir de 2 900 € HT par an, selon le volume de commentaires."},{"@type":"Offer","name":"Abonnement mensuel","price":"270","priceCurrency":"EUR","priceSpecification":{"@type":"UnitPriceSpecification","price":"270","priceCurrency":"EUR","unitCode":"MON","valueAddedTaxIncluded":false},"description":"À partir de 270 € HT par mois, sans engagement."}]}]}</script>
-<script src="/js/site.js?v=24542d656f" defer></script>
+<script src="/js/site.js?v=0833c7b2ae" defer></script>
 </head>
 <body>
 <div id="racine" style="background: #f3f1fa; color: #1e1033; font-family: Figtree, ui-sans-serif, system-ui, sans-serif; font-size: 17px; line-height: 1.6;">
@@ -216,7 +219,7 @@ section[id]{scroll-margin-top:96px}
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px;">
 <a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
 <a href="/fonctionnalites" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
-<a href="#video" style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#1e1033"></circle><polygon points="9,7 15,11 9,15" fill="#ffe45c"></polygon></svg>Voir la vidéo (46 s)</a>
+<a href="#video" style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#1e1033"></circle><polygon points="9,7 15,11 9,15" fill="#ffe45c"></polygon></svg>Voir la vidéo (49 s)</a>
 </div>
 </div>
 <div class="v2-compo" style="flex: 1.3 1 520px; min-width: 0;">
@@ -228,28 +231,30 @@ section[id]{scroll-margin-top:96px}
 </div>
 </section>
 
-<!-- Vidéo de présentation : démarre sans le son quand elle est à moitié visible (sous-titres incrustés), sauf si l'appareil demande moins d'animations -->
+<!-- Vidéo de présentation : aperçu muet lancé quand elle est à moitié visible (sauf si l'appareil demande moins d'animations) ; un clic sur l'image la relance avec le son, puis la met en pause ou la reprend -->
 <section id="video" aria-labelledby="titre-video" style="padding: 0 24px 104px;">
-<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
-<h2 id="titre-video" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.015em;">tangram.cx en 46 secondes</h2>
-<div style="position: relative; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #f3f1fa; box-shadow: 0 24px 60px rgba(30, 16, 51, 0.12), 0 4px 14px rgba(30, 16, 51, 0.06);">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+<h2 id="titre-video" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.015em;">tangram.cx en moins d'une minute</h2>
+<div class="video-cadre" style="position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 0 auto; border-radius: 24px; overflow: hidden; background: #f3f1fa; box-shadow: 0 24px 60px rgba(30, 16, 51, 0.12), 0 4px 14px rgba(30, 16, 51, 0.06);">
 <video data-video="" src="/video/introduction.mp4" poster="/video/affiche.jpg" muted playsinline preload="metadata" aria-label="Vidéo de présentation de tangram.cx" style="display: block; width: 100%; height: 100%; object-fit: cover;"><track kind="subtitles" src="/video/sous-titres.vtt" srclang="fr" label="Français"></track></video>
-<div data-video-fin="" hidden>
-<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; background: rgba(243, 241, 250, 0.94); text-align: center;">
+<button type="button" aria-label="Lire la vidéo avec le son" data-video-zone="" style="position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer;">
+<span data-video-lecture="" aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; background: rgba(30, 16, 51, 0.82); display: flex; align-items: center; justify-content: center;"><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="14,8 33,20 14,32" fill="#ffe45c"></polygon></svg></span>
+<span data-video-astuce="" hidden aria-hidden="true" style="position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(30, 16, 51, 0.82); color: #ffffff; font-family: Figtree, sans-serif; font-size: 15px; font-weight: 600;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg>Cliquer pour écouter</span>
+</button>
+<div style="position: absolute; right: 12px; bottom: 12px; display: flex; gap: 8px;">
+<button type="button" data-video-son="" aria-label="Activer le son" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: rgba(30, 16, 51, 0.82); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<span data-video-icone-son="" hidden style="display: flex;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg></span>
+<span data-video-icone-muet="" style="display: flex;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg></span>
+</button>
+<button type="button" data-video-st="" aria-label="Sous-titres complets" aria-pressed="false" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: rgba(30, 16, 51, 0.82); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer;"><span aria-hidden="true" style="padding: 1px 5px; border: 2px solid #ffffff; border-radius: 5px; font-family: Figtree, sans-serif; font-size: 13px; font-weight: 800; line-height: 1.2;">CC</span></button>
+</div>
+<div data-video-fin="" hidden style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; background: rgba(243, 241, 250, 0.94); text-align: center;">
 <p class="video-fin-phrase" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(24px, 3vw, 40px); line-height: 1.15; letter-spacing: -0.015em;">Vos clients vous parlent. Passez à l'action.</p>
 <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 24px;">
 <a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
 <a href="/fonctionnalites" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
 <button type="button" data-video-revoir="" style="min-height: 44px; padding: 0 18px; border: 2px solid #1e1033; border-radius: 999px; background: transparent; color: #1e1033; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Revoir la vidéo</button>
 </div>
-</div>
-</div>
-</div>
-<div data-video-commandes="">
-<div style="display: flex; flex-wrap: wrap; gap: 8px;">
-<button type="button" data-video-son="" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Activer le son</button>
-<button type="button" data-video-lecture="" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Lecture</button>
-<button type="button" data-video-st="" aria-pressed="false" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Sous-titres complets</button>
 </div>
 </div>
 </div>

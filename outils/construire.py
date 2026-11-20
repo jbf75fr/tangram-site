@@ -122,28 +122,34 @@ def video(corps):
     """Vidéo de l'accueil : le lecteur de la maquette devient du HTML simple, piloté par site.js."""
     if 'ref="{{poserVideo}}"' not in corps:
         return corps
+    debut = corps.index('<section id="video"')
+    fin = corps.index('</section>', debut)
+    bloc = corps[debut:fin]
     remplacements = [
         ('ref="{{poserVideo}}" src="video/introduction.mp4" poster="video/affiche.jpg" playsInline="{{ true }}"',
          'data-video="" src="/video/introduction.mp4" poster="/video/affiche.jpg" muted playsinline'),
         (' onEnded="{{finVideo}}" onPlay="{{surLecture}}" onPause="{{surPause}}"', ''),
         ('src="video/sous-titres.vtt"', 'src="/video/sous-titres.vtt"'),
-        ('<sc-if value="{{pasFini}}" hint-placeholder-val="{{ true }}">', '<div data-video-commandes="">'),
-        ('<sc-if value="{{fini}}" hint-placeholder-val="{{ false }}">', '<div data-video-fin="" hidden>'),
-        ('onClick="{{basculerSon}}"', 'data-video-son=""'),
-        ('{{libelleSon}}', 'Activer le son'),
-        ('onClick="{{basculerLecture}}"', 'data-video-lecture=""'),
-        ('{{libelleLecture}}', 'Lecture'),
-        ('onClick="{{basculerSousTitres}}" aria-pressed="{{sousTitres}}"', 'data-video-st="" aria-pressed="false"'),
+        ('aria-label="{{libelleZone}}" onClick="{{cliquerVideo}}"', 'aria-label="Lire la vidéo avec le son" data-video-zone=""'),
+        ('onClick="{{basculerSon}}" aria-label="{{libelleSon}}"', 'data-video-son="" aria-label="Activer le son"'),
+        ('onClick="{{basculerSousTitres}}" aria-label="Sous-titres complets" aria-pressed="{{sousTitres}}"',
+         'data-video-st="" aria-label="Sous-titres complets" aria-pressed="false"'),
         ('onClick="{{revoir}}"', 'data-video-revoir=""'),
     ]
     for avant, apres in remplacements:
-        if avant not in corps:
+        if avant not in bloc:
             raise SystemExit('Vidéo : élément de la maquette introuvable : ' + avant)
-        corps = corps.replace(avant, apres)
-    debut = corps.index('<section id="video"')
-    fin = corps.index('</section>', debut)
-    corps = corps[:debut] + corps[debut:fin].replace('</sc-if>', '</div>') + corps[fin:]
-    return corps
+        bloc = bloc.replace(avant, apres)
+    # Chaque bloc conditionnel devient un élément repéré par site.js, caché ou non au départ.
+    conditions = {'montrerLecture': ('lecture', False), 'montrerAstuce': ('astuce', True),
+                  'son': ('icone-son', True), 'pasSon': ('icone-muet', False), 'fini': ('fin', True)}
+    for nom, (repere, cache) in conditions.items():
+        motif = re.compile(r'<sc-if value="\{\{' + nom + r'\}\}"[^>]*>\s*<(\w+)')
+        if not motif.search(bloc):
+            raise SystemExit('Vidéo : condition de la maquette introuvable : ' + nom)
+        bloc = motif.sub(lambda m: f'<{m.group(1)} data-video-{repere}=""' + (' hidden' if cache else ''), bloc, count=1)
+    bloc = re.sub(r'\s*</sc-if>', '', bloc)
+    return corps[:debut] + bloc + corps[fin:]
 
 
 def formulaire(corps):

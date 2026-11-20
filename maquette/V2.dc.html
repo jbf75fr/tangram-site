@@ -162,7 +162,10 @@ section[id]{scroll-margin-top:96px}
 /* Menu Secteurs : entree Autre secteur */
 .menu-sect-panneau .menu-sect-autre{grid-column:1/-1;margin-top:4px;border-top:1px solid #e5e4ee;border-radius:0 0 10px 10px;color:#3a0ca3;font-weight:600}
 .etapes3>div{flex:1 1 260px !important}@media (min-width: 1000px){.etapes3{flex-wrap:nowrap !important}.etapes3>div{flex:1 1 0 !important}}
-/* Vidéo de l'accueil : sur téléphone, l'écran de fin ne garde que les boutons. */
+/* Vidéo de l'accueil : toujours entière à l'écran sous l'en-tête ; sur téléphone, l'écran de fin ne garde que les boutons. */
+#video{scroll-margin-top:88px}
+#video [hidden]{display:none !important}
+.video-cadre{max-width:calc((100vh - 190px) * 16 / 9)}
 @media (max-width: 640px){.video-fin-phrase{display:none}}
 </style>
 </helmet>
@@ -201,7 +204,7 @@ section[id]{scroll-margin-top:96px}
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px;">
 <a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
 <a href="Solution.dc.html" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
-<a href="#video" style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#1e1033"></circle><polygon points="9,7 15,11 9,15" fill="#ffe45c"></polygon></svg>Voir la vidéo (46 s)</a>
+<a href="#video" style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#1e1033"></circle><polygon points="9,7 15,11 9,15" fill="#ffe45c"></polygon></svg>Voir la vidéo (49 s)</a>
 </div>
 </div>
 <div class="v2-compo" style="flex: 1.3 1 520px; min-width: 0;">
@@ -213,12 +216,31 @@ section[id]{scroll-margin-top:96px}
 </div>
 </section>
 
-<!-- Vidéo de présentation : démarre sans le son quand elle est à moitié visible (sous-titres incrustés), sauf si l'appareil demande moins d'animations -->
+<!-- Vidéo de présentation : aperçu muet lancé quand elle est à moitié visible (sauf si l'appareil demande moins d'animations) ; un clic sur l'image la relance avec le son, puis la met en pause ou la reprend -->
 <section id="video" aria-labelledby="titre-video" style="padding: 0 24px 104px;">
-<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
-<h2 id="titre-video" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.015em;">tangram.cx en 46 secondes</h2>
-<div style="position: relative; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #f3f1fa; box-shadow: 0 24px 60px rgba(30, 16, 51, 0.12), 0 4px 14px rgba(30, 16, 51, 0.06);">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+<h2 id="titre-video" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.015em;">tangram.cx en moins d'une minute</h2>
+<div class="video-cadre" style="position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 0 auto; border-radius: 24px; overflow: hidden; background: #f3f1fa; box-shadow: 0 24px 60px rgba(30, 16, 51, 0.12), 0 4px 14px rgba(30, 16, 51, 0.06);">
 <video ref="{{poserVideo}}" src="video/introduction.mp4" poster="video/affiche.jpg" playsInline="{{ true }}" preload="metadata" aria-label="Vidéo de présentation de tangram.cx" onEnded="{{finVideo}}" onPlay="{{surLecture}}" onPause="{{surPause}}" style="display: block; width: 100%; height: 100%; object-fit: cover;"><track kind="subtitles" src="video/sous-titres.vtt" srclang="fr" label="Français"></track></video>
+<button type="button" aria-label="{{libelleZone}}" onClick="{{cliquerVideo}}" style="position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer;">
+<sc-if value="{{montrerLecture}}" hint-placeholder-val="{{ false }}">
+<span aria-hidden="true" style="position: absolute; left: 50%; top: 50%; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; background: rgba(30, 16, 51, 0.82); display: flex; align-items: center; justify-content: center;"><svg width="40" height="40" viewBox="0 0 40 40"><polygon points="14,8 33,20 14,32" fill="#ffe45c"></polygon></svg></span>
+</sc-if>
+<sc-if value="{{montrerAstuce}}" hint-placeholder-val="{{ true }}">
+<span aria-hidden="true" style="position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px 0 12px; border-radius: 999px; background: rgba(30, 16, 51, 0.82); color: #ffffff; font-family: Figtree, sans-serif; font-size: 15px; font-weight: 600;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg>Cliquer pour écouter</span>
+</sc-if>
+</button>
+<div style="position: absolute; right: 12px; bottom: 12px; display: flex; gap: 8px;">
+<button type="button" onClick="{{basculerSon}}" aria-label="{{libelleSon}}" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: rgba(30, 16, 51, 0.82); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+<sc-if value="{{son}}" hint-placeholder-val="{{ false }}">
+<span style="display: flex;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg></span>
+</sc-if>
+<sc-if value="{{pasSon}}" hint-placeholder-val="{{ true }}">
+<span style="display: flex;"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#ffffff"></path><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round"></path></svg></span>
+</sc-if>
+</button>
+<button type="button" onClick="{{basculerSousTitres}}" aria-label="Sous-titres complets" aria-pressed="{{sousTitres}}" style="width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: rgba(30, 16, 51, 0.82); color: #ffffff; display: flex; align-items: center; justify-content: center; cursor: pointer;"><span aria-hidden="true" style="padding: 1px 5px; border: 2px solid #ffffff; border-radius: 5px; font-family: Figtree, sans-serif; font-size: 13px; font-weight: 800; line-height: 1.2;">CC</span></button>
+</div>
 <sc-if value="{{fini}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; background: rgba(243, 241, 250, 0.94); text-align: center;">
 <p class="video-fin-phrase" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(24px, 3vw, 40px); line-height: 1.15; letter-spacing: -0.015em;">Vos clients vous parlent. Passez à l'action.</p>
@@ -230,13 +252,6 @@ section[id]{scroll-margin-top:96px}
 </div>
 </sc-if>
 </div>
-<sc-if value="{{pasFini}}" hint-placeholder-val="{{ true }}">
-<div style="display: flex; flex-wrap: wrap; gap: 8px;">
-<button type="button" onClick="{{basculerSon}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{libelleSon}}</button>
-<button type="button" onClick="{{basculerLecture}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{libelleLecture}}</button>
-<button type="button" onClick="{{basculerSousTitres}}" aria-pressed="{{sousTitres}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Sous-titres complets</button>
-</div>
-</sc-if>
 </div>
 </section>
 
@@ -375,25 +390,30 @@ section[id]{scroll-margin-top:96px}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6300}}'>
 class Component extends DCLogic {
 poserRacine = (el) => { this.racine = el; };
-state = { son: false, enLecture: false, fini: false, sousTitres: false, pauseVoulue: false };
-// Vidéo : toujours muette au départ, seul un clic remet le son.
+state = { son: false, enLecture: false, fini: false, sousTitres: false, apercu: true, pauseVoulue: false };
+// Vidéo : aperçu muet au départ ; le son ne revient que sur un clic, et la vidéo repart alors du début.
 poserVideo = (el) => { this.video = el; if (el) el.muted = !this.state.son; };
 lancer = () => { const v = this.video; if (v) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } };
+depuisLeDebutAvecSon = () => {
+const v = this.video; if (!v) return;
+v.muted = false; v.currentTime = 0; this.setState({ son: true, apercu: false, fini: false, pauseVoulue: false }); this.lancer();
+};
+cliquerVideo = () => {
+const v = this.video; if (!v) return;
+if (this.state.apercu || this.state.fini) { this.depuisLeDebutAvecSon(); return; }
+if (v.paused) { this.setState({ pauseVoulue: false }); this.lancer(); } else { this.setState({ pauseVoulue: true }); v.pause(); }
+};
 basculerSon = () => {
 const v = this.video; if (!v) return;
 if (this.state.son) { v.muted = true; this.setState({ son: false }); return; }
-// Avec le son, on repart du début pour entendre toute la voix.
-v.muted = false; v.currentTime = 0; this.setState({ son: true, fini: false, pauseVoulue: false }); this.lancer();
-};
-basculerLecture = () => {
-const v = this.video; if (!v) return;
-if (v.paused) { this.setState({ pauseVoulue: false }); this.lancer(); } else { this.setState({ pauseVoulue: true }); v.pause(); }
+if (this.state.apercu) { this.depuisLeDebutAvecSon(); return; }
+v.muted = false; this.setState({ son: true });
 };
 basculerSousTitres = () => {
 const v = this.video; if (!v || !v.textTracks || !v.textTracks[0]) return;
 const actif = !this.state.sousTitres; v.textTracks[0].mode = actif ? 'showing' : 'hidden'; this.setState({ sousTitres: actif });
 };
-revoir = () => { const v = this.video; if (!v) return; v.currentTime = 0; this.setState({ fini: false, pauseVoulue: false }); this.lancer(); };
+revoir = () => { this.depuisLeDebutAvecSon(); };
 finVideo = () => { this.setState({ fini: true, enLecture: false }); };
 surLecture = () => { this.setState({ enLecture: true }); };
 surPause = () => { this.setState({ enLecture: false }); };
@@ -455,18 +475,21 @@ const s = this.state;
 return {
 poserRacine: this.poserRacine,
 poserVideo: this.poserVideo,
+cliquerVideo: this.cliquerVideo,
 basculerSon: this.basculerSon,
-basculerLecture: this.basculerLecture,
 basculerSousTitres: this.basculerSousTitres,
 revoir: this.revoir,
 finVideo: this.finVideo,
 surLecture: this.surLecture,
 surPause: this.surPause,
+libelleZone: s.apercu ? 'Lire la vidéo avec le son' : s.enLecture ? 'Mettre la vidéo en pause' : 'Reprendre la vidéo',
 libelleSon: s.son ? 'Couper le son' : 'Activer le son',
-libelleLecture: s.enLecture ? 'Pause' : 'Lecture',
+son: s.son,
+pasSon: !s.son,
 sousTitres: s.sousTitres,
+montrerLecture: !s.enLecture && !s.fini,
+montrerAstuce: s.apercu && s.enLecture,
 fini: s.fini,
-pasFini: !s.fini,
 };
 }
 }

@@ -94,37 +94,47 @@ dire("L'envoi n'a pas abouti. Écrivez-nous à contact@tangram.cx ou choisissez 
 });
 }
 
-// Video de l'accueil : muette au depart (sous-titres incrustes), elle se lance quand
-// elle est a moitie visible, sauf si l'appareil demande moins d'animations.
-// Seul un clic remet le son, et la video repart alors du debut.
+// Video de l'accueil : apercu muet lance quand elle est a moitie visible, sauf si
+// l'appareil demande moins d'animations. Un clic sur l'image la relance du debut avec
+// le son, puis la met en pause ou la reprend. Son et sous-titres : boutons sur l'image.
 function video() {
 var v = document.querySelector('video[data-video]');
 if (!v) return;
 v.muted = true;
-var commandes = document.querySelector('[data-video-commandes]');
-var fin = document.querySelector('[data-video-fin]');
-var son = document.querySelector('[data-video-son]');
-var lecture = document.querySelector('[data-video-lecture]');
-var st = document.querySelector('[data-video-st]');
-var revoir = document.querySelector('[data-video-revoir]');
-var pauseVoulue = false;
-var finie = false;
-var lancer = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
-var montrerFin = function (oui) {
-finie = oui;
-if (fin) fin.hidden = !oui;
-if (commandes) commandes.hidden = oui;
+var el = function (nom) { return document.querySelector('[data-video-' + nom + ']'); };
+var zone = el('zone'), lecture = el('lecture'), astuce = el('astuce'), fin = el('fin');
+var son = el('son'), iconeSon = el('icone-son'), iconeMuet = el('icone-muet');
+var st = el('st'), revoir = el('revoir');
+var apercu = true, finie = false, pauseVoulue = false;
+var montrer = function (n, oui) { if (n) n.hidden = !oui; };
+var majSon = function () {
+montrer(iconeSon, !v.muted); montrer(iconeMuet, v.muted);
+if (son) son.setAttribute('aria-label', v.muted ? 'Activer le son' : 'Couper le son');
 };
-v.addEventListener('play', function () { if (lecture) lecture.textContent = 'Pause'; });
-v.addEventListener('pause', function () { if (lecture) lecture.textContent = 'Lecture'; });
-v.addEventListener('ended', function () { montrerFin(true); if (revoir) revoir.focus(); });
-if (son) son.addEventListener('click', function () {
-if (!v.muted) { v.muted = true; son.textContent = 'Activer le son'; return; }
-v.muted = false; son.textContent = 'Couper le son';
-v.currentTime = 0; pauseVoulue = false; montrerFin(false); lancer();
-});
-if (lecture) lecture.addEventListener('click', function () {
+var majEtat = function () {
+var enLecture = !v.paused && !v.ended;
+montrer(lecture, !enLecture && !finie);
+montrer(astuce, apercu && enLecture);
+montrer(fin, finie);
+if (zone) zone.setAttribute('aria-label', apercu || finie ? 'Lire la vidéo avec le son' : enLecture ? 'Mettre la vidéo en pause' : 'Reprendre la vidéo');
+};
+var lancer = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+var avecSon = function () {
+v.muted = false; v.currentTime = 0;
+apercu = false; finie = false; pauseVoulue = false;
+majSon(); majEtat(); lancer();
+};
+v.addEventListener('play', majEtat);
+v.addEventListener('pause', majEtat);
+v.addEventListener('ended', function () { finie = true; majEtat(); if (revoir) revoir.focus(); });
+if (zone) zone.addEventListener('click', function () {
+if (apercu || finie) { avecSon(); return; }
 if (v.paused) { pauseVoulue = false; lancer(); } else { pauseVoulue = true; v.pause(); }
+});
+if (son) son.addEventListener('click', function () {
+if (!v.muted) { v.muted = true; majSon(); return; }
+if (apercu) { avecSon(); return; }
+v.muted = false; majSon();
 });
 if (st) st.addEventListener('click', function () {
 var piste = v.textTracks && v.textTracks[0];
@@ -133,10 +143,8 @@ var actif = st.getAttribute('aria-pressed') !== 'true';
 piste.mode = actif ? 'showing' : 'hidden';
 st.setAttribute('aria-pressed', actif ? 'true' : 'false');
 });
-if (revoir) revoir.addEventListener('click', function () {
-v.currentTime = 0; pauseVoulue = false; montrerFin(false); lancer();
-if (lecture) lecture.focus();
-});
+if (revoir) revoir.addEventListener('click', function () { avecSon(); if (zone) zone.focus(); });
+majSon(); majEtat();
 var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (reduit || !('IntersectionObserver' in window)) return;
 new IntersectionObserver(function (entrees) {
