@@ -1,5 +1,5 @@
 // Site tangram.cx : animations au defilement, comparateur de la page
-// Fonctionnalites et envoi du formulaire de demande d'essai.
+// Fonctionnalites, envoi du formulaire de demande d'essai et video de l'accueil.
 // Fichier ecrit a la main a partir de la maquette (outils/construire.py ne le modifie pas).
 (function () {
 'use strict';
@@ -94,6 +94,59 @@ dire("L'envoi n'a pas abouti. Écrivez-nous à contact@tangram.cx ou choisissez 
 });
 }
 
-function demarrer() { animations(); comparateur(); formulaire(); }
+// Video de l'accueil : muette au depart (sous-titres incrustes), elle se lance quand
+// elle est a moitie visible, sauf si l'appareil demande moins d'animations.
+// Seul un clic remet le son, et la video repart alors du debut.
+function video() {
+var v = document.querySelector('video[data-video]');
+if (!v) return;
+v.muted = true;
+var commandes = document.querySelector('[data-video-commandes]');
+var fin = document.querySelector('[data-video-fin]');
+var son = document.querySelector('[data-video-son]');
+var lecture = document.querySelector('[data-video-lecture]');
+var st = document.querySelector('[data-video-st]');
+var revoir = document.querySelector('[data-video-revoir]');
+var pauseVoulue = false;
+var finie = false;
+var lancer = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+var montrerFin = function (oui) {
+finie = oui;
+if (fin) fin.hidden = !oui;
+if (commandes) commandes.hidden = oui;
+};
+v.addEventListener('play', function () { if (lecture) lecture.textContent = 'Pause'; });
+v.addEventListener('pause', function () { if (lecture) lecture.textContent = 'Lecture'; });
+v.addEventListener('ended', function () { montrerFin(true); if (revoir) revoir.focus(); });
+if (son) son.addEventListener('click', function () {
+if (!v.muted) { v.muted = true; son.textContent = 'Activer le son'; return; }
+v.muted = false; son.textContent = 'Couper le son';
+v.currentTime = 0; pauseVoulue = false; montrerFin(false); lancer();
+});
+if (lecture) lecture.addEventListener('click', function () {
+if (v.paused) { pauseVoulue = false; lancer(); } else { pauseVoulue = true; v.pause(); }
+});
+if (st) st.addEventListener('click', function () {
+var piste = v.textTracks && v.textTracks[0];
+if (!piste) return;
+var actif = st.getAttribute('aria-pressed') !== 'true';
+piste.mode = actif ? 'showing' : 'hidden';
+st.setAttribute('aria-pressed', actif ? 'true' : 'false');
+});
+if (revoir) revoir.addEventListener('click', function () {
+v.currentTime = 0; pauseVoulue = false; montrerFin(false); lancer();
+if (lecture) lecture.focus();
+});
+var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduit || !('IntersectionObserver' in window)) return;
+new IntersectionObserver(function (entrees) {
+entrees.forEach(function (e) {
+if (finie || pauseVoulue) return;
+if (e.isIntersecting) lancer(); else v.pause();
+});
+}, { threshold: 0.5 }).observe(v);
+}
+
+function demarrer() { animations(); comparateur(); formulaire(); video(); }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer); else demarrer();
 })();

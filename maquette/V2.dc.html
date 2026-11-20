@@ -162,6 +162,8 @@ section[id]{scroll-margin-top:96px}
 /* Menu Secteurs : entree Autre secteur */
 .menu-sect-panneau .menu-sect-autre{grid-column:1/-1;margin-top:4px;border-top:1px solid #e5e4ee;border-radius:0 0 10px 10px;color:#3a0ca3;font-weight:600}
 .etapes3>div{flex:1 1 260px !important}@media (min-width: 1000px){.etapes3{flex-wrap:nowrap !important}.etapes3>div{flex:1 1 0 !important}}
+/* Vidéo de l'accueil : sur téléphone, l'écran de fin ne garde que les boutons. */
+@media (max-width: 640px){.video-fin-phrase{display:none}}
 </style>
 </helmet>
 <div ref="{{poserRacine}}" style="background: #f3f1fa; color: #1e1033; font-family: Figtree, ui-sans-serif, system-ui, sans-serif; font-size: 17px; line-height: 1.6;">
@@ -199,6 +201,7 @@ section[id]{scroll-margin-top:96px}
 <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 24px;">
 <a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
 <a href="Solution.dc.html" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
+<a href="#video" style="display: inline-flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="11" fill="#1e1033"></circle><polygon points="9,7 15,11 9,15" fill="#ffe45c"></polygon></svg>Voir la vidéo (46 s)</a>
 </div>
 </div>
 <div class="v2-compo" style="flex: 1.3 1 520px; min-width: 0;">
@@ -207,6 +210,33 @@ section[id]{scroll-margin-top:96px}
 <div class="v2-carte v2-c-themes v2-etiquette v2-e2"><p style="margin: 0 0 10px; color: #68607e;">Sujets les plus cités</p><ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px;"><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Accueil et conseil</span><span style="color: #68607e;">78 % / 22 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 78%; background: #2e9e5b;"></span><span style="width: 22%; background: #e5584d;"></span></span></li><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Délais de livraison</span><span style="color: #68607e;">18 % / 82 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 18%; background: #2e9e5b;"></span><span style="width: 82%; background: #e5584d;"></span></span></li><li style="display: flex; flex-direction: column; gap: 4px;"><span style="display: flex; justify-content: space-between; gap: 8px;"><span style="font-weight: 600;">Prix</span><span style="color: #68607e;">41 % / 59 %</span></span><span aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;"><span style="width: 41%; background: #2e9e5b;"></span><span style="width: 59%; background: #e5584d;"></span></span></li></ul></div>
 <div class="v2-carte v2-c-fait v2-etiquette v2-e3" style="background: #fff3a6; border-color: #f5df6e;"><p style="margin: 0; font-weight: 600; color: #3a0ca3;">Fait marquant</p><p style="margin: 4px 0 0;">Les délais de livraison sont deux fois plus cités que le mois dernier.</p></div>
 </div>
+</div>
+</section>
+
+<!-- Vidéo de présentation : démarre sans le son quand elle est à moitié visible (sous-titres incrustés), sauf si l'appareil demande moins d'animations -->
+<section id="video" aria-labelledby="titre-video" style="padding: 0 24px 104px;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+<h2 id="titre-video" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(26px, 2.6vw, 34px); line-height: 1.15; letter-spacing: -0.015em;">tangram.cx en 46 secondes</h2>
+<div style="position: relative; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #f3f1fa; box-shadow: 0 24px 60px rgba(30, 16, 51, 0.12), 0 4px 14px rgba(30, 16, 51, 0.06);">
+<video ref="{{poserVideo}}" src="video/introduction.mp4" poster="video/affiche.jpg" playsInline="{{ true }}" preload="metadata" aria-label="Vidéo de présentation de tangram.cx" onEnded="{{finVideo}}" onPlay="{{surLecture}}" onPause="{{surPause}}" style="display: block; width: 100%; height: 100%; object-fit: cover;"><track kind="subtitles" src="video/sous-titres.vtt" srclang="fr" label="Français"></track></video>
+<sc-if value="{{fini}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 16px; background: rgba(243, 241, 250, 0.94); text-align: center;">
+<p class="video-fin-phrase" style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(24px, 3vw, 40px); line-height: 1.15; letter-spacing: -0.015em;">Vos clients vous parlent. Passez à l'action.</p>
+<div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 24px;">
+<a href="#essai" style="display: inline-flex; align-items: center; min-height: 52px; padding: 0 28px; border-radius: 999px; background: #ffe45c; text-decoration: none; font-size: 16px; font-weight: 600; color: #1e1033;">Essayer gratuitement</a>
+<a href="Solution.dc.html" style="font-size: 16px; font-weight: 600; color: #1e1033; text-underline-offset: 4px;">Découvrir les fonctionnalités</a>
+<button type="button" onClick="{{revoir}}" style="min-height: 44px; padding: 0 18px; border: 2px solid #1e1033; border-radius: 999px; background: transparent; color: #1e1033; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Revoir la vidéo</button>
+</div>
+</div>
+</sc-if>
+</div>
+<sc-if value="{{pasFini}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; gap: 8px;">
+<button type="button" onClick="{{basculerSon}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{libelleSon}}</button>
+<button type="button" onClick="{{basculerLecture}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">{{libelleLecture}}</button>
+<button type="button" onClick="{{basculerSousTitres}}" aria-pressed="{{sousTitres}}" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: #1e1033; color: #ffffff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer;">Sous-titres complets</button>
+</div>
+</sc-if>
 </div>
 </section>
 
@@ -345,7 +375,40 @@ section[id]{scroll-margin-top:96px}
 <script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6300}}'>
 class Component extends DCLogic {
 poserRacine = (el) => { this.racine = el; };
+state = { son: false, enLecture: false, fini: false, sousTitres: false, pauseVoulue: false };
+// Vidéo : toujours muette au départ, seul un clic remet le son.
+poserVideo = (el) => { this.video = el; if (el) el.muted = !this.state.son; };
+lancer = () => { const v = this.video; if (v) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } };
+basculerSon = () => {
+const v = this.video; if (!v) return;
+if (this.state.son) { v.muted = true; this.setState({ son: false }); return; }
+// Avec le son, on repart du début pour entendre toute la voix.
+v.muted = false; v.currentTime = 0; this.setState({ son: true, fini: false, pauseVoulue: false }); this.lancer();
+};
+basculerLecture = () => {
+const v = this.video; if (!v) return;
+if (v.paused) { this.setState({ pauseVoulue: false }); this.lancer(); } else { this.setState({ pauseVoulue: true }); v.pause(); }
+};
+basculerSousTitres = () => {
+const v = this.video; if (!v || !v.textTracks || !v.textTracks[0]) return;
+const actif = !this.state.sousTitres; v.textTracks[0].mode = actif ? 'showing' : 'hidden'; this.setState({ sousTitres: actif });
+};
+revoir = () => { const v = this.video; if (!v) return; v.currentTime = 0; this.setState({ fini: false, pauseVoulue: false }); this.lancer(); };
+finVideo = () => { this.setState({ fini: true, enLecture: false }); };
+surLecture = () => { this.setState({ enLecture: true }); };
+surPause = () => { this.setState({ enLecture: false }); };
 componentDidMount() {
+const video = this.video;
+const reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (video && !reduit && 'IntersectionObserver' in window) {
+this.obsVideo = new IntersectionObserver((entrees) => {
+entrees.forEach((e) => {
+if (this.state.fini || this.state.pauseVoulue) return;
+if (e.isIntersecting) this.lancer(); else video.pause();
+});
+}, { threshold: 0.5 });
+this.obsVideo.observe(video);
+}
 const racine = this.racine;
 if (!racine) return;
 racine.classList.add('anim-pret');
@@ -386,9 +449,25 @@ premier = false;
 }, { rootMargin: '0px 0px -12% 0px' });
 scenes.filter((s) => !s.parentElement.closest('[data-scene]')).forEach((scene) => this.observateur.observe(scene));
 }
-componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); }
+componentWillUnmount() { if (this.observateur) this.observateur.disconnect(); if (this.obsVideo) this.obsVideo.disconnect(); }
 renderVals() {
-return { poserRacine: this.poserRacine,};
+const s = this.state;
+return {
+poserRacine: this.poserRacine,
+poserVideo: this.poserVideo,
+basculerSon: this.basculerSon,
+basculerLecture: this.basculerLecture,
+basculerSousTitres: this.basculerSousTitres,
+revoir: this.revoir,
+finVideo: this.finVideo,
+surLecture: this.surLecture,
+surPause: this.surPause,
+libelleSon: s.son ? 'Couper le son' : 'Activer le son',
+libelleLecture: s.enLecture ? 'Pause' : 'Lecture',
+sousTitres: s.sousTitres,
+fini: s.fini,
+pasFini: !s.fini,
+};
 }
 }
 </script>

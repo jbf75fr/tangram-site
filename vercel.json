@@ -66,6 +66,24 @@
       ]
     },
     {
+      "source": "/video/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/video/(.*).vtt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/vtt; charset=utf-8"
+        }
+      ]
+    },
+    {
       "source": "/js/(.*)",
       "headers": [
         {
