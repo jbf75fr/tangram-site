@@ -3,12 +3,14 @@ La voix dit « tangram » ; à l'écran et dans les sous-titres, on garde « tan
 Vérifier chaque « tangram » en faisant transcrire par ElevenLabs un court extrait autour du mot : sur une phrase entière, la transcription corrige « tendram », « tamgram » ou « tongr ». « sudgestion » n'est pas détectable : écouter.
 Pour garder la même voix, générer d'un seul tenant tout un paragraphe et la phrase qui le suit ; comparer hauteur, timbre et débit au reste (une prise trop « brillante » sonne comme une autre personne).
 
+Toute la voix vient d'une seule prise (voix/… prise 1 du 21/11/2026, texte complet généré d'un seul tenant) : c'est la seule façon d'avoir exactement la même voix d'une scène à l'autre. Les petites variations de hauteur qui restent viennent des balises de ton ([curious], [warmly]…).
+
 Temps réels (vidéo de 57 s) :
-[0,25 à 2,6 s] Et si vos priorités venaient de vos clients ?
-[3,6 à 9,7 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram les récupère automatiquement.
-[13,4 à 21,3 s] Chaque commentaire est lu en entier. Tangram repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
-[24 à 31 s] Des milliers de retours deviennent alors des indicateurs fiables. Vous voyez tout de suite les sujets qui influencent la satisfaction de vos clients.
-[33,6 à 43,3 s] Vous lancez vos actions, puis vous mesurez leur effet dans les commentaires suivants. Et toutes vos équipes avancent sur les mêmes constats, accompagnées par nos experts, de l'analyse jusqu'à l'action.
-[45,2 à 54,1 s] Comme au tangram, chaque retour trouve sa place, et l'ensemble dessine vos priorités. Vos clients vous parlent : essayez tangram gratuitement et passez à l'action.
+[0,35 à 2,4 s] Et si vos priorités venaient de vos clients ?
+[3,6 à 10,5 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram les récupère automatiquement.
+[13,4 à 21,4 s] Chaque commentaire est lu en entier. Tangram repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
+[24 à 31,4 s] Des milliers de retours deviennent alors des indicateurs fiables. Vous voyez tout de suite les sujets qui influencent la satisfaction de vos clients.
+[33,6 à 44,6 s] Vous lancez vos actions, puis vous mesurez leur effet dans les commentaires suivants. Et toutes vos équipes avancent sur les mêmes constats, accompagnées par nos experts, de l'analyse jusqu'à l'action.
+[45,2 à 54,8 s] Comme au tangram, chaque retour trouve sa place, et l'ensemble dessine vos priorités. Vos clients vous parlent : essayez tangram gratuitement et passez à l'action.
 
 Dans le code, les scènes 1 à 5 sont en temps « sans l'ouverture » (DECALAGE = 3 s) et la scène 5 est encore décalée de FIN_DECALAGE = 4 s (src/Introduction.tsx).
