@@ -16,7 +16,7 @@ export const SOUS_TITRES: { debut: number; fin: number; texte: string }[] = [
   { debut: 34.5, fin: 37.2, texte: "Vos équipes partagent les mêmes constats," },
   { debut: 37.25, fin: 40.5, texte: "accompagnées par nos experts, de l'analyse à l'action." },
   { debut: 42.2, fin: 45.1, texte: "Comme au tangram, chaque retour trouve sa place," },
-  { debut: 45.15, fin: 47.3, texte: "et l'ensemble dessine vos priorités." },
+  { debut: 44.7, fin: 46.5, texte: "et l'ensemble dessine vos priorités." },
 ];
 
 export const SousTitres: React.FC<{ t: number }> = ({ t }) => {

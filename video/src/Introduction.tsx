@@ -72,7 +72,7 @@ const BRUITS: [number, string, number][] = [
   [35.5, "pop", 0.35],
   [37.45, "whoosh", 0.45],
   [POSES[POSES.length - 1], "pop", 0.35],
-  [46.52, "pop", 0.4],
+  [44.62, "pop", 0.4],
   [47.8, "clic", 0.55],
 ];
 
