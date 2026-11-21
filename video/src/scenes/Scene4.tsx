@@ -4,12 +4,12 @@ import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe
 import { POUSSEE } from "./Scene3";
 
 // Scène 4 (30 à 42 s) : l'équipe agit, mesure l'effet, partage, et l'expert tangram.cx l'accompagne.
-export const EXPERT = 37.3;
+export const EXPERT = 38.25;
 const EXPERT_Y = 945;
 const EQUIPES = [
-  { nom: "Direction", initiales: "DG", couleur: C.iris, debut: 34.8 },
-  { nom: "Service client", initiales: "SC", couleur: C.vert, debut: 35.15 },
-  { nom: "Logistique", initiales: "LO", couleur: C.encre, debut: 35.5 },
+  { nom: "Direction", initiales: "DG", couleur: C.iris, debut: 35.6 },
+  { nom: "Service client", initiales: "SC", couleur: C.vert, debut: 35.95 },
+  { nom: "Logistique", initiales: "LO", couleur: C.encre, debut: 36.3 },
 ];
 
 const POINTS = [
@@ -35,33 +35,33 @@ const cheminLisse = (l: number, h: number) => {
 const CLES: Cle[] = [
   [30.0, 610, 540, 1.3],
   [30.8, 610, 540, 1.3],
-  [31.9, 560, 700, 1.4],
-  [32.2, 560, 700, 1.42],
+  [32.0, 560, 700, 1.4],
+  [32.3, 560, 700, 1.42],
   [33.2, 610, 600, 1.45],
   [34.3, 620, 520, 1.42],
   [34.8, 1150, 540, 1.0],
-  [37.3, 1150, 560, 0.98],
-  [37.85, 1180, 600, 1.0],
+  [38.2, 1150, 560, 0.98],
+  [38.75, 1180, 600, 1.0],
   [41.45, 1170, 590, 0.98],
   [41.78, 960, 540, 0.05],
 ];
 
 export const Scene4: React.FC<{ t: number }> = ({ t }) => {
   if (t < 29.95 || t > 41.78) return null;
-  const clic = 32.2;
+  const clic = 32.3;
   const mesure = entre(t, clic + 0.1, clic + 0.8, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const apres = -34 + 46 * mesure;
-  const ecart = ressort(t, 33.05, 10);
+  const ecart = ressort(t, 33.15, 10);
   const rapport = ressort(t, 34.5, 12);
   // Le curseur arrive sur le bouton puis s'efface.
-  const vers = entre(t, 31.4, 32.05, 0, 1);
+  const vers = entre(t, 31.5, 32.15, 0, 1);
   const curseurX = 760 + (340 - 760) * vers;
   const curseurY = 980 + (830 - 980) * vers;
   const expert = ressort(t, EXPERT, 11);
 
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateX(${(1 - entre(t, POUSSEE[0], POUSSEE[1], 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2))) * 1920}px)` }}>
-      <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.05, ...EQUIPES.map((e) => e.debut), EXPERT], 0.025)}>
+      <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.15, ...EQUIPES.map((e) => e.debut), EXPERT], 0.025)}>
         <Carte style={{ left: 150, top: 170, width: 920, height: 740, padding: "48px 56px", boxSizing: "border-box" }}>
           <div style={{ fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>Plan d'action</div>
           <div style={{ fontSize: 46, fontWeight: 800, marginTop: 8 }}>Réduire les délais de livraison</div>
@@ -221,7 +221,7 @@ export const Scene4: React.FC<{ t: number }> = ({ t }) => {
             </div>
           </div>
         </Carte>
-        <Curseur x={curseurX} y={curseurY} appui={t > clic && t < clic + 0.15} opacite={entre(t, 31.3, 31.45, 0, 1) * entre(t, 33.0, 33.3, 1, 0)} />
+        <Curseur x={curseurX} y={curseurY} appui={t > clic && t < clic + 0.15} opacite={entre(t, 31.4, 31.55, 0, 1) * entre(t, 33.1, 33.4, 1, 0)} />
       </Camera>
     </AbsoluteFill>
   );
