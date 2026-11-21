@@ -4,7 +4,7 @@ import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe
 import { POUSSEE } from "./Scene3";
 
 // Scène 4 (30 à 42 s) : l'équipe agit, mesure l'effet, partage, et l'expert tangram.cx l'accompagne.
-export const EXPERT = 37.62;
+export const EXPERT = 37.3;
 const EXPERT_Y = 945;
 const EQUIPES = [
   { nom: "Direction", initiales: "DG", couleur: C.iris, debut: 34.8 },

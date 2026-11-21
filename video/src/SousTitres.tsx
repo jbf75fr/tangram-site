@@ -13,8 +13,8 @@ export const SOUS_TITRES: { debut: number; fin: number; texte: string }[] = [
   { debut: 24.5, fin: 29.0, texte: "Vous voyez où agir en premier." },
   { debut: 30.6, fin: 32.05, texte: "Vous lancez vos actions." },
   { debut: 32.1, fin: 34.55, texte: "Vous mesurez leur effet." },
-  { debut: 34.4, fin: 37.2, texte: "Vos équipes partagent les mêmes constats." },
-  { debut: 37.3, fin: 40.6, texte: "Et nos experts vous accompagnent, de l'analyse à l'action." },
+  { debut: 34.5, fin: 37.2, texte: "Vos équipes partagent les mêmes constats," },
+  { debut: 37.25, fin: 40.5, texte: "accompagnées par nos experts, de l'analyse à l'action." },
   { debut: 42.2, fin: 45.1, texte: "Comme au tangram, chaque retour trouve sa place," },
   { debut: 45.15, fin: 47.3, texte: "et l'ensemble dessine vos priorités." },
 ];
