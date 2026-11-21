@@ -15,12 +15,12 @@ export const DUREE = 53;
 
 // Passages où la voix parle : la musique baisse dessous (voir voix/texte.txt).
 const VOIX: [number, number][] = [
-  [0.25, 3.0],
-  [3.5, 10.1],
-  [10.1, 17.9],
-  [21.0, 28.0],
-  [30.4, 37.4],
-  [38.1, 46.98],
+  [0.25, 2.6],
+  [3.3, 10.3],
+  [10.2, 18.4],
+  [21.0, 27.9],
+  [30.6, 36.9],
+  [38.2, 47.4],
 ];
 
 const volumeMusique = (f: number) => {
@@ -50,16 +50,20 @@ const BRUITS: [number, string, number][] = [
   [8.0, "whoosh", 0.45],
   [8.75, "pop", 0.3],
   [13.06, "pop", 0.4],
-  [14.18, "pop", 0.4],
-  [14.94, "pop", 0.4],
-  [16.04, "pop", 0.4],
-  [17.26, "pop", 0.4],
+  [14.42, "pop", 0.4],
+  [15.38, "pop", 0.4],
+  [16.45, "pop", 0.4],
+  [17.8, "pop", 0.4],
   [20.0, "whoosh", 0.45],
   [22.1, "whoosh", 0.4],
   [22.6, "pop", 0.4],
-  [24.5, "pop", 0.4],
-  [25.35, "whoosh", 0.25],
-  [25.9, "pop", 0.4],
+  [24.1, "pop", 0.35],
+  [24.5, "whoosh", 0.4],
+  [25.9, "pop", 0.45],
+  [26.45, "pop", 0.35],
+  [27.6, "whoosh", 0.4],
+  [28.05, "whoosh", 0.2],
+  [28.6, "pop", 0.4],
   [29.9, "whoosh", 0.4],
   [32.2, "clic", 0.55],
   [33.0, "succes", 0.35],
@@ -69,8 +73,8 @@ const BRUITS: [number, string, number][] = [
   [35.5, "pop", 0.35],
   [37.45, "whoosh", 0.45],
   ...POSES.map((p) => [p, "pop", 0.3] as [number, string, number]),
-  [46.08, "pop", 0.4],
-  [47.35, "clic", 0.55],
+  [46.52, "pop", 0.4],
+  [47.8, "clic", 0.55],
 ];
 
 export const Introduction: React.FC = () => {

@@ -4,19 +4,19 @@ import { C, Camera, Curseur, Marque, PIECES_LOGO, POLICE, entre, hasard, ressort
 
 // Scène 5 (38 à 50 s) : « Comme au tangram, chaque retour trouve sa place » : les pièces du logo se posent
 // une à une au rythme de la voix, puis la phrase finale et l'invitation à l'essai gratuit.
-export const POSES = [38.0, 38.45, 39.3, 39.55, 39.85, 40.2, 40.9];
+export const POSES = [38.0, 38.46, 39.38, 39.62, 39.96, 40.36, 41.2];
 const vif = (t: number, a: number, b: number) => entre(t, a, b, 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2));
 
 const MOTS_1 = [
-  { mot: "Vos", t: 43.44 },
-  { mot: "clients", t: 43.56 },
-  { mot: "vous", t: 43.86 },
-  { mot: "parlent.", t: 44.04 },
+  { mot: "Vos", t: 43.94 },
+  { mot: "clients", t: 44.1 },
+  { mot: "vous", t: 44.42 },
+  { mot: "parlent.", t: 44.6 },
 ];
 const MOTS_2 = [
-  { mot: "Passez", t: 44.7 },
-  { mot: "à", t: 44.98 },
-  { mot: "l'action.", t: 45.06 },
+  { mot: "Passez", t: 45.26 },
+  { mot: "à", t: 45.54 },
+  { mot: "l'action.", t: 45.6 },
 ];
 
 const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, mots }) => (
@@ -35,14 +35,14 @@ const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, 
 export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   if (t < 37.6) return null;
   // Le logo, d'abord grand au centre, rejoint le nom en haut.
-  const range = vif(t, 43.0, 43.45);
+  const range = vif(t, 43.3, 43.75);
   const taille = 340 + (110 - 340) * range;
   const cx = 960 + (775 - 960) * range;
   const cy = 470 + (170 - 470) * range;
-  const marque = ressort(t, 43.2, 13);
-  const bouton = ressort(t, 46.08, 10);
-  const clic = 47.35;
-  const vers = entre(t, 46.45, 47.15, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
+  const marque = ressort(t, 43.5, 13);
+  const bouton = ressort(t, 46.52, 10);
+  const clic = 47.8;
+  const vers = entre(t, 46.85, 47.55, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const onde = entre(t, clic, clic + 0.6, 0, 1);
 
   return (
@@ -54,7 +54,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
           [42.6, 960, 540, 1.0],
           [50, 960, 540, 1.0],
         ]}
-        extra={secousse(t, [...POSES, 41.84, 46.08, clic], 0.02)}
+        extra={secousse(t, [...POSES, 42.5, 46.52, clic], 0.02)}
       >
         <svg width={taille} height={taille} viewBox="-1 -1 34 34" style={{ position: "absolute", left: cx - taille / 2, top: cy - taille / 2, overflow: "visible" }}>
           {PIECES_LOGO.map((p, i) => {
@@ -92,7 +92,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
                 backgroundImage: `linear-gradient(${C.beurre}, ${C.beurre})`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 90%",
-                backgroundSize: `${entre(t, 45.2, 45.6, 0, 100)}% 20px`,
+                backgroundSize: `${entre(t, 45.75, 46.15, 0, 100)}% 20px`,
               }}
             >
               <Mots t={t} mots={MOTS_2} />
@@ -108,10 +108,10 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
             </div>
           </div>
         </div>
-        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 46.5, 46.8, 0, 1), transform: `translateY(${entre(t, 46.5, 46.8, 20, 0)}px)` }}>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 46.9, 47.2, 0, 1), transform: `translateY(${entre(t, 46.9, 47.2, 20, 0)}px)` }}>
           <span style={{ color: C.iris }}>500 commentaires</span> analysés gratuitement
         </div>
-        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 46.4, 46.55, 0, 1)} />
+        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 46.8, 46.95, 0, 1)} />
       </Camera>
     </AbsoluteFill>
   );

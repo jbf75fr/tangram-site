@@ -7,16 +7,16 @@ import { C, PIECES_LOGO, POLICE, entre, hasard, ressort } from "../commun";
 const TAILLE = 180;
 
 const LIGNE_1 = [
-  { mot: "Et", t: 0.4 },
-  { mot: "si", t: 0.65 },
-  { mot: "vos", t: 0.88 },
-  { mot: "priorités", t: 1.08 },
+  { mot: "Et", t: 0.42 },
+  { mot: "si", t: 0.57 },
+  { mot: "vos", t: 0.71 },
+  { mot: "priorités", t: 0.85 },
 ];
 const LIGNE_2 = [
-  { mot: "venaient", t: 2.0 },
-  { mot: "de", t: 2.28 },
-  { mot: "vos", t: 2.42, accent: true },
-  { mot: "clients ?", t: 2.6, accent: true },
+  { mot: "venaient", t: 1.41 },
+  { mot: "de", t: 1.65 },
+  { mot: "vos", t: 1.75, accent: true },
+  { mot: "clients ?", t: 1.93, accent: true },
 ];
 
 const Ligne: React.FC<{ t: number; mots: { mot: string; t: number; accent?: boolean }[] }> = ({ t, mots }) => (

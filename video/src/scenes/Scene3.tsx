@@ -2,8 +2,8 @@ import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Logo, POLICE, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
 
-// Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs,
-// la frise du parcours d'achat, puis la matrice de priorisation.
+// Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, la frise du parcours d'achat,
+// une plongée dans l'étape Livraison et ses sous-étapes, puis un dézoom vers la matrice de priorisation.
 
 // ---------- Mur de commentaires ----------
 const COLONNES = 41;
@@ -113,13 +113,16 @@ const COURBE = (() => {
   }
   return d + ` L${X0 + LARGEUR},${PTS[PTS.length - 1].y}`;
 })();
-const DEBUT_FRISE = 23.2;
-const DUREE_FRISE = 1.2;
+const DEBUT_FRISE = 23.0;
+const DUREE_FRISE = 1.0;
+// Plongée dans l'étape Livraison, puis retour au tableau de bord.
+const PLONGEE = 24.5;
+const RETOUR = 27.6;
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + DUREE_FRISE, 0, 1, (n) => n);
-  const alerte = ressort(t, 24.5, 9);
-  const pouls = t > 24.5 ? 0.5 + 0.5 * Math.sin((t - 24.5) * 8) : 0;
+  const alerte = ressort(t, 24.1, 9);
+  const pouls = t > 24.1 ? 0.5 + 0.5 * Math.sin((t - 24.1) * 8) : 0;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
       <rect x={X0} y={90} width={LARGEUR} height={ZERO - 90} fill={C.vertFond} opacity={0.7} />
@@ -140,7 +143,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         const yPastille = p.y - 52;
         return (
           <g key={e.nom}>
-            {livraison && t > 24.5 && <circle cx={p.x} cy={p.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
+            {livraison && t > 24.1 && <circle cx={p.x} cy={p.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
             <circle cx={p.x} cy={p.y} r={r} fill={couleur} stroke={C.blanc} strokeWidth={4} />
             <g opacity={a} transform={`translate(${p.x} ${yPastille}) scale(${(0.6 + 0.4 * a) * (livraison ? 1 + 0.3 * alerte : 1)})`}>
               <rect x={-48} y={-22} width={96} height={44} rx={22} fill={C.blanc} stroke={C.grisClair} strokeWidth={2} />
@@ -188,8 +191,8 @@ const QUADRANTS = [
 ];
 
 const Matrice: React.FC<{ t: number }> = ({ t }) => {
-  const priorite = ressort(t, 25.9, 9);
-  const pouls = t > 25.9 ? 0.5 + 0.5 * Math.sin((t - 25.9) * 7) : 0;
+  const priorite = ressort(t, 28.6, 9);
+  const pouls = t > 28.6 ? 0.5 + 0.5 * Math.sin((t - 28.6) * 7) : 0;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
       <rect x={MILIEU_X} y={MILIEU_Y} width={MX1 - MILIEU_X} height={MY1 - MILIEU_Y} fill={C.rougeFond} opacity={0.4 + 0.6 * priorite} />
@@ -210,18 +213,18 @@ const Matrice: React.FC<{ t: number }> = ({ t }) => {
           fontWeight={800}
           fill={q.couleur}
           fontFamily="Figtree"
-          opacity={ressort(t, 25.5 + i * 0.05)}
+          opacity={ressort(t, 28.15 + i * 0.04)}
         >
           {q.nom}
         </text>
       ))}
       {BULLES.map((b, i) => {
-        const a = ressort(t, 25.55 + i * 0.06, 11);
+        const a = ressort(t, 28.2 + i * 0.05, 11);
         const premiere = i === 0;
         const r = 18 * a * (premiere ? 1 + 0.5 * priorite : 1);
         return (
-          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 26.1, 26.4, 1, 0.45))}>
-            {premiere && t > 25.9 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
+          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 28.7, 29.0, 1, 0.45))}>
+            {premiere && t > 28.6 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
             <circle cx={b.x} cy={b.y} r={r} fill={b.couleur} stroke={C.blanc} strokeWidth={4} />
             <text x={b.x < MILIEU_X ? b.x + r + 14 : b.x - r - 14} y={b.y + 9} textAnchor={b.x < MILIEU_X ? "start" : "end"} fontSize={premiere ? 28 : 24} fontWeight={premiere ? 800 : 700} fill={C.encre} fontFamily="Figtree">
               {b.nom}
@@ -239,8 +242,118 @@ const Matrice: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+// ---------- Sous-étapes de la Livraison (vue zoomée) ----------
+const SOUS_ETAPES = [
+  { nom: "Expédition", score: -8 },
+  { nom: "Délai de livraison", score: -52 },
+  { nom: "Suivi du colis", score: -21 },
+  { nom: "Remise", score: 12 },
+];
+const SX0 = 150;
+const SL = 1620;
+const SCOL = SL / SOUS_ETAPES.length;
+const SZERO = 520;
+const SECH = 4.6;
+const SPTS = SOUS_ETAPES.map((e, i) => ({ x: SX0 + SCOL / 2 + i * SCOL, y: SZERO - e.score * SECH }));
+const SCOURBE = (() => {
+  let d = `M${SX0},${SPTS[0].y} L${SPTS[0].x},${SPTS[0].y}`;
+  for (let i = 0; i < SPTS.length - 1; i++) {
+    const a = SPTS[i];
+    const b = SPTS[i + 1];
+    const m = (a.x + b.x) / 2;
+    d += ` C${m},${a.y} ${m},${b.y} ${b.x},${b.y}`;
+  }
+  return d + ` L${SX0 + SL},${SPTS[SPTS.length - 1].y}`;
+})();
+const PIRE = 25.9;
+const CITATION = 26.45;
+
+const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
+  if (t < PLONGEE + 0.1 || t > RETOUR + 0.55) return null;
+  // L'étape grandit depuis sa colonne de la frise jusqu'à remplir l'écran, puis y retourne.
+  const ouverture = entre(t, PLONGEE + 0.1, PLONGEE + 0.5, 0, 1, (n) => 1 - Math.pow(1 - n, 3)) * entre(t, RETOUR, RETOUR + 0.45, 1, 0, (n) => n * n);
+  const trace = entre(t, 25.05, 25.75, 0, 1, (n) => n);
+  const alerte = ressort(t, PIRE, 9);
+  const pouls = t > PIRE ? 0.5 + 0.5 * Math.sin((t - PIRE) * 8) : 0;
+  const citation = ressort(t, CITATION, 12);
+  const p = SPTS[1];
+  return (
+    <AbsoluteFill
+      style={{
+        background: C.blanc,
+        opacity: Math.min(1, ouverture * 3),
+        transform: `scale(${0.2 + 0.8 * ouverture})`,
+        transformOrigin: "960px 542px",
+        borderRadius: 60 * (1 - ouverture),
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ position: "absolute", left: SX0, top: 110, display: "flex", alignItems: "center", gap: 22 }}>
+        <div style={{ width: 64, height: 64, borderRadius: 32, background: C.beurre, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800 }}>3</div>
+        <div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: C.encreDouce }}>Sous-étapes du parcours</div>
+          <div style={{ fontSize: 60, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>Livraison</div>
+        </div>
+      </div>
+      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+        <rect x={SX0} y={290} width={SL} height={SZERO - 290} fill={C.vertFond} opacity={0.8} />
+        <rect x={SX0} y={SZERO} width={SL} height={850 - SZERO} fill={C.rougeFond} opacity={0.8} />
+        <rect x={SX0 + SCOL} y={SZERO} width={SCOL} height={850 - SZERO} fill={C.rouge} opacity={0.2 * alerte} />
+        <line x1={SX0} x2={SX0 + SL} y1={SZERO} y2={SZERO} stroke={C.encreDouce} strokeWidth={2} strokeDasharray="8 10" opacity={0.5} />
+        {SOUS_ETAPES.slice(1).map((_, i) => (
+          <line key={i} x1={SX0 + (i + 1) * SCOL} x2={SX0 + (i + 1) * SCOL} y1={290} y2={850} stroke={C.blanc} strokeWidth={4} />
+        ))}
+        <path d={SCOURBE} fill="none" stroke={C.encre} strokeWidth={7} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
+        {SOUS_ETAPES.map((e, i) => {
+          const q = SPTS[i];
+          const a = ressort(t, 25.05 + (0.7 * (i + 0.5)) / SOUS_ETAPES.length, 11);
+          const pire = i === 1;
+          const r = 22 * a * (pire ? 1 + 0.45 * alerte : 1);
+          return (
+            <g key={e.nom}>
+              {pire && t > PIRE && <circle cx={q.x} cy={q.y} r={r + 14 + 20 * pouls} fill="none" stroke={C.rouge} strokeWidth={5} opacity={0.5 * (1 - pouls)} />}
+              <circle cx={q.x} cy={q.y} r={r} fill={e.score < 0 ? C.rouge : C.vert} stroke={C.blanc} strokeWidth={5} />
+              <g opacity={a} transform={`translate(${q.x} ${q.y - 64}) scale(${(0.6 + 0.4 * a) * (pire ? 1 + 0.35 * alerte : 1)})`}>
+                <rect x={-62} y={-28} width={124} height={56} rx={28} fill={C.blanc} stroke={C.grisClair} strokeWidth={2} />
+                <text x={0} y={11} textAnchor="middle" fontSize={32} fontWeight={800} fill={e.score < 0 ? C.rougeTexte : C.vertTexte} fontFamily="Figtree">
+                  {signe(e.score)}
+                </text>
+              </g>
+              <text x={q.x} y={915} textAnchor="middle" fontSize={32} fontWeight={700} fill={C.encre} fontFamily="Figtree" opacity={ressort(t, 24.9 + i * 0.06)}>
+                {e.nom}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      {/* La phrase du client du début vient se poser sur la sous-étape qui décroche. */}
+      <div
+        style={{
+          position: "absolute",
+          left: p.x + 50,
+          top: p.y + 42,
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          padding: "16px 26px",
+          borderRadius: 22,
+          background: C.encre,
+          color: C.blanc,
+          boxShadow: "0 18px 40px rgba(30,16,51,0.25)",
+          opacity: Math.min(1, citation * 2),
+          transform: `translate(${(1 - citation) * -260}px, ${(1 - citation) * -180}px) scale(${0.6 + 0.4 * citation}) rotate(${(1 - citation) * -8}deg)`,
+          transformOrigin: "0 50%",
+        }}
+      >
+        <span style={{ fontSize: 22, fontWeight: 700, color: C.beurre }}>Note : 6 / 10</span>
+        <span style={{ fontSize: 34, fontWeight: 700 }}>« trois semaines pour être livré »</span>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 // ---------- Tableau de bord ----------
-const BASCULE = 25.35;
+const BASCULE = 28.05;
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.5) return null;
@@ -252,13 +365,17 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
   const cles: Cle[] = [
     [22.9, 960, 540, 1.0],
     [23.3, 960, 640, 1.12],
-    [25.3, 960, 660, 1.14],
-    [25.9, 1000, 740, 1.15],
+    [PLONGEE, 960, 660, 1.14],
+    [PLONGEE + 0.5, 960, 662, 4.5],
+    [RETOUR, 960, 662, 4.5],
+    [RETOUR + 0.5, 960, 660, 1.14],
+    [BASCULE + 0.15, 960, 660, 1.14],
+    [BASCULE + 0.55, 1000, 740, 1.15],
     [29.4, 1000, 740, 1.2],
     [30.3, 140 + 36 + LIVRAISON.x, 90 + 322 + LIVRAISON.y, 3.6],
   ];
   return (
-    <Camera t={t} cles={cles} extra={secousse(t, [24.5, 25.9], 0.025)}>
+    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 28.6], 0.025)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
@@ -328,6 +445,7 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateY(${entree * 1100}px)` }}>
       <Mur t={t} />
       <Tableau t={t} />
+      <SousEtapes t={t} />
     </AbsoluteFill>
   );
 };
