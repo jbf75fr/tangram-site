@@ -191,8 +191,8 @@ const QUADRANTS = [
 ];
 
 const Matrice: React.FC<{ t: number }> = ({ t }) => {
-  const priorite = ressort(t, 28.6, 9);
-  const pouls = t > 28.6 ? 0.5 + 0.5 * Math.sin((t - 28.6) * 7) : 0;
+  const priorite = ressort(t, 29.0, 9);
+  const pouls = t > 29.0 ? 0.5 + 0.5 * Math.sin((t - 29.0) * 7) : 0;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
       <rect x={MILIEU_X} y={MILIEU_Y} width={MX1 - MILIEU_X} height={MY1 - MILIEU_Y} fill={C.rougeFond} opacity={0.4 + 0.6 * priorite} />
@@ -213,18 +213,18 @@ const Matrice: React.FC<{ t: number }> = ({ t }) => {
           fontWeight={800}
           fill={q.couleur}
           fontFamily="Figtree"
-          opacity={ressort(t, 28.15 + i * 0.04)}
+          opacity={ressort(t, 28.6 + i * 0.04)}
         >
           {q.nom}
         </text>
       ))}
       {BULLES.map((b, i) => {
-        const a = ressort(t, 28.2 + i * 0.05, 11);
+        const a = ressort(t, 28.65 + i * 0.05, 11);
         const premiere = i === 0;
         const r = 18 * a * (premiere ? 1 + 0.5 * priorite : 1);
         return (
-          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 28.7, 29.0, 1, 0.45))}>
-            {premiere && t > 28.6 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
+          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 29.1, 29.4, 1, 0.45))}>
+            {premiere && t > 29.0 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
             <circle cx={b.x} cy={b.y} r={r} fill={b.couleur} stroke={C.blanc} strokeWidth={4} />
             <text x={b.x < MILIEU_X ? b.x + r + 14 : b.x - r - 14} y={b.y + 9} textAnchor={b.x < MILIEU_X ? "start" : "end"} fontSize={premiere ? 28 : 24} fontWeight={premiere ? 800 : 700} fill={C.encre} fontFamily="Figtree">
               {b.nom}
@@ -269,9 +269,10 @@ const PIRE = 25.9;
 const CITATION = 26.45;
 
 const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
-  if (t < PLONGEE + 0.1 || t > RETOUR + 0.55) return null;
-  // L'étape grandit depuis sa colonne de la frise jusqu'à remplir l'écran, puis y retourne.
-  const ouverture = entre(t, PLONGEE + 0.1, PLONGEE + 0.5, 0, 1, (n) => 1 - Math.pow(1 - n, 3)) * entre(t, RETOUR, RETOUR + 0.45, 1, 0, (n) => n * n);
+  if (t < PLONGEE + 0.3 || t > RETOUR + 0.3) return null;
+  // La caméra plonge dans la colonne de la frise, puis la vue détaillée apparaît en fondu ;
+  // à la sortie, fondu inverse, puis la caméra recule d'un seul mouvement.
+  const ouverture = entre(t, PLONGEE + 0.35, PLONGEE + 0.6, 0, 1) * entre(t, RETOUR, RETOUR + 0.25, 1, 0);
   const trace = entre(t, 25.05, 25.75, 0, 1, (n) => n);
   const alerte = ressort(t, PIRE, 9);
   const pouls = t > PIRE ? 0.5 + 0.5 * Math.sin((t - PIRE) * 8) : 0;
@@ -281,10 +282,9 @@ const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
     <AbsoluteFill
       style={{
         background: C.blanc,
-        opacity: Math.min(1, ouverture * 3),
-        transform: `scale(${0.2 + 0.8 * ouverture})`,
+        opacity: ouverture,
+        transform: `scale(${1.04 - 0.04 * ouverture})`,
         transformOrigin: "960px 542px",
-        borderRadius: 60 * (1 - ouverture),
         overflow: "hidden",
       }}
     >
@@ -353,7 +353,7 @@ const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------- Tableau de bord ----------
-const BASCULE = 28.05;
+const BASCULE = 28.55;
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.5) return null;
@@ -367,15 +367,15 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
     [23.3, 960, 640, 1.12],
     [PLONGEE, 960, 660, 1.14],
     [PLONGEE + 0.5, 960, 662, 4.5],
-    [RETOUR, 960, 662, 4.5],
-    [RETOUR + 0.5, 960, 660, 1.14],
-    [BASCULE + 0.15, 960, 660, 1.14],
-    [BASCULE + 0.55, 1000, 740, 1.15],
-    [29.4, 1000, 740, 1.2],
+    [RETOUR + 0.15, 960, 662, 4.5],
+    [RETOUR + 0.8, 960, 660, 1.14],
+    [BASCULE + 0.1, 960, 660, 1.14],
+    [BASCULE + 0.6, 1000, 740, 1.15],
+    [29.6, 1000, 740, 1.2],
     [30.3, 140 + 36 + LIVRAISON.x, 90 + 322 + LIVRAISON.y, 3.6],
   ];
   return (
-    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 28.6], 0.025)}>
+    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 29.0], 0.025)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
