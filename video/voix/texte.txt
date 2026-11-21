@@ -1,16 +1,14 @@
-Voix off de la vidéo d'introduction (49 s, fichier public/voix-off.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3.
-« tangram point C X » et « C R M » sont écrits ainsi pour guider la prononciation.
+Voix off de la vidéo d'introduction (57 s, fichier public/voix-off.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3, ton enjoué (stabilité « créative » 0.0, balises [warmly], [enthusiastic], [confident]).
+La voix dit « tangram » ; à l'écran et dans les sous-titres, on garde « tangram.cx ». « C R M » est écrit ainsi pour guider la prononciation.
+Vérifier chaque « tangram » en faisant transcrire par ElevenLabs un court extrait autour du mot : sur une phrase entière, la transcription corrige « tendram », « tamgram » ou « tongr ». « sudgestion » n'est pas détectable : écouter.
+Pour garder la même voix, générer d'un seul tenant tout un paragraphe et la phrase qui le suit ; comparer hauteur, timbre et débit au reste (une prise trop « brillante » sonne comme une autre personne).
 
-[0,25 à 3 s] Et si vos priorités venaient de vos clients ? (ton curieux, prise à part)
+Temps réels (vidéo de 57 s) :
+[0,25 à 2,6 s] Et si vos priorités venaient de vos clients ?
+[3,6 à 9,7 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram les récupère automatiquement.
+[13,4 à 21,3 s] Chaque commentaire est lu en entier. Tangram repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
+[24 à 31 s] Des milliers de retours deviennent alors des indicateurs fiables. Vous voyez tout de suite les sujets qui influencent la satisfaction de vos clients.
+[33,6 à 43,3 s] Vous lancez vos actions, puis vous mesurez leur effet dans les commentaires suivants. Et toutes vos équipes avancent sur les mêmes constats, accompagnées par nos experts, de l'analyse jusqu'à l'action.
+[45,2 à 54,1 s] Comme au tangram, chaque retour trouve sa place, et l'ensemble dessine vos priorités. Vos clients vous parlent : essayez tangram gratuitement et passez à l'action.
 
-Les temps ci-dessous sont en temps « sans l'accueil » : ajouter 3 s (DECALAGE dans src/Introduction.tsx).
-
-[0,5 à 7 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram point C X les récupère automatiquement.
-
-[9,5 à 18,7 s] Chaque commentaire est lu en entier. tangram point C X repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
-
-[21 à 28 s] Des milliers de retours deviennent alors des indicateurs fiables. Vous voyez tout de suite les sujets qui influencent la satisfaction de vos clients.
-
-[30,4 à 37,4 s] Vous lancez vos actions, puis vous mesurez leur effet dans les commentaires suivants. Et toutes vos équipes avancent sur les mêmes constats.
-
-[39 à 42,9 s] Vos clients vous parlent. Passez à l'action. Essayez gratuitement.
+Dans le code, les scènes 1 à 5 sont en temps « sans l'ouverture » (DECALAGE = 3 s) et la scène 5 est encore décalée de FIN_DECALAGE = 4 s (src/Introduction.tsx).
