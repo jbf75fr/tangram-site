@@ -111,6 +111,9 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
         <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 46.9, 47.2, 0, 1), transform: `translateY(${entre(t, 46.9, 47.2, 20, 0)}px)` }}>
           <span style={{ color: C.iris }}>500 commentaires</span> analysés gratuitement
         </div>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 878, textAlign: "center", fontSize: 30, fontWeight: 600, color: C.encreDouce, opacity: entre(t, 47.25, 47.55, 0, 1), transform: `translateY(${entre(t, 47.25, 47.55, 20, 0)}px)` }}>
+          Un expert vous accompagne dès l'essai.
+        </div>
         <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 46.8, 46.95, 0, 1)} />
       </Camera>
     </AbsoluteFill>

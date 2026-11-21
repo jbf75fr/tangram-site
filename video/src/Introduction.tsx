@@ -5,13 +5,16 @@ import { Scene0 } from "./scenes/Scene0";
 import { Scene1 } from "./scenes/Scene1";
 import { Scene2 } from "./scenes/Scene2";
 import { Scene3 } from "./scenes/Scene3";
-import { Scene4 } from "./scenes/Scene4";
+import { EXPERT, Scene4 } from "./scenes/Scene4";
 import { POSES, Scene5 } from "./scenes/Scene5";
 import { SousTitres } from "./SousTitres";
 
 // Les scènes 1 à 5 sont écrites en temps « sans l'accueil » : elles commencent après DECALAGE secondes.
 export const DECALAGE = 3;
-export const DUREE = 53;
+export const DUREE = 57;
+// Phrase de l'expert insérée avant la fin : tout ce qui suit APRES (temps « sans l'ouverture ») est décalé de FIN_DECALAGE.
+export const FIN_DECALAGE = 4;
+const APRES = 37.4;
 
 // Passages où la voix parle : la musique baisse dessous (voir voix/texte.txt).
 const VOIX: [number, number][] = [
@@ -20,7 +23,8 @@ const VOIX: [number, number][] = [
   [10.4, 18.1],
   [21.0, 27.9],
   [30.6, 36.9],
-  [38.2, 47.4],
+  [37.4, 40.6],
+  [42.2, 51.4],
 ];
 
 const volumeMusique = (f: number) => {
@@ -86,12 +90,12 @@ export const Introduction: React.FC = () => {
       <Scene2 t={s} />
       <Scene3 t={s} />
       <Scene4 t={s} />
-      <Scene5 t={s} />
+      <Scene5 t={s - FIN_DECALAGE} />
       <Scene0 t={t} />
       <SousTitres t={s} />
       <Audio src={staticFile("musique.mp3")} volume={volumeMusique} />
       <Audio src={staticFile("voix-off.mp3")} />
-      {[...BRUITS_ACCUEIL, ...BRUITS.map(([d, n, v]) => [d + DECALAGE, n, v] as [number, string, number])].map(([debut, son, volume], i) => (
+      {[...BRUITS_ACCUEIL, ...BRUITS.map(([d, n, v]) => [d + DECALAGE + (d >= APRES ? FIN_DECALAGE : 0), n, v] as [number, string, number]), [EXPERT + DECALAGE, "pop", 0.35] as [number, string, number]].map(([debut, son, volume], i) => (
         <Sequence key={i} from={Math.round(debut * FPS)} layout="none">
           <Audio src={staticFile(`sons/${son}.mp3`)} volume={volume} endAt={son === "frappe" ? Math.round(1.4 * FPS) : undefined} />
         </Sequence>
