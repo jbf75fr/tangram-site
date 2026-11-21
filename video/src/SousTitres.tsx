@@ -2,7 +2,7 @@ import React from "react";
 import { C, POLICE, entre, ressort } from "./commun";
 
 // Sous-titres courts incrustés : la vidéo se comprend sans le son.
-// La scène 5 n'en a pas, son texte est déjà à l'écran.
+// La fin de la scène 5 n'en a pas, son texte est déjà à l'écran.
 export const SOUS_TITRES: { debut: number; fin: number; texte: string }[] = [
   { debut: 0.4, fin: 3.3, texte: "Vos clients vous écrivent." },
   { debut: 3.3, fin: 4.55, texte: "Leurs commentaires arrivent dans votre CRM." },
@@ -14,6 +14,8 @@ export const SOUS_TITRES: { debut: number; fin: number; texte: string }[] = [
   { debut: 30.5, fin: 32.15, texte: "Vous lancez vos actions." },
   { debut: 32.2, fin: 34.8, texte: "Vous mesurez leur effet." },
   { debut: 34.85, fin: 37.4, texte: "Vos équipes partagent les mêmes constats." },
+  { debut: 38.15, fin: 40.75, texte: "Comme au tangram, chaque retour trouve sa place," },
+  { debut: 40.8, fin: 42.8, texte: "et l'ensemble dessine vos priorités." },
 ];
 
 export const SousTitres: React.FC<{ t: number }> = ({ t }) => {

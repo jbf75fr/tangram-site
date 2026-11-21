@@ -6,21 +6,21 @@ import { Scene1 } from "./scenes/Scene1";
 import { Scene2 } from "./scenes/Scene2";
 import { Scene3 } from "./scenes/Scene3";
 import { Scene4 } from "./scenes/Scene4";
-import { Scene5 } from "./scenes/Scene5";
+import { POSES, Scene5 } from "./scenes/Scene5";
 import { SousTitres } from "./SousTitres";
 
 // Les scènes 1 à 5 sont écrites en temps « sans l'accueil » : elles commencent après DECALAGE secondes.
 export const DECALAGE = 3;
-export const DUREE = 49;
+export const DUREE = 53;
 
 // Passages où la voix parle : la musique baisse dessous (voir voix/texte.txt).
 const VOIX: [number, number][] = [
   [0.25, 3.0],
   [3.5, 10.1],
-  [9.5, 18.7],
+  [10.1, 17.9],
   [21.0, 28.0],
   [30.4, 37.4],
-  [39.0, 42.9],
+  [38.1, 46.98],
 ];
 
 const volumeMusique = (f: number) => {
@@ -49,11 +49,11 @@ const BRUITS: [number, string, number][] = [
   [4.55, "pop", 0.4],
   [8.0, "whoosh", 0.45],
   [8.75, "pop", 0.3],
-  [13.1, "pop", 0.4],
-  [14.55, "pop", 0.4],
-  [15.55, "pop", 0.4],
-  [16.6, "pop", 0.4],
-  [17.85, "pop", 0.4],
+  [13.06, "pop", 0.4],
+  [14.18, "pop", 0.4],
+  [14.94, "pop", 0.4],
+  [16.04, "pop", 0.4],
+  [17.26, "pop", 0.4],
   [20.0, "whoosh", 0.45],
   [22.1, "whoosh", 0.4],
   [22.6, "pop", 0.4],
@@ -68,8 +68,9 @@ const BRUITS: [number, string, number][] = [
   [35.15, "pop", 0.35],
   [35.5, "pop", 0.35],
   [37.45, "whoosh", 0.45],
-  [41.9, "pop", 0.4],
-  [43.2, "clic", 0.55],
+  ...POSES.map((p) => [p, "pop", 0.3] as [number, string, number]),
+  [46.08, "pop", 0.4],
+  [47.35, "clic", 0.55],
 ];
 
 export const Introduction: React.FC = () => {

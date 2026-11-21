@@ -1,16 +1,18 @@
-Voix off de la vidéo d'introduction (49 s, fichier public/voix-off.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3.
-« tangram point C X » et « C R M » sont écrits ainsi pour guider la prononciation.
+Voix off de la vidéo d'introduction (53 s, fichier public/voix-off.mp3). Voix ElevenLabs « Rachel - Clear and Engaging », modèle eleven_v3.
+La voix dit « tangram » (pas « tangram.cx ») ; à l'écran et dans les sous-titres, on garde « tangram.cx ». « C R M » est écrit ainsi pour guider la prononciation.
+Vérifier chaque prise avec la transcription d'ElevenLabs : certaines prises disent « tendram » ou « tamgram ».
 
-[0,25 à 3 s] Et si vos priorités venaient de vos clients ? (ton curieux, prise à part)
+[0,25 à 3 s, temps réel] Et si vos priorités venaient de vos clients ? (ton curieux, prise à part)
 
-Les temps ci-dessous sont en temps « sans l'accueil » : ajouter 3 s (DECALAGE dans src/Introduction.tsx).
+Les temps ci-dessous sont en temps « sans l'ouverture » : ajouter 3 s (DECALAGE dans src/Introduction.tsx).
 
-[0,5 à 7 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram point C X les récupère automatiquement.
+[0,4 à 6,6 s] Tous les jours, vos clients vous écrivent. Leurs commentaires arrivent dans votre C R M, et tangram les récupère automatiquement.
 
-[9,5 à 18,7 s] Chaque commentaire est lu en entier. tangram point C X repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
+[10 à 17,9 s] Chaque commentaire est lu en entier. Tangram repère l'étape du parcours, la tonalité, l'émotion, le risque de départ et les suggestions.
 
 [21 à 28 s] Des milliers de retours deviennent alors des indicateurs fiables. Vous voyez tout de suite les sujets qui influencent la satisfaction de vos clients.
 
 [30,4 à 37,4 s] Vous lancez vos actions, puis vous mesurez leur effet dans les commentaires suivants. Et toutes vos équipes avancent sur les mêmes constats.
 
-[39 à 42,9 s] Vos clients vous parlent. Passez à l'action. Essayez gratuitement.
+[38,1 à 47 s] Comme au tangram, chaque retour trouve sa place, et l'ensemble dessine vos priorités. Vos clients vous parlent. Passez à l'action. Essayez gratuitement.
+(Les sept pièces du logo se posent une à une pendant la première phrase : POSES dans src/scenes/Scene5.tsx.)

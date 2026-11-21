@@ -13,18 +13,18 @@ const MORCEAUX: Morceau[] = [
   { texte: " mais " },
   { texte: "trois semaines pour être livré.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 13.2 } },
   { texte: " " },
-  { texte: "Je ne recommanderai pas.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 16.55 } },
+  { texte: "Je ne recommanderai pas.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 16.0 } },
 ];
 const TOTAL = MORCEAUX.reduce((n, m) => n + m.texte.length, 0);
 
 type Etiquette = { debut: number; libelle: string; valeur: string; fond: string; encre: string; piece: string; rotation: number; de: [number, number] };
 
 const ETIQUETTES: Etiquette[] = [
-  { debut: 13.1, libelle: "Étape du parcours", valeur: "Accueil et Livraison", fond: C.iris, encre: C.blanc, piece: C.beurre, rotation: 0, de: [600, 420] },
-  { debut: 14.55, libelle: "Tonalité", valeur: "Négative", fond: C.rouge, encre: C.blanc, piece: C.encre, rotation: 90, de: [700, 500] },
-  { debut: 15.55, libelle: "Émotion", valeur: "Déception", fond: C.beurre, encre: C.encre, piece: C.iris, rotation: 180, de: [700, 500] },
-  { debut: 16.6, libelle: "Risque de départ", valeur: "Élevé", fond: C.blanc, encre: C.rougeTexte, piece: C.rouge, rotation: 270, de: [520, 610] },
-  { debut: 17.85, libelle: "Suggestion", valeur: "Livrer plus vite", fond: C.vert, encre: C.blanc, piece: C.beurrePale, rotation: 45, de: [600, 520] },
+  { debut: 13.06, libelle: "Étape du parcours", valeur: "Accueil et Livraison", fond: C.iris, encre: C.blanc, piece: C.beurre, rotation: 0, de: [600, 420] },
+  { debut: 14.18, libelle: "Tonalité", valeur: "Négative", fond: C.rouge, encre: C.blanc, piece: C.encre, rotation: 90, de: [700, 500] },
+  { debut: 14.94, libelle: "Émotion", valeur: "Déception", fond: C.beurre, encre: C.encre, piece: C.iris, rotation: 180, de: [700, 500] },
+  { debut: 16.04, libelle: "Risque de départ", valeur: "Élevé", fond: C.blanc, encre: C.rougeTexte, piece: C.rouge, rotation: 270, de: [520, 610] },
+  { debut: 17.26, libelle: "Suggestion", valeur: "Livrer plus vite", fond: C.vert, encre: C.blanc, piece: C.beurrePale, rotation: 45, de: [600, 520] },
 ];
 
 const CLES: Cle[] = [
@@ -39,7 +39,7 @@ const CLES: Cle[] = [
 
 export const Scene2: React.FC<{ t: number }> = ({ t }) => {
   if (t < 8.65 || t > 20.75) return null;
-  const lu = entre(t, 9.7, 11.3, 0, TOTAL, (n) => n);
+  const lu = entre(t, 10.2, 11.7, 0, TOTAL, (n) => n);
   // Sortie : la scène file vers le haut.
   const sortie = entre(t, 20.05, 20.6, 0, 1, (n) => n * n * n);
   let position = 0;
@@ -109,7 +109,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
               })}
             </div>
             {/* Trait jaune qui balaie la lecture. */}
-            <div style={{ height: 8, borderRadius: 4, marginTop: 34, background: "rgba(255,255,255,0.12)", width: 940, opacity: entre(t, 9.6, 9.75, 0, 1) * entre(t, 11.5, 11.9, 1, 0) }}>
+            <div style={{ height: 8, borderRadius: 4, marginTop: 34, background: "rgba(255,255,255,0.12)", width: 940, opacity: entre(t, 10.1, 10.25, 0, 1) * entre(t, 11.9, 12.3, 1, 0) }}>
               <div style={{ height: 8, borderRadius: 4, background: C.beurre, width: `${(lu / TOTAL) * 100}%` }} />
             </div>
           </div>
