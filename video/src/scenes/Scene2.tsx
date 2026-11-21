@@ -59,7 +59,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
                 padding: "10px 22px",
                 fontSize: 26,
                 fontWeight: 800,
-                transform: `scale(${ressort(t, 8.75, 11)})`,
+                transform: `scale(${ressort(t, 8.68, 11)})`,
                 transformOrigin: "0 50%",
               }}
             >
@@ -88,7 +88,7 @@ export const Scene2: React.FC<{ t: number }> = ({ t }) => {
                     {m.texte.split(/(?<= )/).map((bout, j) => {
                       // Chaque mot claque à son tour à l'ouverture.
                       const indexMot = mot++;
-                      const arrive = ressort(t, 8.8 + indexMot * 0.035, 13);
+                      const arrive = ressort(t, 8.7 + indexMot * 0.03, 13);
                       const offset = m.texte.split(/(?<= )/).slice(0, j).join("").length;
                       return (
                         <span key={j} style={{ display: "inline-block", whiteSpace: "pre", opacity: arrive, transform: `translateY(${(1 - arrive) * 30}px)` }}>

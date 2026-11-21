@@ -68,7 +68,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------- Indicateurs ----------
 const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
-  const a = ressort(t, 22.65 + i * 0.07);
+  const a = ressort(t, 22.38 + i * 0.03);
   return (
     <div
       style={{
@@ -118,8 +118,6 @@ const DUREE_FRISE = 1.0;
 // Plongée dans l'étape Livraison, puis retour au tableau de bord.
 const PLONGEE = 24.5;
 const RETOUR = 27.6;
-// Demi-marge entre la colonne Livraison (zoomée par la caméra) et les bords de l'écran.
-const BORD_COLONNE = (1920 - (1448 / 5) * 4.5) / 2;
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + DUREE_FRISE, 0, 1, (n) => n);
@@ -193,8 +191,8 @@ const QUADRANTS = [
 ];
 
 const Matrice: React.FC<{ t: number }> = ({ t }) => {
-  const priorite = ressort(t, 29.15, 9);
-  const pouls = t > 29.15 ? 0.5 + 0.5 * Math.sin((t - 29.15) * 7) : 0;
+  const priorite = ressort(t, 28.95, 9);
+  const pouls = t > 28.95 ? 0.5 + 0.5 * Math.sin((t - 28.95) * 7) : 0;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
       <rect x={MILIEU_X} y={MILIEU_Y} width={MX1 - MILIEU_X} height={MY1 - MILIEU_Y} fill={C.rougeFond} opacity={0.4 + 0.6 * priorite} />
@@ -215,18 +213,18 @@ const Matrice: React.FC<{ t: number }> = ({ t }) => {
           fontWeight={800}
           fill={q.couleur}
           fontFamily="Figtree"
-          opacity={ressort(t, 28.75 + i * 0.04)}
+          opacity={ressort(t, 28.55 + i * 0.04)}
         >
           {q.nom}
         </text>
       ))}
       {BULLES.map((b, i) => {
-        const a = ressort(t, 28.8 + i * 0.05, 11);
+        const a = ressort(t, 28.6 + i * 0.05, 11);
         const premiere = i === 0;
         const r = 18 * a * (premiere ? 1 + 0.5 * priorite : 1);
         return (
-          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 29.25, 29.55, 1, 0.45))}>
-            {premiere && t > 29.15 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
+          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 29.05, 29.35, 1, 0.45))}>
+            {premiere && t > 28.95 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
             <circle cx={b.x} cy={b.y} r={r} fill={b.couleur} stroke={C.blanc} strokeWidth={4} />
             <text x={b.x < MILIEU_X ? b.x + r + 14 : b.x - r - 14} y={b.y + 9} textAnchor={b.x < MILIEU_X ? "start" : "end"} fontSize={premiere ? 28 : 24} fontWeight={premiere ? 800 : 700} fill={C.encre} fontFamily="Figtree">
               {b.nom}
@@ -270,26 +268,55 @@ const SCOURBE = (() => {
 const PIRE = 25.9;
 const CITATION = 26.45;
 
+// Transition « conteneur qui s'agrandit » : la colonne Livraison de la frise devient elle-même
+// la vue détaillée, en grandissant jusqu'au plein écran pendant que le tableau de bord s'assombrit ;
+// le contenu n'apparaît qu'une fois le conteneur ouvert. La sortie est exactement le geste inverse.
+const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2);
+// Position à l'écran de la colonne Livraison (caméra du tableau de bord : centre 960 x 660, zoom 1,14).
+const COLONNE = (() => {
+  const z = 1.14;
+  const x0 = 140 + 36 + X0 + 2 * COL;
+  const y0 = 90 + 322 + 90;
+  const x1 = x0 + COL;
+  const y1 = 90 + 322 + 410;
+  const ecranX = (x: number) => 960 + (x - 960) * z;
+  const ecranY = (y: number) => 540 + (y - 660) * z;
+  return { x: ecranX(x0), y: ecranY(y0), l: ecranX(x1) - ecranX(x0), h: ecranY(y1) - ecranY(y0) };
+})();
+const OUVRE = [PLONGEE, PLONGEE + 0.6];
+const FERME = [RETOUR + 0.1, RETOUR + 0.65];
+export const ouvertureDetail = (t: number) =>
+  entre(t, OUVRE[0], OUVRE[1], 0, 1, enDouceur) * (1 - entre(t, FERME[0], FERME[1], 0, 1, enDouceur));
+const melange = (a: number[], b: number[], k: number) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(",")})`;
+
 const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
-  if (t < PLONGEE + 0.45 || t > RETOUR + 0.35) return null;
-  // La caméra plonge dans la colonne Livraison de la frise ; la vue détaillée se déplie alors
-  // depuis la largeur de cette colonne jusqu'aux bords de l'écran. À la sortie, elle se replie
-  // dans la colonne, puis la caméra recule. Même geste dans les deux sens, sans fondu.
-  const ouverture = entre(t, PLONGEE + 0.45, PLONGEE + 0.8, 0, 1, (n) => 1 - Math.pow(1 - n, 3)) * entre(t, RETOUR, RETOUR + 0.35, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
-  const bord = BORD_COLONNE * (1 - ouverture);
+  if (t < OUVRE[0] || t > FERME[1]) return null;
+  const k = ouvertureDetail(t);
+  const contenu = entre(t, OUVRE[1] - 0.2, OUVRE[1] + 0.05, 0, 1) * entre(t, RETOUR - 0.1, RETOUR + 0.08, 1, 0);
+  const g = COLONNE.x * (1 - k);
+  const h = COLONNE.y * (1 - k);
+  const l = COLONNE.l + (1920 - COLONNE.l) * k;
+  const ht = COLONNE.h + (1080 - COLONNE.h) * k;
   const trace = entre(t, 25.05, 25.75, 0, 1, (n) => n);
   const alerte = ressort(t, PIRE, 9);
   const pouls = t > PIRE ? 0.5 + 0.5 * Math.sin((t - PIRE) * 8) : 0;
   const citation = ressort(t, CITATION, 12);
   const p = SPTS[1];
   return (
-    <AbsoluteFill
+    <div
       style={{
-        background: C.blanc,
-        clipPath: `inset(0px ${bord}px 0px ${bord}px)`,
+        position: "absolute",
+        left: g,
+        top: h,
+        width: l,
+        height: ht,
         overflow: "hidden",
+        borderRadius: 18 * (1 - k),
+        background: melange([248, 214, 210], [255, 255, 255], Math.min(1, k * 1.4)),
+        boxShadow: `0 30px 80px rgba(30,16,51,${0.35 * Math.sin(Math.PI * k)})`,
       }}
     >
+    <div style={{ position: "absolute", left: -g, top: -h, width: 1920, height: 1080, opacity: contenu, transform: `translateY(${(1 - contenu) * 24}px)` }}>
       <div style={{ position: "absolute", left: SX0, top: 110, display: "flex", alignItems: "center", gap: 22 }}>
         <div style={{ width: 64, height: 64, borderRadius: 32, background: C.beurre, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800 }}>3</div>
         <div>
@@ -350,34 +377,33 @@ const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
         <span style={{ fontSize: 22, fontWeight: 700, color: C.beurre }}>Note : 6 / 10</span>
         <span style={{ fontSize: 34, fontWeight: 700 }}>« trois semaines pour être livré »</span>
       </div>
-    </AbsoluteFill>
+    </div>
+    </div>
   );
 };
 
 // ---------- Tableau de bord ----------
-const BASCULE = 28.7;
+const BASCULE = 28.4;
+// Passage à la scène 4 : la scène 3 est poussée vers la gauche.
+export const POUSSEE = [30.0, 30.45];
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.5) return null;
-  const fenetre = ressort(t, 22.55, 13);
-  const compte = entre(t, 22.7, 23.9, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
+  const fenetre = ressort(t, 22.35, 13);
+  const compte = entre(t, 22.42, 23.8, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
   const remplissage = entre(t, 22.8, 23.6, 0, 1);
-  const bascule = entre(t, BASCULE, BASCULE + 0.3, 0, 1);
-  const carte = ressort(t, 22.9, 13);
+  const bascule = entre(t, BASCULE, BASCULE + 0.45, 0, 1, enDouceur);
+  const carte = ressort(t, 22.45, 13);
   const cles: Cle[] = [
     [22.9, 960, 540, 1.0],
     [23.3, 960, 640, 1.12],
-    [PLONGEE, 960, 660, 1.14],
-    [PLONGEE + 0.5, 960, 662, 4.5],
-    [RETOUR + 0.3, 960, 662, 4.5],
-    [RETOUR + 0.95, 960, 660, 1.14],
-    [BASCULE + 0.1, 960, 660, 1.14],
-    [BASCULE + 0.6, 1000, 740, 1.15],
-    [29.6, 1000, 740, 1.2],
-    [30.3, 140 + 36 + LIVRAISON.x, 90 + 322 + LIVRAISON.y, 3.6],
+    [24.2, 960, 660, 1.14],
+    [BASCULE + 0.3, 960, 660, 1.14],
+    [BASCULE + 0.8, 1000, 740, 1.15],
+    [POUSSEE[1], 1040, 760, 1.25],
   ];
   return (
-    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 29.15], 0.025)}>
+    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 28.95], 0.02)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
@@ -416,13 +442,14 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             borderRadius: 22,
             border: `2px solid ${C.grisClair}`,
             boxSizing: "border-box",
+            overflow: "hidden",
             opacity: Math.min(1, carte * 2),
             transform: `translateY(${(1 - carte) * 60}px)`,
           }}
         >
           <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800 }}>
-            <span style={{ opacity: 1 - bascule }}>Parcours client</span>
-            <span style={{ position: "absolute", left: 0, top: 0, whiteSpace: "nowrap", opacity: bascule }}>Matrice de priorisation</span>
+            <span style={{ display: "inline-block", opacity: 1 - bascule, transform: `translateX(${-bascule * 40}px)` }}>Parcours client</span>
+            <span style={{ position: "absolute", left: 0, top: 0, whiteSpace: "nowrap", opacity: bascule, transform: `translateX(${(1 - bascule) * 40}px)` }}>Matrice de priorisation</span>
           </div>
           <div style={{ position: "absolute", right: 34, top: 20, width: 300, height: 52, borderRadius: 999, background: C.grisClair }}>
             <div style={{ position: "absolute", top: 4, left: 4 + 146 * bascule, width: 146, height: 44, borderRadius: 999, background: C.encre }} />
@@ -432,8 +459,9 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
               </div>
             ))}
           </div>
-          <div style={{ position: "absolute", inset: 0, opacity: 1 - bascule, transform: `scale(${1 - 0.05 * bascule})` }}>{t < BASCULE + 0.3 && <Frise t={t} />}</div>
-          <div style={{ position: "absolute", inset: 0, opacity: bascule, transform: `scale(${0.95 + 0.05 * bascule})` }}>{t > BASCULE && <Matrice t={t} />}</div>
+          {/* Frise et matrice glissent côte à côte, comme un carrousel. */}
+          <div style={{ position: "absolute", inset: 0, transform: `translateX(${-bascule * 1568}px)` }}>{t < BASCULE + 0.5 && <Frise t={t} />}</div>
+          <div style={{ position: "absolute", inset: 0, transform: `translateX(${(1 - bascule) * 1568}px)` }}>{t > BASCULE && <Matrice t={t} />}</div>
         </div>
       </Carte>
     </Camera>
@@ -441,12 +469,16 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
 };
 
 export const Scene3: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 20.05 || t > 30.45) return null;
+  if (t < 20.05 || t > POUSSEE[1]) return null;
   const entree = entre(t, 20.05, 20.6, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
+  const poussee = entre(t, POUSSEE[0], POUSSEE[1], 0, 1, enDouceur);
+  const k = ouvertureDetail(t);
   return (
-    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateY(${entree * 1100}px)` }}>
+    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translate(${-poussee * 1920}px, ${entree * 1100}px)` }}>
       <Mur t={t} />
       <Tableau t={t} />
+      {/* Le tableau de bord s'assombrit pendant que la vue détaillée est ouverte. */}
+      <AbsoluteFill style={{ background: `rgba(30,16,51,${0.4 * k})` }} />
       <SousEtapes t={t} />
     </AbsoluteFill>
   );

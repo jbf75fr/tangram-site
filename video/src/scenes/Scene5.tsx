@@ -5,6 +5,11 @@ import { C, Camera, Curseur, Marque, PIECES_LOGO, POLICE, entre, hasard, ressort
 // Scène 5 (38 à 50 s) : « Comme au tangram, chaque retour trouve sa place » : les pièces du logo se posent
 // une à une au rythme de la voix, puis la phrase finale et l'invitation à l'essai gratuit.
 export const POSES = [38.0, 38.46, 39.38, 39.62, 39.96, 40.36, 41.2];
+// Centre de chaque pièce du logo, dans la grille de 32.
+const CENTRES = PIECES_LOGO.map((p) => {
+  const n = p.points.split(" ").map((c) => c.split(",").map(Number));
+  return [n.reduce((s, c) => s + c[0], 0) / n.length, n.reduce((s, c) => s + c[1], 0) / n.length];
+});
 const vif = (t: number, a: number, b: number) => entre(t, a, b, 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2));
 
 const MOTS_1 = [
@@ -33,7 +38,7 @@ const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, 
 );
 
 export const Scene5: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 37.6) return null;
+  if (t < 37.78) return null;
   // Le logo, d'abord grand au centre, rejoint le nom en haut.
   const range = vif(t, 43.3, 43.75);
   const taille = 340 + (110 - 340) * range;
@@ -46,7 +51,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   const onde = entre(t, clic, clic + 0.6, 0, 1);
 
   return (
-    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 37.6, 37.75, 0, 1) }}>
+    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden" }}>
       <Camera
         t={t}
         cles={[
@@ -61,11 +66,15 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
             // Chaque pièce arrive de loin et se pose sur un mot de la voix.
             const a = ressort(t, POSES[i] - 0.3, 12);
             const angle = hasard(i + 4) * Math.PI * 2;
-            const dx = Math.cos(angle) * 95;
-            const dy = Math.sin(angle) * 60;
+            // Jaillissement : les pièces partent du centre (là où la scène précédente s'est refermée)
+            // vers le bord, puis reviennent se poser une à une.
+            const jaillit = entre(t, 37.78, 38.2, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
+            const [cx0, cy0] = CENTRES[i];
+            const dx = (16 - cx0) + (Math.cos(angle) * 95 - (16 - cx0)) * jaillit;
+            const dy = (16 - cy0) + (Math.sin(angle) * 60 - (16 - cy0)) * jaillit;
             const r = (hasard(i + 19) - 0.5) * 540;
             return (
-              <g key={i} transform={`translate(${dx * (1 - a)} ${dy * (1 - a)})`} opacity={Math.min(1, a * 3)}>
+              <g key={i} transform={`translate(${dx * (1 - a)} ${dy * (1 - a)})`}>
                 <polygon
                   points={p.points}
                   fill={p.couleur}

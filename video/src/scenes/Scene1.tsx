@@ -117,8 +117,8 @@ const Crm: React.FC<{ t: number }> = ({ t }) => {
           width: 760,
           height: 700,
           overflow: "hidden",
-          opacity: a,
-          transform: `translateX(${(1 - a) * -200}px) scale(${1 + secousse(t, ARRIVEES.map((r) => r.debut + 0.45), 0.004)})`,
+          opacity: t > 2.78 ? 1 : 0,
+          transform: `translateX(${(1 - a) * -900}px) scale(${1 + secousse(t, ARRIVEES.map((r) => r.debut + 0.45), 0.004)})`,
         }}
       >
         <div style={{ height: 70, background: C.encre, display: "flex", alignItems: "center", padding: "0 28px", gap: 12 }}>

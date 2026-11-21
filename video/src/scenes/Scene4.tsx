@@ -1,9 +1,10 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe } from "../commun";
+import { POUSSEE } from "./Scene3";
 
 // Scène 4 (30 à 42 s) : l'équipe agit, mesure l'effet, partage, et l'expert tangram.cx l'accompagne.
-export const EXPERT = 37.76;
+export const EXPERT = 37.62;
 const EXPERT_Y = 945;
 const EQUIPES = [
   { nom: "Direction", initiales: "DG", couleur: C.iris, debut: 34.8 },
@@ -32,7 +33,7 @@ const cheminLisse = (l: number, h: number) => {
 };
 
 const CLES: Cle[] = [
-  [30.3, 610, 540, 2.4],
+  [30.0, 610, 540, 1.3],
   [30.8, 610, 540, 1.3],
   [31.9, 560, 700, 1.4],
   [32.2, 560, 700, 1.42],
@@ -41,12 +42,12 @@ const CLES: Cle[] = [
   [34.8, 1150, 540, 1.0],
   [37.3, 1150, 560, 0.98],
   [37.85, 1180, 600, 1.0],
-  [41.25, 1170, 590, 0.98],
-  [41.9, 960, 540, 0.25],
+  [41.45, 1170, 590, 0.98],
+  [41.78, 960, 540, 0.05],
 ];
 
 export const Scene4: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 30.25 || t > 41.95) return null;
+  if (t < 29.95 || t > 41.78) return null;
   const clic = 32.2;
   const mesure = entre(t, clic + 0.1, clic + 0.8, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const apres = -34 + 46 * mesure;
@@ -56,11 +57,10 @@ export const Scene4: React.FC<{ t: number }> = ({ t }) => {
   const vers = entre(t, 31.4, 32.05, 0, 1);
   const curseurX = 760 + (340 - 760) * vers;
   const curseurY = 980 + (830 - 980) * vers;
-  const sortie = entre(t, 41.5, 41.95, 0, 1);
   const expert = ressort(t, EXPERT, 11);
 
   return (
-    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", opacity: entre(t, 30.25, 30.4, 0, 1) * (1 - sortie) }}>
+    <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateX(${(1 - entre(t, POUSSEE[0], POUSSEE[1], 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2))) * 1920}px)` }}>
       <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.05, ...EQUIPES.map((e) => e.debut), EXPERT], 0.025)}>
         <Carte style={{ left: 150, top: 170, width: 920, height: 740, padding: "48px 56px", boxSizing: "border-box" }}>
           <div style={{ fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>Plan d'action</div>
