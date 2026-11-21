@@ -1,9 +1,9 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Camera, Carte, Cle, Logo, POLICE, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
+import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
 
-// Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, la frise du parcours d'achat,
-// une plongée dans l'étape Livraison et ses sous-étapes, puis un dézoom vers la matrice de priorisation.
+// Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
+// parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
 
 // ---------- Mur de commentaires ----------
 const COLONNES = 41;
@@ -89,7 +89,15 @@ const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: Re
   );
 };
 
-// ---------- Frise du parcours ----------
+// ---------- Parcours : une seule frise, parcourue par une pièce de tangram ----------
+// Pas de changement de vue : la caméra suit la pièce et plonge dans le creux de la Livraison,
+// où les sous-étapes se révèlent au fil du zoom (c'est le même tracé, vu de plus près).
+const X0 = 60;
+const LARGEUR = 1448;
+const COL = LARGEUR / 5;
+const ZERO = 250;
+const ECH = 3.4;
+const ECH_SOUS = 2.6;
 const ETAPES = [
   { nom: "S'informer", score: 22 },
   { nom: "Commander", score: 9 },
@@ -97,270 +105,220 @@ const ETAPES = [
   { nom: "Installation", score: 4 },
   { nom: "Service après-vente", score: -12 },
 ];
-const X0 = 60;
-const LARGEUR = 1448;
-const COL = LARGEUR / ETAPES.length;
-const ZERO = 250;
-const ECHELLE = 3.6;
-const PTS = ETAPES.map((e, i) => ({ x: X0 + COL / 2 + i * COL, y: ZERO - e.score * ECHELLE }));
-const COURBE = (() => {
-  let d = `M${X0},${PTS[0].y} L${PTS[0].x},${PTS[0].y}`;
-  for (let i = 0; i < PTS.length - 1; i++) {
-    const a = PTS[i];
-    const b = PTS[i + 1];
-    const m = (a.x + b.x) / 2;
-    d += ` C${m},${a.y} ${m},${b.y} ${b.x},${b.y}`;
-  }
-  return d + ` L${X0 + LARGEUR},${PTS[PTS.length - 1].y}`;
-})();
-const DEBUT_FRISE = 23.0;
-const DUREE_FRISE = 1.0;
-// Plongée dans l'étape Livraison, puis retour au tableau de bord.
-const PLONGEE = 24.5;
-const RETOUR = 27.6;
-
-const Frise: React.FC<{ t: number }> = ({ t }) => {
-  const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + DUREE_FRISE, 0, 1, (n) => n);
-  const alerte = ressort(t, 24.1, 9);
-  const pouls = t > 24.1 ? 0.5 + 0.5 * Math.sin((t - 24.1) * 8) : 0;
-  return (
-    <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-      <rect x={X0} y={90} width={LARGEUR} height={ZERO - 90} fill={C.vertFond} opacity={0.7} />
-      <rect x={X0} y={ZERO} width={LARGEUR} height={410 - ZERO} fill={C.rougeFond} opacity={0.7} />
-      <rect x={X0 + 2 * COL} y={ZERO} width={COL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte} />
-      <line x1={X0} x2={X0 + LARGEUR} y1={ZERO} y2={ZERO} stroke={C.encreDouce} strokeWidth={2} strokeDasharray="6 8" opacity={0.5} />
-      {ETAPES.slice(1).map((_, i) => (
-        <line key={i} x1={X0 + (i + 1) * COL} x2={X0 + (i + 1) * COL} y1={90} y2={410} stroke={C.blanc} strokeWidth={3} />
-      ))}
-      <path d={COURBE} fill="none" stroke={C.encre} strokeWidth={5} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
-      {ETAPES.map((e, i) => {
-        const p = PTS[i];
-        const a = ressort(t, DEBUT_FRISE + (DUREE_FRISE * (i + 0.5)) / ETAPES.length, 11);
-        const negatif = e.score < 0;
-        const couleur = negatif ? C.rouge : C.vert;
-        const livraison = i === 2;
-        const r = 16 * a * (livraison ? 1 + 0.4 * alerte : 1);
-        const yPastille = p.y - 52;
-        return (
-          <g key={e.nom}>
-            {livraison && t > 24.1 && <circle cx={p.x} cy={p.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
-            <circle cx={p.x} cy={p.y} r={r} fill={couleur} stroke={C.blanc} strokeWidth={4} />
-            <g opacity={a} transform={`translate(${p.x} ${yPastille}) scale(${(0.6 + 0.4 * a) * (livraison ? 1 + 0.3 * alerte : 1)})`}>
-              <rect x={-48} y={-22} width={96} height={44} rx={22} fill={C.blanc} stroke={C.grisClair} strokeWidth={2} />
-              <text x={0} y={9} textAnchor="middle" fontSize={26} fontWeight={800} fill={negatif ? C.rougeTexte : C.vertTexte} fontFamily="Figtree">
-                {signe(e.score)}
-              </text>
-            </g>
-            <g opacity={ressort(t, 23.0 + i * 0.06)}>
-              <circle cx={p.x} cy={452} r={18} fill={C.beurre} />
-              <text x={p.x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
-                {i + 1}
-              </text>
-              <text x={p.x} y={505} textAnchor="middle" fontSize={26} fontWeight={700} fill={C.encre} fontFamily="Figtree">
-                {e.nom}
-              </text>
-            </g>
-          </g>
-        );
-      })}
-    </svg>
-  );
-};
-
-// ---------- Matrice de priorisation ----------
-const MX0 = 120;
-const MX1 = 1508;
-const MY0 = 90;
-const MY1 = 470;
-const MILIEU_X = 760;
-const MILIEU_Y = 270;
-const LIVRAISON = { x: 1290, y: 420 };
-const BULLES = [
-  { nom: "Délais de livraison", x: LIVRAISON.x, y: LIVRAISON.y, couleur: C.rouge },
-  { nom: "Accueil et conseil", x: 1240, y: 140, couleur: C.vert },
-  { nom: "Prix", x: 930, y: 330, couleur: C.rouge },
-  { nom: "Service après-vente", x: 300, y: 175, couleur: C.iris },
-  { nom: "Site et application", x: 450, y: 235, couleur: C.iris },
-  { nom: "Disponibilité des produits", x: 260, y: 370, couleur: C.encreDouce },
-];
-const QUADRANTS = [
-  { nom: "Maintenir", x: MX0 + 20, y: MY0 + 36, ancre: "start", couleur: C.iris },
-  { nom: "Capitaliser", x: MX1 - 20, y: MY0 + 36, ancre: "end", couleur: C.vertTexte },
-  { nom: "Surveiller", x: MX0 + 20, y: MY1 - 18, ancre: "start", couleur: C.encreDouce },
-  { nom: "Agir vite", x: MX1 - 20, y: MY1 - 18, ancre: "end", couleur: C.rougeTexte },
-];
-
-const Matrice: React.FC<{ t: number }> = ({ t }) => {
-  const priorite = ressort(t, 28.95, 9);
-  const pouls = t > 28.95 ? 0.5 + 0.5 * Math.sin((t - 28.95) * 7) : 0;
-  return (
-    <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-      <rect x={MILIEU_X} y={MILIEU_Y} width={MX1 - MILIEU_X} height={MY1 - MILIEU_Y} fill={C.rougeFond} opacity={0.4 + 0.6 * priorite} />
-      <line x1={MX0} x2={MX1} y1={MY1} y2={MY1} stroke={C.gris} strokeWidth={3} />
-      <line x1={MX0} x2={MX0} y1={MY0} y2={MY1} stroke={C.gris} strokeWidth={3} />
-      <line x1={MILIEU_X} x2={MILIEU_X} y1={MY0} y2={MY1} stroke={C.encreDouce} strokeWidth={2} strokeDasharray="6 8" opacity={0.5} />
-      <line x1={MX0} x2={MX1} y1={MILIEU_Y} y2={MILIEU_Y} stroke={C.encreDouce} strokeWidth={2} strokeDasharray="6 8" opacity={0.5} />
-      <text x={MX1} y={MY1 + 40} textAnchor="end" fontSize={22} fontWeight={600} fill={C.encreDouce} fontFamily="Figtree">
-        Volume →
-      </text>
-      {QUADRANTS.map((q, i) => (
-        <text
-          key={q.nom}
-          x={q.x}
-          y={q.y}
-          textAnchor={q.ancre as "start" | "end"}
-          fontSize={q.nom === "Agir vite" ? 30 + 6 * priorite : 26}
-          fontWeight={800}
-          fill={q.couleur}
-          fontFamily="Figtree"
-          opacity={ressort(t, 28.55 + i * 0.04)}
-        >
-          {q.nom}
-        </text>
-      ))}
-      {BULLES.map((b, i) => {
-        const a = ressort(t, 28.6 + i * 0.05, 11);
-        const premiere = i === 0;
-        const r = 18 * a * (premiere ? 1 + 0.5 * priorite : 1);
-        return (
-          <g key={b.nom} opacity={Math.min(1, a * 2) * (premiere ? 1 : entre(t, 29.05, 29.35, 1, 0.45))}>
-            {premiere && t > 28.95 && <circle cx={b.x} cy={b.y} r={r + 10 + 14 * pouls} fill="none" stroke={C.rouge} strokeWidth={4} opacity={0.5 * (1 - pouls)} />}
-            <circle cx={b.x} cy={b.y} r={r} fill={b.couleur} stroke={C.blanc} strokeWidth={4} />
-            <text x={b.x < MILIEU_X ? b.x + r + 14 : b.x - r - 14} y={b.y + 9} textAnchor={b.x < MILIEU_X ? "start" : "end"} fontSize={premiere ? 28 : 24} fontWeight={premiere ? 800 : 700} fill={C.encre} fontFamily="Figtree">
-              {b.nom}
-            </text>
-          </g>
-        );
-      })}
-      <g opacity={priorite} transform={`translate(${LIVRAISON.x - 280} ${LIVRAISON.y - 70}) scale(${0.5 + 0.5 * priorite})`}>
-        <rect x={0} y={0} width={150} height={44} rx={22} fill={C.encre} />
-        <text x={75} y={30} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.beurre} fontFamily="Figtree">
-          Priorité
-        </text>
-      </g>
-    </svg>
-  );
-};
-
-// ---------- Sous-étapes de la Livraison (vue zoomée) ----------
-const SOUS_ETAPES = [
+const SOUS = [
   { nom: "Expédition", score: -8 },
   { nom: "Délai de livraison", score: -52 },
   { nom: "Suivi du colis", score: -21 },
   { nom: "Remise", score: 12 },
 ];
-const SX0 = 150;
-const SL = 1620;
-const SCOL = SL / SOUS_ETAPES.length;
-const SZERO = 520;
-const SECH = 4.6;
-const SPTS = SOUS_ETAPES.map((e, i) => ({ x: SX0 + SCOL / 2 + i * SCOL, y: SZERO - e.score * SECH }));
-const SCOURBE = (() => {
-  let d = `M${SX0},${SPTS[0].y} L${SPTS[0].x},${SPTS[0].y}`;
-  for (let i = 0; i < SPTS.length - 1; i++) {
-    const a = SPTS[i];
-    const b = SPTS[i + 1];
-    const m = (a.x + b.x) / 2;
-    d += ` C${m},${a.y} ${m},${b.y} ${b.x},${b.y}`;
+const L0 = X0 + 2 * COL;
+const SCOL = COL / 4;
+const centreEtape = (i: number) => X0 + COL / 2 + i * COL;
+const PTS_SOUS = SOUS.map((e, i) => ({ x: L0 + SCOL / 2 + i * SCOL, y: ZERO - e.score * ECH_SOUS }));
+// Deux versions du même tracé : de loin, une courbe lisse dont le creux est la Livraison (-34) ;
+// de près, le creux révèle les sous-étapes. On passe de l'une à l'autre avec le zoom.
+type Point = { x: number; y: number };
+const yBezier = (pts: Point[], x: number) => {
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1];
+    const b = pts[i];
+    if (x <= b.x) {
+      const m = (a.x + b.x) / 2;
+      let bas = 0;
+      let haut = 1;
+      for (let k = 0; k < 30; k++) {
+        const u = (bas + haut) / 2;
+        const v = 1 - u;
+        const xu = v * v * v * a.x + 3 * v * v * u * m + 3 * v * u * u * m + u * u * u * b.x;
+        if (xu < x) bas = u;
+        else haut = u;
+      }
+      const u = (bas + haut) / 2;
+      const v = 1 - u;
+      return v * v * v * a.y + 3 * v * v * u * a.y + 3 * v * u * u * b.y + u * u * u * b.y;
+    }
   }
-  return d + ` L${SX0 + SL},${SPTS[SPTS.length - 1].y}`;
-})();
+  return pts[pts.length - 1].y;
+};
+const DEBUT_TRACE = { x: X0, y: ZERO - 22 * ECH };
+const FIN_TRACE = { x: X0 + LARGEUR, y: ZERO + 12 * ECH };
+const ETAPES_PTS = ETAPES.map((e, i) => ({ x: centreEtape(i), y: ZERO - e.score * ECH }));
+const LISSE = [DEBUT_TRACE, ...ETAPES_PTS, FIN_TRACE];
+const traceA = (d: number): Point[] => [
+  DEBUT_TRACE,
+  ETAPES_PTS[0],
+  ETAPES_PTS[1],
+  ...PTS_SOUS.map((p) => ({ x: p.x, y: yBezier(LISSE, p.x) + (p.y - yBezier(LISSE, p.x)) * d })),
+  ETAPES_PTS[3],
+  ETAPES_PTS[4],
+  FIN_TRACE,
+];
+const chemin = (pts: Point[]) =>
+  pts.reduce((c, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${c} C${(pts[i - 1].x + p.x) / 2},${pts[i - 1].y} ${(pts[i - 1].x + p.x) / 2},${p.y} ${p.x},${p.y}`), "");
+
+const DEBUT_FRISE = 23.0;
 const PIRE = 25.9;
 const CITATION = 26.45;
+const DEPART_CITATION = 27.3;
+const lisse = (n: number) => n * n * (3 - 2 * n);
+const accelere = (n: number) => n * n;
+// Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
+const TRAJET: [number, number, (n: number) => number][] = [
+  [24.0, X0 + 4, lisse],
+  [24.55, centreEtape(1), lisse],
+  [25.25, PTS_SOUS[0].x, accelere],
+  [PIRE, PTS_SOUS[1].x, lisse],
+  [27.35, PTS_SOUS[1].x, lisse],
+  [27.75, PTS_SOUS[2].x, lisse],
+  [28.1, PTS_SOUS[3].x, accelere],
+  [28.6, centreEtape(3), lisse],
+  [29.1, centreEtape(4), lisse],
+  [29.6, X0 + LARGEUR - 24, lisse],
+];
+const xPiece = (t: number) => {
+  if (t <= TRAJET[0][0]) return TRAJET[0][1];
+  for (let i = 1; i < TRAJET.length; i++) {
+    const [t1, x1, f] = TRAJET[i];
+    const [t0, x0] = TRAJET[i - 1];
+    if (t <= t1) return x0 + (x1 - x0) * f((t - t0) / (t1 - t0));
+  }
+  return TRAJET[TRAJET.length - 1][1];
+};
 
-// Transition « conteneur qui s'agrandit » : la colonne Livraison de la frise devient elle-même
-// la vue détaillée, en grandissant jusqu'au plein écran pendant que le tableau de bord s'assombrit ;
-// le contenu n'apparaît qu'une fois le conteneur ouvert. La sortie est exactement le geste inverse.
-const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2);
-// Position à l'écran de la colonne Livraison (caméra du tableau de bord : centre 960 x 660, zoom 1,14).
-const COLONNE = (() => {
-  const z = 1.14;
-  const x0 = 140 + 36 + X0 + 2 * COL;
-  const y0 = 90 + 322 + 90;
-  const x1 = x0 + COL;
-  const y1 = 90 + 322 + 410;
-  const ecranX = (x: number) => 960 + (x - 960) * z;
-  const ecranY = (y: number) => 540 + (y - 660) * z;
-  return { x: ecranX(x0), y: ecranY(y0), l: ecranX(x1) - ecranX(x0), h: ecranY(y1) - ecranY(y0) };
-})();
-const OUVRE = [PLONGEE, PLONGEE + 0.6];
-const FERME = [RETOUR + 0.1, RETOUR + 0.65];
-export const ouvertureDetail = (t: number) =>
-  entre(t, OUVRE[0], OUVRE[1], 0, 1, enDouceur) * (1 - entre(t, FERME[0], FERME[1], 0, 1, enDouceur));
-const melange = (a: number[], b: number[], k: number) => `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * k)).join(",")})`;
+// Caméra du tableau de bord (coordonnées de la page) : la colonne Livraison est centrée en x = 960.
+const CLES_TABLEAU: Cle[] = [
+  [22.9, 960, 540, 1.0],
+  [23.3, 960, 640, 1.12],
+  [24.55, 960, 660, 1.14],
+  [25.3, 960, 732, 4.2],
+  [27.55, 960, 732, 4.2],
+  [28.4, 960, 660, 1.14],
+  [30.45, 1000, 680, 1.2],
+];
+// Origine de la frise dans la page.
+const OX = 140 + 36;
+const OY = 90 + 322;
 
-const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
-  if (t < OUVRE[0] || t > FERME[1]) return null;
-  const k = ouvertureDetail(t);
-  const contenu = entre(t, OUVRE[1] - 0.2, OUVRE[1] + 0.05, 0, 1) * entre(t, RETOUR - 0.1, RETOUR + 0.08, 1, 0);
-  const g = COLONNE.x * (1 - k);
-  const h = COLONNE.y * (1 - k);
-  const l = COLONNE.l + (1920 - COLONNE.l) * k;
-  const ht = COLONNE.h + (1080 - COLONNE.h) * k;
-  const trace = entre(t, 25.05, 25.75, 0, 1, (n) => n);
+const Frise: React.FC<{ t: number }> = ({ t }) => {
+  const z = camera(t, CLES_TABLEAU).z;
+  const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + 1.0, 0, 1, (n) => n);
+  const principal = 1 - entre(z, 1.3, 2.0, 0, 1);
+  const detail = entre(z, 2.0, 3.4, 0, 1);
+  // Le creux se transforme dès que la caméra commence à plonger.
+  const forme = entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n));
+  const pts = traceA(forme);
+  const yAuPoint = (x: number) => yBezier(pts, x);
   const alerte = ressort(t, PIRE, 9);
   const pouls = t > PIRE ? 0.5 + 0.5 * Math.sin((t - PIRE) * 8) : 0;
-  const citation = ressort(t, CITATION, 12);
-  const p = SPTS[1];
+  const approche = ressort(t, 24.3, 10);
+  // La pièce : un triangle du logo, posé sur le tracé et incliné selon la pente.
+  const xp = xPiece(t);
+  const yp = yAuPoint(xp);
+  const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
+  const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
+  const taille = 26 / z;
+  const visible = ressort(t, 23.9, 11);
+  const ty = (p: { y: number }) => p.y;
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: g,
-        top: h,
-        width: l,
-        height: ht,
-        overflow: "hidden",
-        borderRadius: 18 * (1 - k),
-        background: melange([248, 214, 210], [255, 255, 255], Math.min(1, k * 1.4)),
-        boxShadow: `0 30px 80px rgba(30,16,51,${0.35 * Math.sin(Math.PI * k)})`,
-      }}
-    >
-    <div style={{ position: "absolute", left: -g, top: -h, width: 1920, height: 1080, opacity: contenu, transform: `translateY(${(1 - contenu) * 24}px)` }}>
-      <div style={{ position: "absolute", left: SX0, top: 110, display: "flex", alignItems: "center", gap: 22 }}>
-        <div style={{ width: 64, height: 64, borderRadius: 32, background: C.beurre, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 800 }}>3</div>
-        <div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: C.encreDouce }}>Sous-étapes du parcours</div>
-          <div style={{ fontSize: 60, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.05 }}>Livraison</div>
-        </div>
-      </div>
-      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
-        <rect x={SX0} y={290} width={SL} height={SZERO - 290} fill={C.vertFond} opacity={0.8} />
-        <rect x={SX0} y={SZERO} width={SL} height={850 - SZERO} fill={C.rougeFond} opacity={0.8} />
-        <rect x={SX0 + SCOL} y={SZERO} width={SCOL} height={850 - SZERO} fill={C.rouge} opacity={0.2 * alerte} />
-        <line x1={SX0} x2={SX0 + SL} y1={SZERO} y2={SZERO} stroke={C.encreDouce} strokeWidth={2} strokeDasharray="8 10" opacity={0.5} />
-        {SOUS_ETAPES.slice(1).map((_, i) => (
-          <line key={i} x1={SX0 + (i + 1) * SCOL} x2={SX0 + (i + 1) * SCOL} y1={290} y2={850} stroke={C.blanc} strokeWidth={4} />
-        ))}
-        <path d={SCOURBE} fill="none" stroke={C.encre} strokeWidth={7} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
-        {SOUS_ETAPES.map((e, i) => {
-          const q = SPTS[i];
-          const a = ressort(t, 25.05 + (0.7 * (i + 0.5)) / SOUS_ETAPES.length, 11);
-          const pire = i === 1;
-          const r = 22 * a * (pire ? 1 + 0.45 * alerte : 1);
+    <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+      <rect x={X0} y={90} width={LARGEUR} height={ZERO - 90} fill={C.vertFond} opacity={0.7} />
+      <rect x={X0} y={ZERO} width={LARGEUR} height={410 - ZERO} fill={C.rougeFond} opacity={0.7} />
+      <rect x={L0} y={ZERO} width={COL} height={410 - ZERO} fill={C.rouge} opacity={0.14 * approche} />
+      <line x1={X0} x2={X0 + LARGEUR} y1={ZERO} y2={ZERO} stroke={C.encreDouce} strokeWidth={2 / Math.max(1, z * 0.6)} strokeDasharray="6 8" opacity={0.5} />
+      {ETAPES.slice(1).map((_, i) => (
+        <line key={i} x1={X0 + (i + 1) * COL} x2={X0 + (i + 1) * COL} y1={90} y2={410} stroke={C.blanc} strokeWidth={3} />
+      ))}
+      {/* Séparations des sous-étapes, visibles en s'approchant. */}
+      {SOUS.slice(1).map((_, i) => (
+        <line key={i} x1={L0 + (i + 1) * SCOL} x2={L0 + (i + 1) * SCOL} y1={90} y2={410} stroke={C.blanc} strokeWidth={0.8} opacity={detail} />
+      ))}
+      <rect x={L0 + SCOL} y={ZERO} width={SCOL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte * detail} />
+      <path d={chemin(pts)} fill="none" stroke={C.encre} strokeWidth={5 / Math.max(1, z * 0.55)} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
+
+      {/* Étapes principales : points, scores, numéros et noms. Ils s'effacent quand on s'approche. */}
+      <g opacity={principal}>
+        {ETAPES.map((e, i) => {
+          const x = centreEtape(i);
+          const y = i === 2 ? yAuPoint(x) : ty({ y: ZERO - e.score * ECH });
+          const a = ressort(t, DEBUT_FRISE + (1.0 * (i + 0.5)) / 5, 11);
+          const negatif = e.score < 0;
           return (
             <g key={e.nom}>
-              {pire && t > PIRE && <circle cx={q.x} cy={q.y} r={r + 14 + 20 * pouls} fill="none" stroke={C.rouge} strokeWidth={5} opacity={0.5 * (1 - pouls)} />}
-              <circle cx={q.x} cy={q.y} r={r} fill={e.score < 0 ? C.rouge : C.vert} stroke={C.blanc} strokeWidth={5} />
-              <g opacity={a} transform={`translate(${q.x} ${q.y - 64}) scale(${(0.6 + 0.4 * a) * (pire ? 1 + 0.35 * alerte : 1)})`}>
-                <rect x={-62} y={-28} width={124} height={56} rx={28} fill={C.blanc} stroke={C.grisClair} strokeWidth={2} />
-                <text x={0} y={11} textAnchor="middle" fontSize={32} fontWeight={800} fill={e.score < 0 ? C.rougeTexte : C.vertTexte} fontFamily="Figtree">
+              <circle cx={x} cy={y} r={14 * a} fill={negatif ? C.rouge : C.vert} stroke={C.blanc} strokeWidth={4} />
+              <g opacity={a} transform={`translate(${x} ${y - 50}) scale(${0.6 + 0.4 * a})`}>
+                <rect x={-46} y={-21} width={92} height={42} rx={21} fill={C.blanc} stroke={C.grisClair} strokeWidth={2} />
+                <text x={0} y={9} textAnchor="middle" fontSize={25} fontWeight={800} fill={negatif ? C.rougeTexte : C.vertTexte} fontFamily="Figtree">
                   {signe(e.score)}
                 </text>
               </g>
-              <text x={q.x} y={915} textAnchor="middle" fontSize={32} fontWeight={700} fill={C.encre} fontFamily="Figtree" opacity={ressort(t, 24.9 + i * 0.06)}>
+              <g opacity={ressort(t, 22.9 + i * 0.05)}>
+                <circle cx={x} cy={452} r={18} fill={C.beurre} />
+                <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
+                  {i + 1}
+                </text>
+                <text x={x} y={505} textAnchor="middle" fontSize={26} fontWeight={700} fill={C.encre} fontFamily="Figtree">
+                  {e.nom}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+      </g>
+
+      {/* Sous-étapes de la Livraison, à l'échelle du zoom (environ 4 fois). */}
+      <g opacity={detail}>
+        {SOUS.map((e, i) => {
+          const p = PTS_SOUS[i];
+          const pire = i === 1;
+          const negatif = e.score < 0;
+          const r = 4.2 * (pire ? 1 + 0.45 * alerte : 1);
+          return (
+            <g key={e.nom}>
+              {pire && t > PIRE && <circle cx={p.x} cy={p.y} r={r + 3 + 4 * pouls} fill="none" stroke={C.rouge} strokeWidth={1.2} opacity={0.5 * (1 - pouls)} />}
+              <circle cx={p.x} cy={p.y} r={r} fill={negatif ? C.rouge : C.vert} stroke={C.blanc} strokeWidth={1.2} />
+              <g transform={`translate(${p.x} ${p.y - 15}) scale(${pire ? 1 + 0.3 * alerte : 1})`}>
+                <rect x={-12} y={-6} width={24} height={12} rx={6} fill={C.blanc} stroke={C.grisClair} strokeWidth={0.5} />
+                <text x={0} y={2.6} textAnchor="middle" fontSize={7.4} fontWeight={800} fill={negatif ? C.rougeTexte : C.vertTexte} fontFamily="Figtree">
+                  {signe(e.score)}
+                </text>
+              </g>
+              <text x={p.x} y={p.y + 19} textAnchor="middle" fontSize={6.2} fontWeight={700} fill={C.encre} fontFamily="Figtree">
                 {e.nom}
               </text>
             </g>
           );
         })}
+      </g>
+
+      {/* La pièce de tangram qui parcourt le tracé. */}
+      <g
+        opacity={Math.min(1, visible * 2)}
+        transform={`translate(${xp} ${yp}) rotate(${(pente * 180) / Math.PI + secousseImpact}) scale(${taille * (0.5 + 0.5 * visible)})`}
+      >
+        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+      </g>
+    </svg>
+  );
+};
+
+// La phrase du client, accrochée au point le plus bas (position à l'écran pendant le zoom).
+const Citation: React.FC<{ t: number }> = ({ t }) => {
+  if (t < CITATION || t > DEPART_CITATION + 0.3) return null;
+  const a = ressort(t, CITATION, 12) * (1 - entre(t, DEPART_CITATION, DEPART_CITATION + 0.25, 0, 1));
+  const p = PTS_SOUS[1];
+  const z = 4.2;
+  const sx = 960 + (OX + p.x - 960) * z;
+  const sy = 540 + (OY + p.y - 732) * z;
+  return (
+    <>
+      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+        <line x1={sx - 30} y1={sy - 10} x2={700} y2={sy - 70} stroke={C.encre} strokeWidth={3} strokeDasharray="3 8" strokeLinecap="round" opacity={a} />
       </svg>
-      {/* La phrase du client du début vient se poser sur la sous-étape qui décroche. */}
       <div
         style={{
           position: "absolute",
-          left: p.x + 50,
-          top: p.y + 42,
+          right: 1920 - 700,
+          top: sy - 108,
           display: "flex",
           alignItems: "center",
           gap: 14,
@@ -369,41 +327,32 @@ const SousEtapes: React.FC<{ t: number }> = ({ t }) => {
           background: C.encre,
           color: C.blanc,
           boxShadow: "0 18px 40px rgba(30,16,51,0.25)",
-          opacity: Math.min(1, citation * 2),
-          transform: `translate(${(1 - citation) * -260}px, ${(1 - citation) * -180}px) scale(${0.6 + 0.4 * citation}) rotate(${(1 - citation) * -8}deg)`,
-          transformOrigin: "0 50%",
+          opacity: Math.min(1, a * 2),
+          transform: `translateX(${(1 - a) * -60}px) scale(${0.7 + 0.3 * a})`,
+          transformOrigin: "100% 50%",
+          whiteSpace: "nowrap",
         }}
       >
         <span style={{ fontSize: 22, fontWeight: 700, color: C.beurre }}>Note : 6 / 10</span>
         <span style={{ fontSize: 34, fontWeight: 700 }}>« trois semaines pour être livré »</span>
       </div>
-    </div>
-    </div>
+    </>
   );
 };
 
 // ---------- Tableau de bord ----------
-const BASCULE = 28.4;
 // Passage à la scène 4 : la scène 3 est poussée vers la gauche.
 export const POUSSEE = [30.0, 30.45];
+const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2);
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 22.5) return null;
+  if (t < 22.3) return null;
   const fenetre = ressort(t, 22.35, 13);
   const compte = entre(t, 22.42, 23.8, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
   const remplissage = entre(t, 22.8, 23.6, 0, 1);
-  const bascule = entre(t, BASCULE, BASCULE + 0.45, 0, 1, enDouceur);
   const carte = ressort(t, 22.45, 13);
-  const cles: Cle[] = [
-    [22.9, 960, 540, 1.0],
-    [23.3, 960, 640, 1.12],
-    [24.2, 960, 660, 1.14],
-    [BASCULE + 0.3, 960, 660, 1.14],
-    [BASCULE + 0.8, 1000, 740, 1.15],
-    [POUSSEE[1], 1040, 760, 1.25],
-  ];
   return (
-    <Camera t={t} cles={cles} extra={secousse(t, [24.1, 28.95], 0.02)}>
+    <Camera t={t} cles={CLES_TABLEAU} extra={secousse(t, [PIRE], 0.015)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
@@ -431,7 +380,6 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14, color: C.rougeTexte }}>{fmt(compte * 0.15)}</div>
           </Indicateur>
         </div>
-
         <div
           style={{
             position: "absolute",
@@ -442,26 +390,12 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             borderRadius: 22,
             border: `2px solid ${C.grisClair}`,
             boxSizing: "border-box",
-            overflow: "hidden",
             opacity: Math.min(1, carte * 2),
             transform: `translateY(${(1 - carte) * 60}px)`,
           }}
         >
-          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800 }}>
-            <span style={{ display: "inline-block", opacity: 1 - bascule, transform: `translateX(${-bascule * 40}px)` }}>Parcours client</span>
-            <span style={{ position: "absolute", left: 0, top: 0, whiteSpace: "nowrap", opacity: bascule, transform: `translateX(${(1 - bascule) * 40}px)` }}>Matrice de priorisation</span>
-          </div>
-          <div style={{ position: "absolute", right: 34, top: 20, width: 300, height: 52, borderRadius: 999, background: C.grisClair }}>
-            <div style={{ position: "absolute", top: 4, left: 4 + 146 * bascule, width: 146, height: 44, borderRadius: 999, background: C.encre }} />
-            {["Frise", "Matrice"].map((v, i) => (
-              <div key={v} style={{ position: "absolute", top: 0, left: i * 150, width: 150, height: 52, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, color: (i === 0 ? 1 - bascule : bascule) > 0.5 ? C.blanc : C.encreDouce }}>
-                {v}
-              </div>
-            ))}
-          </div>
-          {/* Frise et matrice glissent côte à côte, comme un carrousel. */}
-          <div style={{ position: "absolute", inset: 0, transform: `translateX(${-bascule * 1568}px)` }}>{t < BASCULE + 0.5 && <Frise t={t} />}</div>
-          <div style={{ position: "absolute", inset: 0, transform: `translateX(${(1 - bascule) * 1568}px)` }}>{t > BASCULE && <Matrice t={t} />}</div>
+          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800 }}>Parcours client</div>
+          <Frise t={t} />
         </div>
       </Carte>
     </Camera>
@@ -472,14 +406,11 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
   if (t < 20.05 || t > POUSSEE[1]) return null;
   const entree = entre(t, 20.05, 20.6, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
   const poussee = entre(t, POUSSEE[0], POUSSEE[1], 0, 1, enDouceur);
-  const k = ouvertureDetail(t);
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translate(${-poussee * 1920}px, ${entree * 1100}px)` }}>
       <Mur t={t} />
       <Tableau t={t} />
-      {/* Le tableau de bord s'assombrit pendant que la vue détaillée est ouverte. */}
-      <AbsoluteFill style={{ background: `rgba(30,16,51,${0.4 * k})` }} />
-      <SousEtapes t={t} />
+      <Citation t={t} />
     </AbsoluteFill>
   );
 };
