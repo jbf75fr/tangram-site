@@ -18,12 +18,12 @@ const APRES = 37.4;
 
 // Passages où la voix parle : la musique baisse dessous (voir voix/texte.txt).
 const VOIX: [number, number][] = [
-  [0.25, 2.6],
-  [3.5, 9.7],
-  [10.4, 18.1],
-  [21.0, 27.9],
-  [30.5, 40.4],
-  [42.2, 51.4],
+  [0.25, 2.5],
+  [3.3, 10.6],
+  [10.4, 18.5],
+  [21.0, 28.4],
+  [30.6, 41.6],
+  [42.2, 51.8],
 ];
 
 const volumeMusique = (f: number) => {
@@ -64,16 +64,16 @@ const BRUITS: [number, string, number][] = [
   [25.9, "pop", 0.4],
   [27.7, "whoosh", 0.2],
   [29.95, "whoosh", 0.4],
-  [32.2, "clic", 0.55],
-  [33.0, "succes", 0.35],
-  [34.3, "whoosh", 0.35],
-  [34.8, "pop", 0.35],
-  [35.15, "pop", 0.35],
-  [35.5, "pop", 0.35],
+  [32.3, "clic", 0.55],
+  [33.1, "succes", 0.35],
+  [35.1, "whoosh", 0.35],
+  [35.6, "pop", 0.35],
+  [35.95, "pop", 0.35],
+  [36.3, "pop", 0.35],
   [37.45, "whoosh", 0.45],
   [POSES[POSES.length - 1], "pop", 0.35],
-  [44.62, "pop", 0.4],
-  [47.8, "clic", 0.55],
+  [45.42, "pop", 0.4],
+  [48.55, "clic", 0.55],
 ];
 
 export const Introduction: React.FC = () => {

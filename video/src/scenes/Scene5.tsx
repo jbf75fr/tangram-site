@@ -4,7 +4,7 @@ import { C, Camera, Curseur, Marque, PIECES_LOGO, POLICE, entre, hasard, ressort
 
 // Scène 5 (38 à 50 s) : « Comme au tangram, chaque retour trouve sa place » : des cartes de commentaires
 // forment une à une les pièces du logo au rythme de la voix, puis la phrase finale et l'essai gratuit.
-export const POSES = [38.0, 38.46, 39.18, 39.44, 39.78, 40.2, 40.82];
+export const POSES = [38.0, 38.46, 39.26, 39.5, 39.84, 40.24, 41.14];
 // Centre de chaque pièce du logo, dans la grille de 32.
 const CENTRES = PIECES_LOGO.map((p) => {
   const n = p.points.split(" ").map((c) => c.split(",").map(Number));
@@ -82,15 +82,15 @@ const Retours: React.FC<{ t: number }> = ({ t }) => {
 };
 
 const MOTS_1 = [
-  { mot: "Vos", t: 43.26 },
-  { mot: "clients", t: 43.4 },
-  { mot: "vous", t: 43.7 },
-  { mot: "parlent.", t: 43.86 },
+  { mot: "Vos", t: 44.06 },
+  { mot: "clients", t: 44.22 },
+  { mot: "vous", t: 44.52 },
+  { mot: "parlent.", t: 44.68 },
 ];
 const MOTS_2 = [
-  { mot: "Passez", t: 46.38 },
-  { mot: "à", t: 46.64 },
-  { mot: "l'action.", t: 46.7 },
+  { mot: "Passez", t: 47.14 },
+  { mot: "à", t: 47.4 },
+  { mot: "l'action.", t: 47.46 },
 ];
 
 const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, mots }) => (
@@ -109,14 +109,14 @@ const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, 
 export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   if (t < 37.78) return null;
   // Le logo, d'abord grand au centre, rejoint le nom en haut.
-  const range = vif(t, 42.8, 43.25);
+  const range = vif(t, 43.6, 44.05);
   const taille = 340 + (110 - 340) * range;
   const cx = 960 + (775 - 960) * range;
   const cy = 470 + (170 - 470) * range;
-  const marque = ressort(t, 43.0, 13);
-  const bouton = ressort(t, 44.62, 10);
-  const clic = 47.8;
-  const vers = entre(t, 46.95, 47.6, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
+  const marque = ressort(t, 43.8, 13);
+  const bouton = ressort(t, 45.42, 10);
+  const clic = 48.55;
+  const vers = entre(t, 47.7, 48.35, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const onde = entre(t, clic, clic + 0.6, 0, 1);
 
   return (
@@ -128,7 +128,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
           [42.6, 960, 540, 1.0],
           [50, 960, 540, 1.0],
         ]}
-        extra={secousse(t, [...POSES, 41.9, 44.62, clic], 0.02)}
+        extra={secousse(t, [...POSES, 42.4, 45.42, clic], 0.02)}
       >
         <Retours t={t} />
         <svg width={taille} height={taille} viewBox="-1 -1 34 34" style={{ position: "absolute", left: cx - taille / 2, top: cy - taille / 2, overflow: "visible" }}>
@@ -163,7 +163,7 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
                 backgroundImage: `linear-gradient(${C.beurre}, ${C.beurre})`,
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "0 90%",
-                backgroundSize: `${entre(t, 46.85, 47.25, 0, 100)}% 20px`,
+                backgroundSize: `${entre(t, 47.6, 48.0, 0, 100)}% 20px`,
               }}
             >
               <Mots t={t} mots={MOTS_2} />
@@ -179,13 +179,13 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
             </div>
           </div>
         </div>
-        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 45.5, 45.8, 0, 1), transform: `translateY(${entre(t, 45.5, 45.8, 20, 0)}px)` }}>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 820, textAlign: "center", fontSize: 36, fontWeight: 700, color: C.encreDouce, opacity: entre(t, 46.2, 46.5, 0, 1), transform: `translateY(${entre(t, 46.2, 46.5, 20, 0)}px)` }}>
           <span style={{ color: C.iris }}>500 commentaires</span> analysés gratuitement
         </div>
-        <div style={{ position: "absolute", left: 0, right: 0, top: 878, textAlign: "center", fontSize: 30, fontWeight: 600, color: C.encreDouce, opacity: entre(t, 46.0, 46.3, 0, 1), transform: `translateY(${entre(t, 46.0, 46.3, 20, 0)}px)` }}>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 878, textAlign: "center", fontSize: 30, fontWeight: 600, color: C.encreDouce, opacity: entre(t, 46.6, 46.9, 0, 1), transform: `translateY(${entre(t, 46.6, 46.9, 20, 0)}px)` }}>
           Un expert vous accompagne dès l'essai.
         </div>
-        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 46.8, 46.95, 0, 1)} />
+        <Curseur x={1500 + (1080 - 1500) * vers} y={1000 + (720 - 1000) * vers} appui={t > clic && t < clic + 0.15} opacite={entre(t, 47.6, 47.75, 0, 1)} />
       </Camera>
     </AbsoluteFill>
   );

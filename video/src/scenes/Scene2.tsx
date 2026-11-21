@@ -13,7 +13,7 @@ const MORCEAUX: Morceau[] = [
   { texte: " mais " },
   { texte: "trois semaines pour être livré.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 13.2 } },
   { texte: " " },
-  { texte: "Je ne recommanderai pas.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 16.26 } },
+  { texte: "Je ne recommanderai pas.", surligne: { fond: "rgba(229,88,77,0.32)", couleur: ROUGE_CLAIR, debut: 16.46 } },
 ];
 const TOTAL = MORCEAUX.reduce((n, m) => n + m.texte.length, 0);
 
@@ -21,10 +21,10 @@ type Etiquette = { debut: number; libelle: string; valeur: string; fond: string;
 
 const ETIQUETTES: Etiquette[] = [
   { debut: 13.06, libelle: "Étape du parcours", valeur: "Accueil et Livraison", fond: C.iris, encre: C.blanc, piece: C.beurre, rotation: 0, de: [600, 420] },
-  { debut: 14.42, libelle: "Tonalité", valeur: "Négative", fond: C.rouge, encre: C.blanc, piece: C.encre, rotation: 90, de: [700, 500] },
-  { debut: 15.3, libelle: "Émotion", valeur: "Déception", fond: C.beurre, encre: C.encre, piece: C.iris, rotation: 180, de: [700, 500] },
-  { debut: 16.26, libelle: "Risque de départ", valeur: "Élevé", fond: C.blanc, encre: C.rougeTexte, piece: C.rouge, rotation: 270, de: [520, 610] },
-  { debut: 17.54, libelle: "Suggestion", valeur: "Livrer plus vite", fond: C.vert, encre: C.blanc, piece: C.beurrePale, rotation: 45, de: [600, 520] },
+  { debut: 14.5, libelle: "Tonalité", valeur: "Négative", fond: C.rouge, encre: C.blanc, piece: C.encre, rotation: 90, de: [700, 500] },
+  { debut: 15.46, libelle: "Émotion", valeur: "Déception", fond: C.beurre, encre: C.encre, piece: C.iris, rotation: 180, de: [700, 500] },
+  { debut: 16.6, libelle: "Risque de départ", valeur: "Élevé", fond: C.blanc, encre: C.rougeTexte, piece: C.rouge, rotation: 270, de: [520, 610] },
+  { debut: 17.82, libelle: "Suggestion", valeur: "Livrer plus vite", fond: C.vert, encre: C.blanc, piece: C.beurrePale, rotation: 45, de: [600, 520] },
 ];
 
 const CLES: Cle[] = [
