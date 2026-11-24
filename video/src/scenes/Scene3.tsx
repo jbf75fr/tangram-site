@@ -68,7 +68,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------- Indicateurs ----------
 const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
-  const a = ressort(t, 22.38 + i * 0.03);
+  const a = ressort(t, 23.45 + i * 0.05);
   return (
     <div
       style={{
@@ -156,7 +156,7 @@ const traceA = (d: number): Point[] => [
 const chemin = (pts: Point[]) =>
   pts.reduce((c, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${c} C${(pts[i - 1].x + p.x) / 2},${pts[i - 1].y} ${(pts[i - 1].x + p.x) / 2},${p.y} ${p.x},${p.y}`), "");
 
-const DEBUT_FRISE = 23.0;
+const DEBUT_FRISE = 23.45;
 const PIRE = 25.9;
 const CITATION = 26.45;
 const DEPART_CITATION = 27.3;
@@ -164,7 +164,8 @@ const lisse = (n: number) => n * n * (3 - 2 * n);
 const accelere = (n: number) => n * n;
 // Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
 const TRAJET: [number, number, (n: number) => number][] = [
-  [24.0, X0 + 4, lisse],
+  [22.5, X0 + 4, lisse],
+  [23.55, centreEtape(0) + 40, lisse],
   [24.55, centreEtape(1), lisse],
   [25.25, PTS_SOUS[0].x, accelere],
   [PIRE, PTS_SOUS[1].x, lisse],
@@ -186,9 +187,16 @@ const xPiece = (t: number) => {
 };
 
 // Caméra du tableau de bord (coordonnées de la page) : la colonne Livraison est centrée en x = 960.
+// Position de la pièce dans la page (frise lisse), pour cadrer le départ sur elle.
+const surRails = (t: number): [number, number] => {
+  const x = xPiece(t);
+  return [140 + 36 + x, 90 + 322 + yBezier(traceA(0), x) - 12];
+};
 const CLES_TABLEAU: Cle[] = [
-  [22.9, 960, 540, 1.0],
-  [23.3, 960, 640, 1.12],
+  // Départ : la caméra colle à la pièce, qui glisse sur des rails ; puis elle recule et le parcours apparaît.
+  [22.4, ...surRails(22.5), 5.0],
+  [23.3, ...surRails(23.3), 4.4],
+  [24.25, 960, 660, 1.14],
   [24.55, 960, 660, 1.14],
   [25.3, 960, 732, 4.2],
   [27.55, 960, 732, 4.2],
@@ -201,11 +209,14 @@ const OY = 90 + 322;
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const z = camera(t, CLES_TABLEAU).z;
-  const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + 1.0, 0, 1, (n) => n);
-  const principal = 1 - entre(z, 1.3, 2.0, 0, 1);
-  const detail = entre(z, 2.0, 3.4, 0, 1);
+  const trace = 1;
+  // Rails et traverses, visibles de près : l'impression de montagnes russes.
+  const rails = entre(z, 1.8, 3.2, 0, 1);
+  const principal = t > 24.4 ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
+  const detail = t > 24.4 ? entre(z, 2.0, 3.4, 0, 1) : 0;
   // Le creux se transforme dès que la caméra commence à plonger.
-  const forme = entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n));
+  // (seulement pendant la plongée dans la Livraison, pas pendant le zoom du départ sur les rails).
+  const forme = t > 24.4 ? entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n)) : 0;
   const pts = traceA(forme);
   const yAuPoint = (x: number) => yBezier(pts, x);
   const alerte = ressort(t, PIRE, 9);
@@ -216,8 +227,8 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const yp = yAuPoint(xp);
   const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
-  const taille = 26 / z;
-  const visible = ressort(t, 23.9, 11);
+  const taille = 34 / z;
+  const visible = ressort(t, 22.35, 11);
   const ty = (p: { y: number }) => p.y;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -233,6 +244,15 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         <line key={i} x1={L0 + (i + 1) * SCOL} x2={L0 + (i + 1) * SCOL} y1={90} y2={410} stroke={C.blanc} strokeWidth={0.8} opacity={detail} />
       ))}
       <rect x={L0 + SCOL} y={ZERO} width={SCOL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte * detail} />
+      {/* Deuxième rail et traverses sous la courbe. */}
+      <g opacity={rails}>
+        {Array.from({ length: Math.floor(LARGEUR / 5) }, (_, k) => {
+          const x = X0 + 2 + k * 5;
+          const y = yAuPoint(x);
+          return <line key={k} x1={x} x2={x} y1={y} y2={y + 3.6} stroke={C.iris} strokeWidth={1.1} opacity={0.55} />;
+        })}
+        <path d={chemin(pts)} transform="translate(0 3.6)" fill="none" stroke={C.encre} strokeWidth={0.9} />
+      </g>
       <path d={chemin(pts)} fill="none" stroke={C.encre} strokeWidth={5 / Math.max(1, z * 0.55)} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
 
       {/* Étapes principales : points, scores, numéros et noms. Ils s'effacent quand on s'approche. */}
@@ -251,7 +271,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
-              <g opacity={ressort(t, 22.9 + i * 0.05)}>
+              <g opacity={ressort(t, 23.5 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
                   {i + 1}
@@ -348,8 +368,8 @@ const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.3) return null;
   const fenetre = ressort(t, 22.35, 13);
-  const compte = entre(t, 22.42, 23.8, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
-  const remplissage = entre(t, 22.8, 23.6, 0, 1);
+  const compte = entre(t, 23.4, 24.5, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
+  const remplissage = entre(t, 23.5, 24.3, 0, 1);
   const carte = ressort(t, 22.45, 13);
   return (
     <Camera t={t} cles={CLES_TABLEAU} extra={secousse(t, [PIRE], 0.015)}>
@@ -364,7 +384,7 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{fmt(compte)}</div>
           </Indicateur>
           <Indicateur t={t} i={1} libelle="Recommandation (NPS)">
-            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 22.8, 23.8, 0, -12))}</div>
+            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 23.5, 24.4, 0, -12))}</div>
           </Indicateur>
           <Indicateur t={t} i={2} libelle="Tonalité">
             <div style={{ display: "flex", height: 22, borderRadius: 11, overflow: "hidden", marginTop: 34, background: C.grisClair }}>
@@ -394,7 +414,7 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             transform: `translateY(${(1 - carte) * 60}px)`,
           }}
         >
-          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800 }}>Parcours client</div>
+          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800, opacity: 1 - entre(camera(t, CLES_TABLEAU).z, 1.6, 2.4, 0, 1) }}>Parcours client</div>
           <Frise t={t} />
         </div>
       </Carte>
