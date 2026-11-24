@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
-import { PremierePersonne } from "./PremierePersonne";
+import { FIN_PP, PremierePersonne } from "./PremierePersonne";
 
 // Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
 // parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
@@ -69,7 +69,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------- Indicateurs ----------
 const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
-  const a = ressort(t, 23.45 + i * 0.05);
+  const a = ressort(t, FIN_PP - 0.15 + i * 0.06);
   return (
     <div
       style={{
@@ -157,7 +157,7 @@ const traceA = (d: number): Point[] => [
 const chemin = (pts: Point[]) =>
   pts.reduce((c, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${c} C${(pts[i - 1].x + p.x) / 2},${pts[i - 1].y} ${(pts[i - 1].x + p.x) / 2},${p.y} ${p.x},${p.y}`), "");
 
-const DEBUT_FRISE = 23.45;
+const DEBUT_FRISE = FIN_PP - 0.2;
 const PIRE = 25.9;
 const CITATION = 26.45;
 const DEPART_CITATION = 27.3;
@@ -165,10 +165,9 @@ const lisse = (n: number) => n * n * (3 - 2 * n);
 const accelere = (n: number) => n * n;
 // Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
 const TRAJET: [number, number, (n: number) => number][] = [
-  [23.35, X0 + 30, lisse],
-  [23.95, centreEtape(0) + 60, lisse],
-  [24.55, centreEtape(1), lisse],
-  [25.25, PTS_SOUS[0].x, accelere],
+  // Avant FIN_PP, la pièce roule dans la vue subjective (PremierePersonne) et arrive sur Commander.
+  [FIN_PP, centreEtape(1), lisse],
+  [25.4, PTS_SOUS[0].x, accelere],
   [PIRE, PTS_SOUS[1].x, lisse],
   [27.35, PTS_SOUS[1].x, lisse],
   [27.75, PTS_SOUS[2].x, lisse],
@@ -188,17 +187,11 @@ const xPiece = (t: number) => {
 };
 
 // Caméra du tableau de bord (coordonnées de la page) : la colonne Livraison est centrée en x = 960.
-// Position de la pièce dans la page (frise lisse), pour cadrer le départ sur elle.
-const surRails = (t: number): [number, number] => {
-  const x = xPiece(t);
-  return [140 + 36 + x, 90 + 322 + yBezier(traceA(0), x) - 12];
-};
 const CLES_TABLEAU: Cle[] = [
-  // Après la vue subjective : la caméra colle à la pièce (le wagon), puis recule et le parcours apparaît.
-  [23.35, ...surRails(23.35), 4.4],
-  [24.25, 960, 660, 1.14],
-  [24.55, 960, 660, 1.14],
-  [25.3, 960, 732, 4.2],
+  // La vue subjective se termine exactement sur ce cadrage (centre 960 x 660, zoom 1,14).
+  [FIN_PP, 960, 660, 1.14],
+  [24.85, 960, 660, 1.14],
+  [25.45, 960, 732, 4.2],
   [27.55, 960, 732, 4.2],
   [28.4, 960, 660, 1.14],
   [30.45, 1000, 680, 1.2],
@@ -210,11 +203,11 @@ const OY = 90 + 322;
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const z = camera(t, CLES_TABLEAU).z;
   const trace = 1;
-  const principal = t > 24.4 ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
-  const detail = t > 24.4 ? entre(z, 2.0, 3.4, 0, 1) : 0;
+  const principal = t > FIN_PP ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
+  const detail = t > FIN_PP ? entre(z, 2.0, 3.4, 0, 1) : 0;
   // Le creux se transforme dès que la caméra commence à plonger.
   // (seulement pendant la plongée dans la Livraison, pas pendant le zoom du départ sur les rails).
-  const forme = t > 24.4 ? entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n)) : 0;
+  const forme = t > FIN_PP ? entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n)) : 0;
   const pts = traceA(forme);
   const yAuPoint = (x: number) => yBezier(pts, x);
   const alerte = ressort(t, PIRE, 9);
@@ -260,7 +253,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
-              <g opacity={ressort(t, 23.5 + i * 0.05)}>
+              <g opacity={ressort(t, FIN_PP - 0.2 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
                   {i + 1}
@@ -357,8 +350,8 @@ const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.3) return null;
   const fenetre = ressort(t, 22.35, 13);
-  const compte = entre(t, 23.4, 24.5, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
-  const remplissage = entre(t, 23.5, 24.3, 0, 1);
+  const compte = entre(t, FIN_PP - 0.1, FIN_PP + 1.0, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
+  const remplissage = entre(t, FIN_PP, FIN_PP + 0.8, 0, 1);
   const carte = ressort(t, 22.45, 13);
   return (
     <Camera t={t} cles={CLES_TABLEAU} extra={secousse(t, [PIRE], 0.015)}>
@@ -373,7 +366,7 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{fmt(compte)}</div>
           </Indicateur>
           <Indicateur t={t} i={1} libelle="Recommandation (NPS)">
-            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 23.5, 24.4, 0, -12))}</div>
+            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, FIN_PP, FIN_PP + 0.9, 0, -12))}</div>
           </Indicateur>
           <Indicateur t={t} i={2} libelle="Tonalité">
             <div style={{ display: "flex", height: 22, borderRadius: 11, overflow: "hidden", marginTop: 34, background: C.grisClair }}>
@@ -411,12 +404,6 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
-const ligneZero = (t: number) => {
-  const c = camera(t, CLES_TABLEAU);
-  const ecranX = (x: number) => 960 + (x - c.x) * c.z;
-  return { x1: ecranX(140 + 36 + X0), x2: ecranX(140 + 36 + X0 + LARGEUR), y: 540 + (90 + 322 + ZERO - c.y) * c.z };
-};
-
 export const Scene3: React.FC<{ t: number }> = ({ t }) => {
   if (t < 20.05 || t > POUSSEE[1]) return null;
   const entree = entre(t, 20.05, 20.6, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
@@ -426,7 +413,7 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
       <Mur t={t} />
       <Tableau t={t} />
       <Citation t={t} />
-      <PremierePersonne t={t} ligneZero={ligneZero(t)} />
+      <PremierePersonne t={t} />
     </AbsoluteFill>
   );
 };
