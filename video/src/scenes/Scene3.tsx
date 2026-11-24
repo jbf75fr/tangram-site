@@ -1,6 +1,7 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
+import { PremierePersonne } from "./PremierePersonne";
 
 // Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
 // parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
@@ -14,13 +15,13 @@ const PAS_X = 136;
 const PAS_Y = 86;
 
 const Mur: React.FC<{ t: number }> = ({ t }) => {
-  if (t > 22.7) return null;
+  if (t > 22.1) return null;
   const cles: Cle[] = [
     [20.3, 960, 540, 3.2],
     [20.8, 960, 540, 3.0],
-    [22.15, 960, 540, 0.55],
+    [21.6, 960, 540, 0.55],
   ];
-  const range = entre(t, 22.1, 22.65, 0, 1, (n) => n * n * n);
+  const range = entre(t, 21.55, 22.05, 0, 1, (n) => n * n * n);
   const tuiles = [];
   for (let r = 0; r < LIGNES; r++) {
     for (let c = 0; c < COLONNES; c++) {
@@ -164,8 +165,8 @@ const lisse = (n: number) => n * n * (3 - 2 * n);
 const accelere = (n: number) => n * n;
 // Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
 const TRAJET: [number, number, (n: number) => number][] = [
-  [22.5, X0 + 4, lisse],
-  [23.55, centreEtape(0) + 40, lisse],
+  [23.35, X0 + 30, lisse],
+  [23.95, centreEtape(0) + 60, lisse],
   [24.55, centreEtape(1), lisse],
   [25.25, PTS_SOUS[0].x, accelere],
   [PIRE, PTS_SOUS[1].x, lisse],
@@ -193,9 +194,8 @@ const surRails = (t: number): [number, number] => {
   return [140 + 36 + x, 90 + 322 + yBezier(traceA(0), x) - 12];
 };
 const CLES_TABLEAU: Cle[] = [
-  // Départ : la caméra colle à la pièce, qui glisse sur des rails ; puis elle recule et le parcours apparaît.
-  [22.4, ...surRails(22.5), 5.0],
-  [23.3, ...surRails(23.3), 4.4],
+  // Après la vue subjective : la caméra colle à la pièce (le wagon), puis recule et le parcours apparaît.
+  [23.35, ...surRails(23.35), 4.4],
   [24.25, 960, 660, 1.14],
   [24.55, 960, 660, 1.14],
   [25.3, 960, 732, 4.2],
@@ -210,8 +210,6 @@ const OY = 90 + 322;
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const z = camera(t, CLES_TABLEAU).z;
   const trace = 1;
-  // Rails et traverses, visibles de près : l'impression de montagnes russes.
-  const rails = entre(z, 1.8, 3.2, 0, 1);
   const principal = t > 24.4 ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
   const detail = t > 24.4 ? entre(z, 2.0, 3.4, 0, 1) : 0;
   // Le creux se transforme dès que la caméra commence à plonger.
@@ -228,7 +226,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
   const taille = 34 / z;
-  const visible = ressort(t, 22.35, 11);
+  const visible = ressort(t, 23.3, 11);
   const ty = (p: { y: number }) => p.y;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -244,15 +242,6 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         <line key={i} x1={L0 + (i + 1) * SCOL} x2={L0 + (i + 1) * SCOL} y1={90} y2={410} stroke={C.blanc} strokeWidth={0.8} opacity={detail} />
       ))}
       <rect x={L0 + SCOL} y={ZERO} width={SCOL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte * detail} />
-      {/* Deuxième rail et traverses sous la courbe. */}
-      <g opacity={rails}>
-        {Array.from({ length: Math.floor(LARGEUR / 5) }, (_, k) => {
-          const x = X0 + 2 + k * 5;
-          const y = yAuPoint(x);
-          return <line key={k} x1={x} x2={x} y1={y} y2={y + 3.6} stroke={C.iris} strokeWidth={1.1} opacity={0.55} />;
-        })}
-        <path d={chemin(pts)} transform="translate(0 3.6)" fill="none" stroke={C.encre} strokeWidth={0.9} />
-      </g>
       <path d={chemin(pts)} fill="none" stroke={C.encre} strokeWidth={5 / Math.max(1, z * 0.55)} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
 
       {/* Étapes principales : points, scores, numéros et noms. Ils s'effacent quand on s'approche. */}
@@ -422,6 +411,12 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+const ligneZero = (t: number) => {
+  const c = camera(t, CLES_TABLEAU);
+  const ecranX = (x: number) => 960 + (x - c.x) * c.z;
+  return { x1: ecranX(140 + 36 + X0), x2: ecranX(140 + 36 + X0 + LARGEUR), y: 540 + (90 + 322 + ZERO - c.y) * c.z };
+};
+
 export const Scene3: React.FC<{ t: number }> = ({ t }) => {
   if (t < 20.05 || t > POUSSEE[1]) return null;
   const entree = entre(t, 20.05, 20.6, 1, 0, (n) => 1 - Math.pow(1 - n, 3));
@@ -431,6 +426,7 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
       <Mur t={t} />
       <Tableau t={t} />
       <Citation t={t} />
+      <PremierePersonne t={t} ligneZero={ligneZero(t)} />
     </AbsoluteFill>
   );
 };
