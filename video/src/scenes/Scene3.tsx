@@ -14,13 +14,13 @@ const PAS_X = 136;
 const PAS_Y = 86;
 
 const Mur: React.FC<{ t: number }> = ({ t }) => {
-  if (t > 22.7) return null;
+  if (t > 22.1) return null;
   const cles: Cle[] = [
     [20.3, 960, 540, 3.2],
     [20.8, 960, 540, 3.0],
-    [22.15, 960, 540, 0.55],
+    [21.6, 960, 540, 0.55],
   ];
-  const range = entre(t, 22.1, 22.65, 0, 1, (n) => n * n * n);
+  const range = entre(t, MORPHOSE[0] - 0.15, MORPHOSE[0] + 0.3, 0, 1, (n) => n * n * n);
   const tuiles = [];
   for (let r = 0; r < LIGNES; r++) {
     for (let c = 0; c < COLONNES; c++) {
@@ -30,7 +30,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
       const centre = r === (LIGNES - 1) / 2 && c === (COLONNES - 1) / 2;
       const ton = hasard(i);
       const d = Math.hypot(c - (COLONNES - 1) / 2, r - (LIGNES - 1) / 2) / 25;
-      const u = Math.min(1, Math.max(0, range * 1.6 - d * 0.6));
+      const u = centre ? 0 : Math.min(1, Math.max(0, range * 1.6 - d * 0.6));
       tuiles.push(
         <div
           key={i}
@@ -49,7 +49,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
             gap: 8,
             padding: "0 16px",
             boxSizing: "border-box",
-            opacity: 1 - u,
+            opacity: centre ? (t < MORPHOSE[0] ? 1 : 0) : 1 - u,
             transform: `scale(${1 - 0.7 * u})`,
           }}
         >
@@ -68,7 +68,7 @@ const Mur: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------- Indicateurs ----------
 const Indicateur: React.FC<{ t: number; i: number; libelle: string; children: React.ReactNode }> = ({ t, i, libelle, children }) => {
-  const a = ressort(t, 22.38 + i * 0.03);
+  const a = ressort(t, FIN_PP - 0.15 + i * 0.06);
   return (
     <div
       style={{
@@ -156,7 +156,22 @@ const traceA = (d: number): Point[] => [
 const chemin = (pts: Point[]) =>
   pts.reduce((c, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${c} C${(pts[i - 1].x + p.x) / 2},${pts[i - 1].y} ${(pts[i - 1].x + p.x) / 2},${p.y} ${p.x},${p.y}`), "");
 
-const DEBUT_FRISE = 23.0;
+// Vol en rase-mottes au-dessus de la frise basculée dans l'espace, puis la feuille se redresse.
+const DEBUT_VOL = 21.95;
+// Passage du mur à la frise : la carte jaune (notre commentaire) devient la pièce de tangram, puis la
+// frise s'ouvre en cercle autour d'elle (REVELATION).
+const MORPHOSE = [21.6, DEBUT_VOL];
+const REVELATION = [21.8, 22.4];
+// Fin du parcours : la pièce saute du bout de la courbe et atterrit à côté du titre du plan d'action.
+export const DEPART_SAUT = 29.7;
+export const ATTERRISSAGE = 30.55;
+const REDRESSE = 23.9;
+const FIN_PP = 24.75;
+const ANGLE_VOL = 60;
+const PERSPECTIVE = 1800;
+// Pendant le vol, la pièce est dans le tiers gauche de l'écran : la frise file jusqu'au bord droit.
+const DECALAGE_VOL = 320;
+const DEBUT_FRISE = DEBUT_VOL - 0.8;
 const PIRE = 25.9;
 const CITATION = 26.45;
 const DEPART_CITATION = 27.3;
@@ -164,16 +179,18 @@ const lisse = (n: number) => n * n * (3 - 2 * n);
 const accelere = (n: number) => n * n;
 // Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
 const TRAJET: [number, number, (n: number) => number][] = [
-  [24.0, X0 + 4, lisse],
-  [24.55, centreEtape(1), lisse],
-  [25.25, PTS_SOUS[0].x, accelere],
+  // Vol en rase-mottes : la pièce traverse S'informer et arrive sur Commander.
+  [DEBUT_VOL, X0 + 2, lisse],
+  [FIN_PP, centreEtape(1), (n) => 1 - Math.pow(1 - n, 1.6)],
+  [25.4, PTS_SOUS[0].x, accelere],
   [PIRE, PTS_SOUS[1].x, lisse],
   [27.35, PTS_SOUS[1].x, lisse],
   [27.75, PTS_SOUS[2].x, lisse],
   [28.1, PTS_SOUS[3].x, accelere],
   [28.6, centreEtape(3), lisse],
   [29.1, centreEtape(4), lisse],
-  [29.6, X0 + LARGEUR - 24, lisse],
+  // Elle ne s'arrête pas au bout : elle prend de l'élan et s'envole vers le plan d'action (PieceTransit).
+  [DEPART_SAUT, X0 + LARGEUR - 6, accelere],
 ];
 const xPiece = (t: number) => {
   if (t <= TRAJET[0][0]) return TRAJET[0][1];
@@ -186,11 +203,11 @@ const xPiece = (t: number) => {
 };
 
 // Caméra du tableau de bord (coordonnées de la page) : la colonne Livraison est centrée en x = 960.
-const CLES_TABLEAU: Cle[] = [
-  [22.9, 960, 540, 1.0],
-  [23.3, 960, 640, 1.12],
-  [24.55, 960, 660, 1.14],
-  [25.3, 960, 732, 4.2],
+const CLES_SUITE: Cle[] = [
+  // La feuille redressée tombe exactement sur ce cadrage (centre 960 x 660, zoom 1,14).
+  [FIN_PP, 960, 660, 1.14],
+  [24.85, 960, 660, 1.14],
+  [25.45, 960, 732, 4.2],
   [27.55, 960, 732, 4.2],
   [28.4, 960, 660, 1.14],
   [30.45, 1000, 680, 1.2],
@@ -198,14 +215,23 @@ const CLES_TABLEAU: Cle[] = [
 // Origine de la frise dans la page.
 const OX = 140 + 36;
 const OY = 90 + 322;
+// Position de la pièce dans la page : pendant le vol, la caméra la garde au centre de l'écran.
+const posPiece = (t: number): [number, number] => {
+  const x = xPiece(t);
+  return [OX + x, OY + yBezier(traceA(0), x)];
+};
+const ZOOM_VOL = 2.6;
+const clesTableau = (t: number): Cle[] =>
+  t < REDRESSE ? [[0, ...posPiece(t), ZOOM_VOL]] : [[REDRESSE, ...posPiece(REDRESSE), ZOOM_VOL], ...CLES_SUITE];
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
-  const z = camera(t, CLES_TABLEAU).z;
-  const trace = entre(t, DEBUT_FRISE, DEBUT_FRISE + 1.0, 0, 1, (n) => n);
-  const principal = 1 - entre(z, 1.3, 2.0, 0, 1);
-  const detail = entre(z, 2.0, 3.4, 0, 1);
+  const z = camera(t, clesTableau(t)).z;
+  const trace = 1;
+  const principal = t > FIN_PP ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
+  const detail = t > FIN_PP ? entre(z, 2.0, 3.4, 0, 1) : 0;
   // Le creux se transforme dès que la caméra commence à plonger.
-  const forme = entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n));
+  // (seulement pendant la plongée dans la Livraison, pas pendant le zoom du départ sur les rails).
+  const forme = t > FIN_PP ? entre(z, 1.3, 3.0, 0, 1, (n) => n * n * (3 - 2 * n)) : 0;
   const pts = traceA(forme);
   const yAuPoint = (x: number) => yBezier(pts, x);
   const alerte = ressort(t, PIRE, 9);
@@ -216,8 +242,9 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const yp = yAuPoint(xp);
   const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
-  const taille = 26 / z;
-  const visible = ressort(t, 23.9, 11);
+  const taille = 34 / z;
+  // Pendant le vol, la pièce est dessinée hors de la feuille basculée (PieceVol), face à nous.
+  const visible = t < FIN_PP || t >= DEPART_SAUT ? 0 : 1;
   const ty = (p: { y: number }) => p.y;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -251,7 +278,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
-              <g opacity={ressort(t, 22.9 + i * 0.05)}>
+              <g opacity={ressort(t, DEBUT_VOL - 0.5 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
                   {i + 1}
@@ -346,13 +373,13 @@ export const POUSSEE = [30.0, 30.45];
 const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2);
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 22.3) return null;
-  const fenetre = ressort(t, 22.35, 13);
-  const compte = entre(t, 22.42, 23.8, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
-  const remplissage = entre(t, 22.8, 23.6, 0, 1);
-  const carte = ressort(t, 22.45, 13);
+  if (t < REVELATION[0]) return null;
+  const fenetre = ressort(t, 21.3, 13);
+  const compte = entre(t, FIN_PP - 0.1, FIN_PP + 1.0, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
+  const remplissage = entre(t, FIN_PP, FIN_PP + 0.8, 0, 1);
+  const carte = ressort(t, 21.3, 13);
   return (
-    <Camera t={t} cles={CLES_TABLEAU} extra={secousse(t, [PIRE], 0.015)}>
+    <Camera t={t} cles={clesTableau(t)} extra={secousse(t, [PIRE], 0.015)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
@@ -364,7 +391,7 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{fmt(compte)}</div>
           </Indicateur>
           <Indicateur t={t} i={1} libelle="Recommandation (NPS)">
-            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, 22.8, 23.8, 0, -12))}</div>
+            <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14 }}>{signe(entre(t, FIN_PP, FIN_PP + 0.9, 0, -12))}</div>
           </Indicateur>
           <Indicateur t={t} i={2} libelle="Tonalité">
             <div style={{ display: "flex", height: 22, borderRadius: 11, overflow: "hidden", marginTop: 34, background: C.grisClair }}>
@@ -394,11 +421,92 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             transform: `translateY(${(1 - carte) * 60}px)`,
           }}
         >
-          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800 }}>Parcours client</div>
+          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800, opacity: 1 - entre(camera(t, clesTableau(t)).z, 1.6, 2.4, 0, 1) }}>Parcours client</div>
           <Frise t={t} />
         </div>
       </Carte>
     </Camera>
+  );
+};
+
+const angleVol = (t: number) => (t >= FIN_PP ? 0 : ANGLE_VOL * (1 - entre(t, REDRESSE, FIN_PP, 0, 1, enDouceur)));
+// Projection d'un point de l'écran (avant bascule) par la rotation de la feuille autour du centre.
+const projette = (sx: number, sy: number, angle: number) => {
+  const a = (angle * Math.PI) / 180;
+  const dx = sx - 960;
+  const ox = 960 - DECALAGE_VOL;
+  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (angle / ANGLE_VOL);
+  const profondeur = dx * Math.sin(a);
+  const k = PERSPECTIVE / (PERSPECTIVE + profondeur);
+  return { x: ox + (xr - ox) * k, y: 540 + (sy - 540) * k, k };
+};
+// La pièce pendant le vol : dessinée face à nous, posée sur la courbe, à la même taille que sur la frise.
+const ecranVol = (t: number) => {
+  const angle = angleVol(t);
+  const c = camera(t, clesTableau(t));
+  const [ax, ay] = posPiece(t);
+  const p = projette(960 + (ax - c.x) * c.z, 540 + (ay - c.y) * c.z, angle);
+  const x = xPiece(t);
+  const pente = Math.atan2(yBezier(traceA(0), x + 1.5) - yBezier(traceA(0), x - 1.5), 3);
+  const rot = Math.atan2(Math.sin(pente), Math.cos(pente) * Math.cos((angle * Math.PI) / 180));
+  return { x: p.x, y: p.y, rot, s: 34 * p.k };
+};
+const PieceVol: React.FC<{ t: number }> = ({ t }) => {
+  if (t < DEBUT_VOL || t >= FIN_PP) return null;
+  const { x, y, rot, s } = ecranVol(t);
+  return (
+    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+      <g transform={`translate(${x} ${y}) rotate(${(rot * 180) / Math.PI}) scale(${s})`}>
+        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+      </g>
+    </svg>
+  );
+};
+
+// La carte jaune du mur (66 x 38 à l'écran, au centre) se replie en triangle et glisse jusqu'à la
+// place de la pièce au début du vol : sommets de la carte vers sommet, milieu de l'hypoténuse et
+// deux coins de la base du triangle.
+const Morphose: React.FC<{ t: number }> = ({ t }) => {
+  if (t < MORPHOSE[0] || t >= MORPHOSE[1]) return null;
+  const e = enDouceur(entre(t, MORPHOSE[0], MORPHOSE[1], 0, 1, (n) => n));
+  const v = ecranVol(MORPHOSE[1]);
+  const carte = [[-33, -19], [33, -19], [33, 19], [-33, 19]].map(([a, b]) => [960 + a, 540 + b]);
+  const tri = [[-1, -1.9], [0, -1.01], [1, -0.12], [-1, -0.12]].map(([a, b]) => {
+    const c = Math.cos(v.rot), sn = Math.sin(v.rot);
+    return [v.x + (a * c - b * sn) * v.s, v.y + (a * sn + b * c) * v.s];
+  });
+  const pts = carte.map(([a, b], i) => `${a + (tri[i][0] - a) * e},${b + (tri[i][1] - b) * e}`).join(" ");
+  return (
+    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+      <polygon points={pts} fill={e < 0.5 ? C.beurrePale : C.beurre} stroke={e < 0.5 ? C.beurre : C.encre} strokeWidth={e < 0.5 ? 4 : 0.14 * v.s} strokeLinejoin="round" />
+    </svg>
+  );
+};
+
+// Le saut : la pièce quitte le bout de la courbe en tournant sur elle-même ; pendant ce temps, la
+// scène 3 est poussée vers la gauche (POUSSEE) et la pièce atterrit dans la scène 4, à côté du titre
+// « Plan d'action » (position à l'écran calculée avec la caméra de la scène 4 : centre 610 x 540, zoom 1,3).
+const CIBLE_PLAN = { x: 960 + (206 + 15 - 610) * 1.3, y: 540 + (230 - 540) * 1.3 };
+export const PieceTransit: React.FC<{ t: number }> = ({ t }) => {
+  if (t < DEPART_SAUT || t >= ATTERRISSAGE) return null;
+  const c = camera(DEPART_SAUT, clesTableau(DEPART_SAUT));
+  const [ax, ay] = posPiece(DEPART_SAUT);
+  const depart = { x: 960 + (ax - c.x) * c.z, y: 540 + (ay - c.y) * c.z };
+  const poussee = entre(t, POUSSEE[0], POUSSEE[1], 0, 1, enDouceur);
+  // La cible arrive avec la scène 4, qui entre par la droite.
+  const cible = { x: CIBLE_PLAN.x + (1 - poussee) * 1920, y: CIBLE_PLAN.y };
+  const u = entre(t, DEPART_SAUT, ATTERRISSAGE, 0, 1, (n) => n);
+  const e = enDouceur(u);
+  const x = depart.x + (cible.x - depart.x) * e;
+  const y = depart.y + (cible.y - depart.y) * e - Math.sin(Math.PI * u) * 110;
+  const taille = 34 * (1 - 0.55 * e);
+  const tour = 360 * enDouceur(u);
+  return (
+    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+      <g transform={`translate(${x} ${y}) rotate(${tour}) scale(${taille})`}>
+        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+      </g>
+    </svg>
   );
 };
 
@@ -409,7 +517,14 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translate(${-poussee * 1920}px, ${entree * 1100}px)` }}>
       <Mur t={t} />
-      <Tableau t={t} />
+      {/* La frise basculée : vue en rase-mottes, puis la feuille se redresse face à nous. */}
+      <div style={{ position: "absolute", inset: 0, perspective: `${PERSPECTIVE}px`, perspectiveOrigin: `${960 - DECALAGE_VOL}px 540px`, clipPath: t < REVELATION[1] ? `circle(${entre(t, REVELATION[0], REVELATION[1], 0, 2300, (n) => n * n * n)}px at ${ecranVol(DEBUT_VOL).x}px ${ecranVol(DEBUT_VOL).y}px)` : undefined }}>
+        <div style={{ position: "absolute", inset: 0, transformOrigin: "960px 540px", transform: angleVol(t) > 0.01 ? `translateX(${-DECALAGE_VOL * (angleVol(t) / ANGLE_VOL)}px) rotateY(${angleVol(t)}deg)` : undefined }}>
+          <Tableau t={t} />
+        </div>
+      </div>
+      <PieceVol t={t} />
+      <Morphose t={t} />
       <Citation t={t} />
     </AbsoluteFill>
   );
