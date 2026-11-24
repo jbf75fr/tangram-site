@@ -51,6 +51,8 @@ Automatisme : à chaque modification de `maquette/`, `outils/` ou `ressources/` 
 
 Une nouvelle page de la maquette doit être déclarée dans `PAGES` ou `SECTEURS` de `outils/construire.py`, avec son adresse, son titre et sa description.
 
+Styles d'une page : `construire.py` ne reprend que le premier bloc `<style>` du `<helmet>` de chaque page de la maquette. Tout nouveau style va dans ce bloc, jamais dans un second `<style>`, sinon il disparaît du site publié.
+
 ## Référencement (SEO et IA)
 
 Fabriqué automatiquement pour chaque page : titre, description, adresse canonique, aperçu pour les réseaux sociaux, données structurées (organisation, logiciel et tarifs, questions fréquentes, fil d'Ariane), `sitemap.xml`, `robots.txt` (ouvert à tous, y compris aux assistants IA) et `llms.txt` (résumé du produit pour les assistants IA).
