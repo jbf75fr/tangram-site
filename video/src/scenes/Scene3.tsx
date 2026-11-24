@@ -1,7 +1,6 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
-import { FIN_PP, PremierePersonne } from "./PremierePersonne";
 
 // Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
 // parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
@@ -157,7 +156,15 @@ const traceA = (d: number): Point[] => [
 const chemin = (pts: Point[]) =>
   pts.reduce((c, p, i) => (i === 0 ? `M${p.x},${p.y}` : `${c} C${(pts[i - 1].x + p.x) / 2},${pts[i - 1].y} ${(pts[i - 1].x + p.x) / 2},${p.y} ${p.x},${p.y}`), "");
 
-const DEBUT_FRISE = FIN_PP - 0.2;
+// Vol en rase-mottes au-dessus de la frise basculée dans l'espace, puis la feuille se redresse.
+const DEBUT_VOL = 21.95;
+const REDRESSE = 23.9;
+const FIN_PP = 24.75;
+const ANGLE_VOL = 60;
+const PERSPECTIVE = 1800;
+// Pendant le vol, la pièce est dans le tiers gauche de l'écran : la frise file jusqu'au bord droit.
+const DECALAGE_VOL = 320;
+const DEBUT_FRISE = DEBUT_VOL - 0.8;
 const PIRE = 25.9;
 const CITATION = 26.45;
 const DEPART_CITATION = 27.3;
@@ -165,8 +172,9 @@ const lisse = (n: number) => n * n * (3 - 2 * n);
 const accelere = (n: number) => n * n;
 // Trajet de la pièce : [instant, abscisse, façon d'avancer]. Elle accélère dans les descentes.
 const TRAJET: [number, number, (n: number) => number][] = [
-  // Avant FIN_PP, la pièce roule dans la vue subjective (PremierePersonne) et arrive sur Commander.
-  [FIN_PP, centreEtape(1), lisse],
+  // Vol en rase-mottes : la pièce traverse S'informer et arrive sur Commander.
+  [DEBUT_VOL, X0 + 2, lisse],
+  [FIN_PP, centreEtape(1), (n) => 1 - Math.pow(1 - n, 1.6)],
   [25.4, PTS_SOUS[0].x, accelere],
   [PIRE, PTS_SOUS[1].x, lisse],
   [27.35, PTS_SOUS[1].x, lisse],
@@ -187,8 +195,8 @@ const xPiece = (t: number) => {
 };
 
 // Caméra du tableau de bord (coordonnées de la page) : la colonne Livraison est centrée en x = 960.
-const CLES_TABLEAU: Cle[] = [
-  // La vue subjective se termine exactement sur ce cadrage (centre 960 x 660, zoom 1,14).
+const CLES_SUITE: Cle[] = [
+  // La feuille redressée tombe exactement sur ce cadrage (centre 960 x 660, zoom 1,14).
   [FIN_PP, 960, 660, 1.14],
   [24.85, 960, 660, 1.14],
   [25.45, 960, 732, 4.2],
@@ -199,9 +207,17 @@ const CLES_TABLEAU: Cle[] = [
 // Origine de la frise dans la page.
 const OX = 140 + 36;
 const OY = 90 + 322;
+// Position de la pièce dans la page : pendant le vol, la caméra la garde au centre de l'écran.
+const posPiece = (t: number): [number, number] => {
+  const x = xPiece(t);
+  return [OX + x, OY + yBezier(traceA(0), x)];
+};
+const ZOOM_VOL = 2.6;
+const clesTableau = (t: number): Cle[] =>
+  t < REDRESSE ? [[0, ...posPiece(t), ZOOM_VOL]] : [[REDRESSE, ...posPiece(REDRESSE), ZOOM_VOL], ...CLES_SUITE];
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
-  const z = camera(t, CLES_TABLEAU).z;
+  const z = camera(t, clesTableau(t)).z;
   const trace = 1;
   const principal = t > FIN_PP ? 1 - entre(z, 1.3, 2.0, 0, 1) : 1;
   const detail = t > FIN_PP ? entre(z, 2.0, 3.4, 0, 1) : 0;
@@ -219,7 +235,8 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
   const taille = 34 / z;
-  const visible = ressort(t, 23.3, 11);
+  // Pendant le vol, la pièce est dessinée hors de la feuille basculée (PieceVol), face à nous.
+  const visible = t < FIN_PP ? 0 : 1;
   const ty = (p: { y: number }) => p.y;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -253,7 +270,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
-              <g opacity={ressort(t, FIN_PP - 0.2 + i * 0.05)}>
+              <g opacity={ressort(t, DEBUT_VOL - 0.5 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
                   {i + 1}
@@ -349,12 +366,12 @@ const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n 
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
   if (t < 22.3) return null;
-  const fenetre = ressort(t, 22.35, 13);
+  const fenetre = ressort(t, 21.3, 13);
   const compte = entre(t, FIN_PP - 0.1, FIN_PP + 1.0, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
   const remplissage = entre(t, FIN_PP, FIN_PP + 0.8, 0, 1);
-  const carte = ressort(t, 22.45, 13);
+  const carte = ressort(t, 21.3, 13);
   return (
-    <Camera t={t} cles={CLES_TABLEAU} extra={secousse(t, [PIRE], 0.015)}>
+    <Camera t={t} cles={clesTableau(t)} extra={secousse(t, [PIRE], 0.015)}>
       <Carte style={{ left: 140, top: 90, width: 1640, height: 900, overflow: "hidden", opacity: Math.min(1, fenetre * 2), transform: `scale(${1.25 - 0.25 * fenetre})` }}>
         <div style={{ height: 76, display: "flex", alignItems: "center", gap: 16, padding: "0 36px", borderBottom: `2px solid ${C.grisClair}` }}>
           <Logo taille={36} />
@@ -396,11 +413,42 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
             transform: `translateY(${(1 - carte) * 60}px)`,
           }}
         >
-          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800, opacity: 1 - entre(camera(t, CLES_TABLEAU).z, 1.6, 2.4, 0, 1) }}>Parcours client</div>
+          <div style={{ position: "absolute", left: 34, top: 26, fontSize: 28, fontWeight: 800, opacity: 1 - entre(camera(t, clesTableau(t)).z, 1.6, 2.4, 0, 1) }}>Parcours client</div>
           <Frise t={t} />
         </div>
       </Carte>
     </Camera>
+  );
+};
+
+const angleVol = (t: number) => (t >= FIN_PP ? 0 : ANGLE_VOL * (1 - entre(t, REDRESSE, FIN_PP, 0, 1, enDouceur)));
+// Projection d'un point de l'écran (avant bascule) par la rotation de la feuille autour du centre.
+const projette = (sx: number, sy: number, angle: number) => {
+  const a = (angle * Math.PI) / 180;
+  const dx = sx - 960;
+  const ox = 960 - DECALAGE_VOL;
+  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (angle / ANGLE_VOL);
+  const profondeur = dx * Math.sin(a);
+  const k = PERSPECTIVE / (PERSPECTIVE + profondeur);
+  return { x: ox + (xr - ox) * k, y: 540 + (sy - 540) * k, k };
+};
+// La pièce pendant le vol : dessinée face à nous, posée sur la courbe, à la même taille que sur la frise.
+const PieceVol: React.FC<{ t: number }> = ({ t }) => {
+  if (t < DEBUT_VOL - 0.2 || t >= FIN_PP) return null;
+  const angle = angleVol(t);
+  const c = camera(t, clesTableau(t));
+  const [ax, ay] = posPiece(t);
+  const p = projette(960 + (ax - c.x) * c.z, 540 + (ay - c.y) * c.z, angle);
+  const x = xPiece(t);
+  const pente = Math.atan2(yBezier(traceA(0), x + 1.5) - yBezier(traceA(0), x - 1.5), 3);
+  const rot = Math.atan2(Math.sin(pente), Math.cos(pente) * Math.cos((angle * Math.PI) / 180));
+  const s = 34 * p.k;
+  return (
+    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+      <g transform={`translate(${p.x} ${p.y}) rotate(${(rot * 180) / Math.PI}) scale(${s})`}>
+        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+      </g>
+    </svg>
   );
 };
 
@@ -411,9 +459,14 @@ export const Scene3: React.FC<{ t: number }> = ({ t }) => {
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translate(${-poussee * 1920}px, ${entree * 1100}px)` }}>
       <Mur t={t} />
-      <Tableau t={t} />
+      {/* La frise basculée : vue en rase-mottes, puis la feuille se redresse face à nous. */}
+      <div style={{ position: "absolute", inset: 0, perspective: `${PERSPECTIVE}px`, perspectiveOrigin: `${960 - DECALAGE_VOL}px 540px` }}>
+        <div style={{ position: "absolute", inset: 0, transformOrigin: "960px 540px", transform: angleVol(t) > 0.01 ? `translateX(${-DECALAGE_VOL * (angleVol(t) / ANGLE_VOL)}px) rotateY(${angleVol(t)}deg)` : undefined }}>
+          <Tableau t={t} />
+        </div>
+      </div>
+      <PieceVol t={t} />
       <Citation t={t} />
-      <PremierePersonne t={t} />
     </AbsoluteFill>
   );
 };
