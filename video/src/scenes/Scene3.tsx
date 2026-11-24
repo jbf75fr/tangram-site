@@ -365,7 +365,7 @@ export const POUSSEE = [30.0, 30.45];
 const enDouceur = (n: number) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2);
 
 const Tableau: React.FC<{ t: number }> = ({ t }) => {
-  if (t < 22.3) return null;
+  if (t < DEBUT_VOL - 0.05) return null;
   const fenetre = ressort(t, 21.3, 13);
   const compte = entre(t, FIN_PP - 0.1, FIN_PP + 1.0, 1, 12480, (n) => 1 - Math.pow(1 - n, 3));
   const remplissage = entre(t, FIN_PP, FIN_PP + 0.8, 0, 1);
@@ -434,7 +434,7 @@ const projette = (sx: number, sy: number, angle: number) => {
 };
 // La pièce pendant le vol : dessinée face à nous, posée sur la courbe, à la même taille que sur la frise.
 const PieceVol: React.FC<{ t: number }> = ({ t }) => {
-  if (t < DEBUT_VOL - 0.2 || t >= FIN_PP) return null;
+  if (t < DEBUT_VOL - 0.05 || t >= FIN_PP) return null;
   const angle = angleVol(t);
   const c = camera(t, clesTableau(t));
   const [ax, ay] = posPiece(t);
