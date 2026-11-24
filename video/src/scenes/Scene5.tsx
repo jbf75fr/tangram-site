@@ -106,6 +106,19 @@ const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, 
   </>
 );
 
+// « et l'ensemble dessine vos priorités » : le logo s'écarte (vue éclatée) et ses trois plus grandes
+// pièces deviennent les priorités vues dans la vidéo, numérotées, puis il se referme avant de monter.
+const ECLATE = [41.3, 41.65, 43.25, 43.6];
+const PRIORITES = [
+  { piece: 0, rang: 1, texte: "Délai de livraison", t: 41.6, x: 1230, y: 300, gauche: false },
+  { piece: 1, rang: 2, texte: "Suivi du colis", t: 41.95, x: 690, y: 470, gauche: true },
+  { piece: 2, rang: 3, texte: "Expédition", t: 42.3, x: 1230, y: 640, gauche: false },
+];
+const centrePiece = (points: string) => {
+  const p = points.split(" ").map((c) => c.split(",").map(Number));
+  return [p.reduce((a, q) => a + q[0], 0) / p.length, p.reduce((a, q) => a + q[1], 0) / p.length];
+};
+
 export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   if (t < 37.78) return null;
   // Le logo, d'abord grand au centre, rejoint le nom en haut.
@@ -118,6 +131,13 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
   const clic = 48.55;
   const vers = entre(t, 47.7, 48.35, 0, 1, (n) => 1 - Math.pow(1 - n, 3));
   const onde = entre(t, clic, clic + 0.6, 0, 1);
+  const eclate = t < ECLATE[2] ? vif(t, ECLATE[0], ECLATE[1]) : 1 - vif(t, ECLATE[2], ECLATE[3]);
+  const ecart = (i: number) => {
+    const [x, y] = centrePiece(PIECES_LOGO[i].points);
+    return [(x - 16) * 0.28 * eclate, (y - 16) * 0.28 * eclate];
+  };
+  // Position à l'écran d'un point du logo (viewBox -1 à 33).
+  const surEcran = (x: number, y: number) => [cx - taille / 2 + ((x + 1) * taille) / 34, cy - taille / 2 + ((y + 1) * taille) / 34];
 
   return (
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden" }}>
@@ -144,11 +164,48 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
                 strokeWidth={0.9}
                 strokeLinejoin="round"
                 opacity={t > POSES[i] - 0.05 ? 1 : 0}
-                style={{ transformBox: "fill-box", transformOrigin: "center", transform: `scale(${0.55 + 0.45 * a})` }}
+                style={{ transformBox: "fill-box", transformOrigin: "center", transform: `translate(${ecart(i)[0]}px, ${ecart(i)[1]}px) scale(${0.55 + 0.45 * a})` }}
               />
             );
           })}
         </svg>
+        {PRIORITES.map((p) => {
+          const a = ressort(t, p.t, 12) * (t < ECLATE[2] ? 1 : 1 - vif(t, ECLATE[2], ECLATE[2] + 0.25));
+          if (a <= 0.001) return null;
+          const [vx, vy] = centrePiece(PIECES_LOGO[p.piece].points);
+          const [ex, ey] = ecart(p.piece);
+          const [px, py] = surEcran(vx + ex, vy + ey);
+          const bx = p.x;
+          return (
+            <React.Fragment key={p.rang}>
+              <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+                <line x1={px} y1={py} x2={px + (bx - px) * Math.min(1, a)} y2={py + (p.y - py) * Math.min(1, a)} stroke={C.encre} strokeWidth={3} strokeLinecap="round" />
+                <circle cx={px} cy={py} r={8 * Math.min(1, a)} fill={C.encre} stroke={C.blanc} strokeWidth={3} />
+              </svg>
+              <div
+                style={{
+                  position: "absolute",
+                  left: bx,
+                  top: p.y,
+                  transform: `translate(${p.gauche ? "-100%" : "0"}, -50%) scale(${0.6 + 0.4 * a})`,
+                  transformOrigin: p.gauche ? "right center" : "left center",
+                  opacity: Math.min(1, a * 2),
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 16,
+                  background: C.blanc,
+                  borderRadius: 999,
+                  padding: "14px 30px 14px 14px",
+                  boxShadow: "0 12px 30px rgba(30,16,51,0.12)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <div style={{ width: 52, height: 52, borderRadius: 999, background: C.beurre, color: C.encre, fontSize: 32, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{p.rang}</div>
+                <div style={{ fontSize: 38, fontWeight: 700, color: C.encre }}>{p.texte}</div>
+              </div>
+            </React.Fragment>
+          );
+        })}
         <div style={{ position: "absolute", left: 850, top: 128, opacity: marque, transform: `translateX(${(1 - marque) * -30}px)` }}>
           <Marque taille={64} />
         </div>
