@@ -158,6 +158,9 @@ const chemin = (pts: Point[]) =>
 
 // Vol en rase-mottes au-dessus de la frise basculée dans l'espace, puis la feuille se redresse.
 const DEBUT_VOL = 21.95;
+// Fin du parcours : la pièce saute du bout de la courbe et atterrit à côté du titre du plan d'action.
+export const DEPART_SAUT = 29.7;
+export const ATTERRISSAGE = 30.55;
 const REDRESSE = 23.9;
 const FIN_PP = 24.75;
 const ANGLE_VOL = 60;
@@ -182,7 +185,8 @@ const TRAJET: [number, number, (n: number) => number][] = [
   [28.1, PTS_SOUS[3].x, accelere],
   [28.6, centreEtape(3), lisse],
   [29.1, centreEtape(4), lisse],
-  [29.6, X0 + LARGEUR - 24, lisse],
+  // Elle ne s'arrête pas au bout : elle prend de l'élan et s'envole vers le plan d'action (PieceTransit).
+  [DEPART_SAUT, X0 + LARGEUR - 6, accelere],
 ];
 const xPiece = (t: number) => {
   if (t <= TRAJET[0][0]) return TRAJET[0][1];
@@ -236,7 +240,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
   const taille = 34 / z;
   // Pendant le vol, la pièce est dessinée hors de la feuille basculée (PieceVol), face à nous.
-  const visible = t < FIN_PP ? 0 : 1;
+  const visible = t < FIN_PP || t >= DEPART_SAUT ? 0 : 1;
   const ty = (p: { y: number }) => p.y;
   return (
     <svg width={1568} height={548} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
@@ -446,6 +450,33 @@ const PieceVol: React.FC<{ t: number }> = ({ t }) => {
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
       <g transform={`translate(${p.x} ${p.y}) rotate(${(rot * 180) / Math.PI}) scale(${s})`}>
+        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+      </g>
+    </svg>
+  );
+};
+
+// Le saut : la pièce quitte le bout de la courbe en tournant sur elle-même ; pendant ce temps, la
+// scène 3 est poussée vers la gauche (POUSSEE) et la pièce atterrit dans la scène 4, à côté du titre
+// « Plan d'action » (position à l'écran calculée avec la caméra de la scène 4 : centre 610 x 540, zoom 1,3).
+const CIBLE_PLAN = { x: 960 + (206 + 15 - 610) * 1.3, y: 540 + (230 - 540) * 1.3 };
+export const PieceTransit: React.FC<{ t: number }> = ({ t }) => {
+  if (t < DEPART_SAUT || t >= ATTERRISSAGE) return null;
+  const c = camera(DEPART_SAUT, clesTableau(DEPART_SAUT));
+  const [ax, ay] = posPiece(DEPART_SAUT);
+  const depart = { x: 960 + (ax - c.x) * c.z, y: 540 + (ay - c.y) * c.z };
+  const poussee = entre(t, POUSSEE[0], POUSSEE[1], 0, 1, enDouceur);
+  // La cible arrive avec la scène 4, qui entre par la droite.
+  const cible = { x: CIBLE_PLAN.x + (1 - poussee) * 1920, y: CIBLE_PLAN.y };
+  const u = entre(t, DEPART_SAUT, ATTERRISSAGE, 0, 1, (n) => n);
+  const e = enDouceur(u);
+  const x = depart.x + (cible.x - depart.x) * e;
+  const y = depart.y + (cible.y - depart.y) * e - Math.sin(Math.PI * u) * 110;
+  const taille = 34 * (1 - 0.55 * e);
+  const tour = 360 * enDouceur(u);
+  return (
+    <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+      <g transform={`translate(${x} ${y}) rotate(${tour}) scale(${taille})`}>
         <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
       </g>
     </svg>

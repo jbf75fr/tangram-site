@@ -4,7 +4,7 @@ import { C, FPS, entre } from "./commun";
 import { Scene0 } from "./scenes/Scene0";
 import { Scene1 } from "./scenes/Scene1";
 import { Scene2 } from "./scenes/Scene2";
-import { Scene3 } from "./scenes/Scene3";
+import { PieceTransit, Scene3 } from "./scenes/Scene3";
 import { EXPERT, Scene4 } from "./scenes/Scene4";
 import { POSES, Scene5 } from "./scenes/Scene5";
 import { SousTitres } from "./SousTitres";
@@ -88,6 +88,7 @@ export const Introduction: React.FC = () => {
       <Scene2 t={s} />
       <Scene3 t={s} />
       <Scene4 t={s} />
+      <PieceTransit t={s} />
       <Scene5 t={s - FIN_DECALAGE} />
       <Scene0 t={t} />
       <SousTitres t={s} />

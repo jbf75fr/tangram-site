@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
 import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe } from "../commun";
-import { POUSSEE } from "./Scene3";
+import { ATTERRISSAGE, POUSSEE } from "./Scene3";
 
 // Scène 4 (30 à 42 s) : l'équipe agit, mesure l'effet, partage, et l'expert tangram.cx l'accompagne.
 export const EXPERT = 38.25;
@@ -63,7 +63,13 @@ export const Scene4: React.FC<{ t: number }> = ({ t }) => {
     <AbsoluteFill style={{ background: C.fond, fontFamily: POLICE, overflow: "hidden", transform: `translateX(${(1 - entre(t, POUSSEE[0], POUSSEE[1], 0, 1, (n) => (n < 0.5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2))) * 1920}px)` }}>
       <Camera t={t} cles={CLES} extra={secousse(t, [clic, 33.15, ...EQUIPES.map((e) => e.debut), EXPERT], 0.025)}>
         <Carte style={{ left: 150, top: 170, width: 920, height: 740, padding: "48px 56px", boxSizing: "border-box" }}>
-          <div style={{ fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>Plan d'action</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>
+            {/* La pièce de tangram du parcours, posée ici à l'atterrissage de son saut. */}
+            <svg width={30} height={30} viewBox="-1.1 -2 2.2 2.2" style={{ opacity: t >= ATTERRISSAGE ? 1 : 0, transform: `scale(${1 + 0.35 * Math.exp(-(t - ATTERRISSAGE) * 9) * (t >= ATTERRISSAGE ? 1 : 0)})` }}>
+              <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+            </svg>
+            Plan d'action
+          </div>
           <div style={{ fontSize: 46, fontWeight: 800, marginTop: 8 }}>Réduire les délais de livraison</div>
           <div style={{ display: "flex", gap: 12, marginTop: 22 }}>
             {["Sujet : Délais de livraison", "Échéance : 31 mars", "Pilote : Logistique"].map((x, i) => {
