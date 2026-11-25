@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
+import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe, Wagon } from "../commun";
 
 // Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
 // parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
@@ -265,6 +265,17 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         <line key={i} x1={L0 + (i + 1) * SCOL} x2={L0 + (i + 1) * SCOL} y1={90} y2={410} stroke={C.blanc} strokeWidth={0.8} opacity={detail} />
       ))}
       <rect x={L0 + SCOL} y={ZERO} width={SCOL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte * detail} />
+      {t >= DEBUT_VOL && t < DEPART_SAUT + 0.3 && (
+        // Traînée de la pièce : le tracé déjà parcouru s'illumine en jaune derrière elle.
+        <g opacity={1 - entre(t, DEPART_SAUT, DEPART_SAUT + 0.3, 0, 1)}>
+          {Array.from({ length: 24 }, (_, i) => {
+            const x1 = Math.max(X0, xp - 300 + (i * 300) / 24);
+            const x2 = Math.max(X0, xp - 300 + ((i + 1) * 300) / 24);
+            if (x2 <= x1) return null;
+            return <line key={i} x1={x1} y1={yAuPoint(x1)} x2={x2} y2={yAuPoint(x2)} stroke={C.beurre} strokeWidth={14 / Math.max(1, z * 0.55)} strokeLinecap="round" opacity={((i + 1) / 24) * 0.9} />;
+          })}
+        </g>
+      )}
       <path d={chemin(pts)} fill="none" stroke={C.encre} strokeWidth={5 / Math.max(1, z * 0.55)} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
 
       {/* Étapes principales : points, scores, numéros et noms. Ils s'effacent quand on s'approche. */}
@@ -336,7 +347,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         opacity={Math.min(1, visible * 2)}
         transform={`translate(${xp} ${yp}) rotate(${(pente * 180) / Math.PI + secousseImpact}) scale(${taille * (0.5 + 0.5 * visible)})`}
       >
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );
@@ -473,7 +484,7 @@ const PieceVol: React.FC<{ t: number }> = ({ t }) => {
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
       <g transform={`translate(${x} ${y}) rotate(${(rot * 180) / Math.PI}) scale(${s})`}>
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );
@@ -494,7 +505,7 @@ const Morphose: React.FC<{ t: number }> = ({ t }) => {
   const pts = carte.map(([a, b], i) => `${a + (tri[i][0] - a) * e},${b + (tri[i][1] - b) * e}`).join(" ");
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
-      <polygon points={pts} fill={e < 0.5 ? C.beurrePale : C.beurre} stroke={e < 0.5 ? C.beurre : C.encre} strokeWidth={e < 0.5 ? 4 : 0.14 * v.s} strokeLinejoin="round" />
+      <polygon points={pts} fill={e < 0.5 ? C.beurrePale : C.beurre} stroke={C.beurre} strokeWidth={4 + (0.34 * v.s - 4) * e} strokeLinejoin="round" />
     </svg>
   );
 };
@@ -520,7 +531,7 @@ export const PieceTransit: React.FC<{ t: number }> = ({ t }) => {
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
       <g transform={`translate(${x} ${y}) rotate(${tour}) scale(${taille})`}>
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );
