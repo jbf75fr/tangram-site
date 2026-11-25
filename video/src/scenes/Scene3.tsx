@@ -224,6 +224,9 @@ const posPiece = (t: number): [number, number] => {
   return [OX + x, OY + yBezier(traceA(0), x)];
 };
 const ZOOM_VOL = 2.6;
+// Taille du wagon à l'écran (demi-largeur, en pixels) selon le zoom : il grandit un peu quand on
+// s'approche et rapetisse quand on recule, pour garder la même proportion avec la frise.
+const tailleWagon = (z: number) => 22 * Math.pow(z, 0.45);
 // De face, la caméra suit la pièce en reculant doucement (2,6 puis 1,7), puis dévoile tout le tableau de bord.
 const zoomVol = (t: number) => ZOOM_VOL - 0.9 * entre(t, DEBUT_VOL, REDRESSE, 0, 1, (n) => n * n * (3 - 2 * n));
 const clesTableau = (t: number): Cle[] =>
@@ -247,7 +250,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
   const yp = yAuPoint(xp);
   const pente = Math.atan2(yAuPoint(xp + 1.5) - yAuPoint(xp - 1.5), 3);
   const secousseImpact = t > PIRE ? Math.sin((t - PIRE) * 38) * 14 * Math.exp(-(t - PIRE) * 5) : 0;
-  const taille = 34 / z;
+  const taille = tailleWagon(z) / z;
   // Pendant le vol, la pièce est dessinée hors de la feuille basculée (PieceVol), face à nous.
   const visible = t < FIN_PP || t >= DEPART_SAUT ? 0 : 1;
   const ty = (p: { y: number }) => p.y;
@@ -465,7 +468,7 @@ const ecranVol = (t: number) => {
   const x = xPiece(t);
   const pente = Math.atan2(yBezier(traceA(0), x + 1.5) - yBezier(traceA(0), x - 1.5), 3);
   const rot = Math.atan2(Math.sin(pente), Math.cos(pente) * Math.cos((angle * Math.PI) / 180));
-  return { x: p.x, y: p.y, rot, s: 34 * p.k };
+  return { x: p.x, y: p.y, rot, s: tailleWagon(c.z) * p.k };
 };
 const PieceVol: React.FC<{ t: number }> = ({ t }) => {
   if (t < DEBUT_VOL || t >= FIN_PP) return null;
@@ -515,7 +518,7 @@ export const PieceTransit: React.FC<{ t: number }> = ({ t }) => {
   const e = enDouceur(u);
   const x = depart.x + (cible.x - depart.x) * e;
   const y = depart.y + (cible.y - depart.y) * e - Math.sin(Math.PI * u) * 110;
-  const taille = 34 * (1 - 0.55 * e);
+  const taille = tailleWagon(c.z) + (15 - tailleWagon(c.z)) * e;
   const tour = 360 * enDouceur(u);
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>

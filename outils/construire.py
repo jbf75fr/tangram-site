@@ -125,11 +125,15 @@ def video(corps):
     debut = corps.index('<section id="video"')
     fin = corps.index('</section>', debut)
     bloc = corps[debut:fin]
+    # Empreinte de chaque fichier dans son adresse (?v=) : les navigateurs gardent la vidéo 24 h
+    # (vercel.json), une nouvelle version doit donc changer d'adresse pour être chargée tout de suite.
+    def v(nom):
+        return hashlib.md5((MAQUETTE / 'video' / nom).read_bytes()).hexdigest()[:8]
     remplacements = [
         ('ref="{{poserVideo}}" src="video/introduction.mp4" poster="video/affiche.jpg" playsInline="{{ true }}"',
-         'data-video="" src="/video/introduction.mp4" poster="/video/affiche.jpg" muted playsinline'),
+         f'data-video="" src="/video/introduction.mp4?v={v("introduction.mp4")}" poster="/video/affiche.jpg?v={v("affiche.jpg")}" muted playsinline'),
         (' onEnded="{{finVideo}}" onPlay="{{surLecture}}" onPause="{{surPause}}"', ''),
-        ('src="video/sous-titres.vtt"', 'src="/video/sous-titres.vtt"'),
+        ('src="video/sous-titres.vtt"', f'src="/video/sous-titres.vtt?v={v("sous-titres.vtt")}"'),
         ('aria-label="{{libelleZone}}" onClick="{{cliquerVideo}}"', 'aria-label="Lire la vidéo avec le son" data-video-zone=""'),
         ('onClick="{{basculerSon}}" aria-label="{{libelleSon}}"', 'data-video-son="" aria-label="Activer le son"'),
         ('onClick="{{basculerSousTitres}}" aria-label="Sous-titres complets" aria-pressed="{{sousTitres}}"',
