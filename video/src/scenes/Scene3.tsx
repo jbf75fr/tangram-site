@@ -164,6 +164,8 @@ const MORPHOSE = [21.6, DEBUT_VOL];
 const REVELATION = [21.8, 22.4];
 // Fin du parcours : la pièce saute du bout de la courbe et atterrit à côté du titre du plan d'action.
 export const DEPART_SAUT = 29.7;
+// Instant où la voix dit « chiffre d'affaires en jeu ».
+const CA_LIVRAISON = 28.55;
 export const ATTERRISSAGE = 30.55;
 const REDRESSE = 23.9;
 const FIN_PP = 24.75;
@@ -278,6 +280,15 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
+              {i === 2 && (
+                // « et le chiffre d'affaires en jeu » : le montant de la Livraison apparaît au-dessus de son score.
+                <g opacity={ressort(t, CA_LIVRAISON, 11)} transform={`translate(${x} ${y - 112}) scale(${0.6 + 0.4 * ressort(t, CA_LIVRAISON, 11)})`}>
+                  <rect x={-118} y={-25} width={236} height={50} rx={25} fill={C.encre} />
+                  <text x={0} y={9} textAnchor="middle" fontSize={25} fontWeight={800} fill={C.blanc} fontFamily="Figtree">
+                    61 800 € en jeu
+                  </text>
+                </g>
+              )}
               <g opacity={ressort(t, DEBUT_VOL - 0.5 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
@@ -405,6 +416,8 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
           </Indicateur>
           <Indicateur t={t} i={3} libelle="Clients à risque de départ">
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14, color: C.rougeTexte }}>{fmt(compte * 0.15)}</div>
+            {/* Chiffre d'affaires de ces clients, en gris neutre comme dans l'application. */}
+            <div style={{ fontSize: 22, fontWeight: 700, color: C.encreDouce, marginTop: 4 }}>{fmt((compte / 12480) * 284300)} € en jeu</div>
           </Indicateur>
         </div>
         <div
