@@ -34,8 +34,8 @@ VERSION_JS = hashlib.sha256((RESSOURCES / 'js' / 'site.js').read_bytes()).hexdig
 # Page de la maquette -> (adresse, titre, description, fil d'Ariane)
 PAGES = {
     'V2': ('/', "tangram.cx | Analyse d'enquêtes et d'avis clients",
-           "tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, "
-           "et vous guide pour agir. Hébergé en Europe. Essai gratuit.", None),
+           "tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations et chiffre ce que chaque sujet "
+           "vous coûte, en satisfaction et en chiffre d'affaires. Essai gratuit.", None),
     'Solution': ('/fonctionnalites', "Fonctionnalités | tangram.cx",
                  "Classement par thème, tonalité et émotion, leviers d'amélioration, chiffre d'affaires "
                  "à risque, alertes et plan d'action : les fonctionnalités de tangram.cx.", 'Fonctionnalités'),
