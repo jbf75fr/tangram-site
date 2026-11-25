@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;background:#f3f1fa}
+@media (max-width: 560px){.lv-mec{display:none}}
 a{color:#1e1033}a:hover{color:#000000}
 /* Animations au defilement (meme famille que l'accueil) */
 @keyframes an-monte{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
@@ -207,7 +208,8 @@ section[id]{scroll-margin-top:96px}
 <li style="border-top: 2px solid #1e1033;"><a href="#cibler" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"></circle><circle cx="16" cy="16" r="7"></circle><circle cx="16" cy="16" r="2.5" fill="#ffe45c" stroke="none"></circle></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">04</span>Cibler</a></li>
 <li style="border-top: 2px solid #1e1033;"><a href="#alertes" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 22V14a7 7 0 0 1 14 0v8l2 3H7z"></path><path d="M13 28h6"></path><circle cx="23" cy="9" r="4" fill="#ffe45c" stroke="none"></circle></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">05</span>Être prévenu</a></li>
 <li style="border-top: 2px solid #1e1033;"><a href="#idees" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="21" cy="10" r="4.5" fill="#ffe45c" stroke="none"></circle><path d="M16 4a8 8 0 0 0-4.5 14.6c.9.6 1.5 1.6 1.5 2.7V23h6v-1.7c0-1.1.6-2.1 1.5-2.7A8 8 0 0 0 16 4z"></path><path d="M13 27h6"></path></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">06</span>Idées des clients</a></li>
-<li style="border-top: 2px solid #1e1033;"><a href="#agir" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V4"></path><path d="M7 5h17l-4 5 4 5H7"></path><polygon points="7,5 24,5 20,10 7,10" fill="#ffe45c" stroke="none"></polygon></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">07</span>Décider</a></li>
+<li style="border-top: 2px solid #1e1033;"><a href="#prioriser" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4h7v7z" fill="#ffe45c" stroke="none"></path><path d="M4 28h24"></path><path d="M8 28V12"></path><path d="M15 28V17"></path><path d="M22 28V22"></path></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">07</span>Prioriser</a></li>
+<li style="border-top: 2px solid #1e1033;"><a href="#agir" style="display: flex; align-items: center; gap: 12px; padding: 16px 0; font-weight: 600; text-decoration: none;"><svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true" style="flex: none; display: block; "><g fill="none" stroke="#1e1033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 28V4"></path><path d="M7 5h17l-4 5 4 5H7"></path><polygon points="7,5 24,5 20,10 7,10" fill="#ffe45c" stroke="none"></polygon></g></svg><span style="color: #3a0ca3; font-weight: 600; font-variant-numeric: tabular-nums;">08</span>Décider</a></li>
 </ol>
 </nav>
 </div>
@@ -376,12 +378,34 @@ section[id]{scroll-margin-top:96px}
 </div>
 </section>
 
-<!-- 07 Agir et partager -->
+<!-- 07 Prioriser : leviers d'amélioration et chiffre d'affaires en jeu -->
+<section id="prioriser" style="padding: 88px 24px; overflow-x: clip;">
+<div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px 72px; align-items: center;">
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+<span style="font-family: Figtree, sans-serif; font-size: 18px; font-weight: 700; color: #3a0ca3;">07</span>
+<h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(28px, 3vw, 40px); line-height: 1.1;">Mesurez ce que chaque sujet vous coûte.</h2>
+<p style="margin: 0; color: #4a4260;">Chaque sujet est chiffré en points de note à gagner et en chiffre d'affaires en jeu : vous savez par où commencer.</p>
+</div>
+<figure class="il" style="flex: 1.4 1 520px; min-width: 0; margin: 0; background: #ffffff; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+<figcaption style="font-family: Figtree, sans-serif; font-size: 20px; font-weight: 700;">Leviers d'amélioration du NPS</figcaption>
+<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums;">
+<thead><tr style="font-size: 12px; color: #68607e; text-align: right;"><th scope="col" style="text-align: left; padding: 0 12px 10px 0; font-weight: 600;">Sujet</th><th scope="col" style="text-align: left; padding: 0 12px 10px; font-weight: 600;">Gain potentiel</th><th scope="col" class="lv-mec" style="padding: 0 12px 10px; font-weight: 600;">Mécontents</th><th scope="col" style="padding: 0 0 10px 12px; font-weight: 600;">CA en jeu</th></tr></thead>
+<tbody>
+<tr style="border-top: 1px solid #e2e1ea;"><th scope="row" style="text-align: left; padding: 12px 12px 12px 0; font-weight: 600;">Délais de livraison</th><td style="padding: 12px; width: 42%;"><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="flex: 1; display: block; height: 14px;"><span class="an-barre " style="display: block; width: 100%; height: 100%; border-radius: 999px; background: #2e9e5b;"></span></span><span style="flex: none; min-width: 52px; font-weight: 700; color: #1c7a43;">+6 pts</span></span></td><td class="lv-mec" style="padding: 12px; text-align: right; color: #4a4260;">412</td><td style="padding: 12px 0 12px 12px; text-align: right; font-weight: 700; white-space: nowrap;">61 800 €</td></tr>
+<tr style="border-top: 1px solid #e2e1ea;"><th scope="row" style="text-align: left; padding: 12px 12px 12px 0; font-weight: 600;">Service client</th><td style="padding: 12px; width: 42%;"><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="flex: 1; display: block; height: 14px;"><span class="an-barre an-d2" style="display: block; width: 67%; height: 100%; border-radius: 999px; background: #2e9e5b;"></span></span><span style="flex: none; min-width: 52px; font-weight: 700; color: #1c7a43;">+4 pts</span></span></td><td class="lv-mec" style="padding: 12px; text-align: right; color: #4a4260;">287</td><td style="padding: 12px 0 12px 12px; text-align: right; font-weight: 700; white-space: nowrap;">38 400 €</td></tr>
+<tr style="border-top: 1px solid #e2e1ea;"><th scope="row" style="text-align: left; padding: 12px 12px 12px 0; font-weight: 600;">Facturation</th><td style="padding: 12px; width: 42%;"><span style="display: flex; align-items: center; gap: 10px;"><span aria-hidden="true" style="flex: 1; display: block; height: 14px;"><span class="an-barre an-d4" style="display: block; width: 33%; height: 100%; border-radius: 999px; background: #2e9e5b;"></span></span><span style="flex: none; min-width: 52px; font-weight: 700; color: #1c7a43;">+2 pts</span></span></td><td class="lv-mec" style="padding: 12px; text-align: right; color: #4a4260;">135</td><td style="padding: 12px 0 12px 12px; text-align: right; font-weight: 700; white-space: nowrap;">22 100 €</td></tr>
+</tbody></table></div>
+<p class="an-monte an-d6" style="margin: 0; padding: 12px 16px; border-radius: 12px; background: #fff3a6; font-size: 15px;"><strong>Délais de livraison :</strong> si les clients qui critiquent ce sujet notaient comme les autres, le NPS gagnerait 6 points.</p>
+</figure>
+</div>
+</section>
+
+<!-- 08 Agir et partager -->
 <section id="agir" style="padding: 88px 24px; background: #1e1033; color: #d9d8e2;">
 <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px;">
 <div style="display: flex; flex-wrap: wrap; gap: 24px 72px; align-items: flex-end;">
 <div style="flex: 1 1 400px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
-<span style="font-family: Figtree, sans-serif; font-size: 18px; font-weight: 700; color: #ffe45c;">07</span>
+<span style="font-family: Figtree, sans-serif; font-size: 18px; font-weight: 700; color: #ffe45c;">08</span>
 <h2 style="margin: 0; font-family: Figtree, sans-serif; font-weight: 700; font-size: clamp(28px, 3vw, 40px); line-height: 1.1; color: #ffffff;">Du constat à la décision.</h2>
 </div>
 <p style="flex: 1 1 460px; min-width: 0; margin: 0;">Des idées d'actions adaptées à votre secteur, à vos objectifs et à vos contraintes. Puis un plan d'action dont vous suivez l'effet dans le temps.</p>
