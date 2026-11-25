@@ -169,7 +169,8 @@ const CA_LIVRAISON = 28.55;
 export const ATTERRISSAGE = 30.55;
 const REDRESSE = 23.9;
 const FIN_PP = 24.75;
-const ANGLE_VOL = 60;
+// Frise de face (la vue basculée faisait « too much ») : 0 degré.
+const ANGLE_VOL = 0;
 const PERSPECTIVE = 1800;
 // Pendant le vol, la pièce est dans le tiers gauche de l'écran : la frise file jusqu'au bord droit.
 const DECALAGE_VOL = 320;
@@ -223,8 +224,10 @@ const posPiece = (t: number): [number, number] => {
   return [OX + x, OY + yBezier(traceA(0), x)];
 };
 const ZOOM_VOL = 2.6;
+// De face, la caméra suit la pièce en reculant doucement (2,6 puis 1,7), puis dévoile tout le tableau de bord.
+const zoomVol = (t: number) => ZOOM_VOL - 0.9 * entre(t, DEBUT_VOL, REDRESSE, 0, 1, (n) => n * n * (3 - 2 * n));
 const clesTableau = (t: number): Cle[] =>
-  t < REDRESSE ? [[0, ...posPiece(t), ZOOM_VOL]] : [[REDRESSE, ...posPiece(REDRESSE), ZOOM_VOL], ...CLES_SUITE];
+  t < REDRESSE ? [[0, ...posPiece(t), zoomVol(t)]] : [[REDRESSE, ...posPiece(REDRESSE), zoomVol(REDRESSE)], ...CLES_SUITE];
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const z = camera(t, clesTableau(t)).z;
@@ -448,7 +451,7 @@ const projette = (sx: number, sy: number, angle: number) => {
   const a = (angle * Math.PI) / 180;
   const dx = sx - 960;
   const ox = 960 - DECALAGE_VOL;
-  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (angle / ANGLE_VOL);
+  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (ANGLE_VOL ? angle / ANGLE_VOL : 0);
   const profondeur = dx * Math.sin(a);
   const k = PERSPECTIVE / (PERSPECTIVE + profondeur);
   return { x: ox + (xr - ox) * k, y: 540 + (sy - 540) * k, k };
