@@ -41,7 +41,7 @@ Ne jamais modifier `public/` : il est refabriqué à chaque changement, la modif
 
 Pour les changements plus importants (mise en page, nouvelle section), passer par la maquette Claude Design puis demander à Claude de mettre le site à jour.
 
-Échelle des tailles (25/11/2026) : textes courants de 15 à 17 px, titres de section `clamp(26px, 2.7vw, 34px)`, titre de page `clamp(34px, 4.4vw, 54px)`, sections espacées de 72 à 80 px. La garder pour toute nouvelle section (détail : `docs/site-vitrine.md` du dépôt `tangram-cx`).
+Échelle des tailles (25/11/2026) : textes courants de 15 à 17 px, titres de section `clamp(26px, 2.7vw, 34px)`, titre de page `clamp(34px, 4.4vw, 54px)`, sections espacées de 72 à 80 px. Photos de tête en 3/2, bandeaux photo en 3/1 sur ordinateur. La garder pour toute nouvelle section (détail : `docs/site-vitrine.md` du dépôt `tangram-cx`).
 
 ## Mettre à jour le site
 
