@@ -5,7 +5,7 @@
 Points clés :
 - Les chiffres affichés sont calculés, jamais rédigés par l'IA : l'IA classe, le calcul compte.
 - Les réponses arrivent automatiquement depuis les outils d'enquête et le CRM, ou par simple dépôt de fichier.
-- Fonctionnalités : classement par thème, sous-thème, tonalité et émotion ; score net par sujet ; croisements avec les données de l'enquête ; personas ; repérage des clients sur le départ ; suggestions des clients repérées et regroupées par famille ; idées d'actions et plan d'action ; alertes par e-mail.
+- Fonctionnalités : classement par thème, sous-thème, tonalité et émotion ; score net par sujet ; croisements avec les données de l'enquête ; personas ; repérage des clients sur le départ ; leviers d'amélioration (points de note à gagner sujet par sujet) et chiffre d'affaires à risque ; suggestions des clients repérées et regroupées par famille ; idées d'actions et plan d'action ; alertes par e-mail.
 - Données hébergées dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées.
 - Essai gratuit jusqu'à 500 commentaires ; abonnement à partir de 2 900 € HT par an ou 270 € HT par mois, selon le volume.
 - Accompagnement par des linguistes et des experts de l'expérience, compris dans l'abonnement : par e-mail, téléphone, visioconférence ou sur place.
@@ -14,8 +14,8 @@ Points clés :
 
 ## Pages principales
 
-- [tangram.cx](https://tangram.cx/): tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations par thème, tonalité et émotion, et vous guide pour agir. Hébergé en Europe. Essai gratuit.
-- [Fonctionnalités](https://tangram.cx/fonctionnalites): Collecte automatique, classement par thème, tonalité et émotion, croisements, profils, alertes, idées des clients et plan d'action : les fonctionnalités de tangram.cx.
+- [tangram.cx](https://tangram.cx/): tangram.cx analyse les commentaires de vos enquêtes, avis et réclamations et chiffre ce que chaque sujet vous coûte, en satisfaction et en chiffre d'affaires. Essai gratuit.
+- [Fonctionnalités](https://tangram.cx/fonctionnalites): Classement par thème, tonalité et émotion, leviers d'amélioration, chiffre d'affaires à risque, alertes et plan d'action : les fonctionnalités de tangram.cx.
 - [Accompagnement : une équipe à vos côtés](https://tangram.cx/accompagnement): Linguistes et experts de l'expérience vous accompagnent, de la mise en place à vos décisions, par e-mail, téléphone, visioconférence ou dans vos locaux. Compris dans l'abonnement.
 - [Tarifs](https://tangram.cx/tarifs): Essai gratuit jusqu'à 500 commentaires, puis abonnement à partir de 2 900 € HT par an ou 270 € HT par mois selon votre volume. Tout est compris.
 - [Sécurité](https://tangram.cx/securite): Hébergement dans l'Union européenne, données personnelles masquées avant analyse, organisations cloisonnées, sauvegardes chiffrées et vérifiées chaque nuit.
