@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe } from "../commun";
+import { C, Camera, Carte, Cle, Logo, POLICE, camera, entre, fmt, hasard, ressort, secousse, signe, Wagon } from "../commun";
 
 // Scène 3 (21 à 30 s) : des milliers de retours deviennent des indicateurs, puis la frise du parcours d'achat,
 // parcourue par une pièce de tangram qui plonge dans les sous-étapes de la Livraison.
@@ -164,10 +164,13 @@ const MORPHOSE = [21.6, DEBUT_VOL];
 const REVELATION = [21.8, 22.4];
 // Fin du parcours : la pièce saute du bout de la courbe et atterrit à côté du titre du plan d'action.
 export const DEPART_SAUT = 29.7;
+// Instant où la voix dit « chiffre d'affaires en jeu ».
+const CA_LIVRAISON = 28.35;
 export const ATTERRISSAGE = 30.55;
 const REDRESSE = 23.9;
 const FIN_PP = 24.75;
-const ANGLE_VOL = 60;
+// Frise de face (la vue basculée faisait « too much ») : 0 degré.
+const ANGLE_VOL = 0;
 const PERSPECTIVE = 1800;
 // Pendant le vol, la pièce est dans le tiers gauche de l'écran : la frise file jusqu'au bord droit.
 const DECALAGE_VOL = 320;
@@ -221,8 +224,10 @@ const posPiece = (t: number): [number, number] => {
   return [OX + x, OY + yBezier(traceA(0), x)];
 };
 const ZOOM_VOL = 2.6;
+// De face, la caméra suit la pièce en reculant doucement (2,6 puis 1,7), puis dévoile tout le tableau de bord.
+const zoomVol = (t: number) => ZOOM_VOL - 0.9 * entre(t, DEBUT_VOL, REDRESSE, 0, 1, (n) => n * n * (3 - 2 * n));
 const clesTableau = (t: number): Cle[] =>
-  t < REDRESSE ? [[0, ...posPiece(t), ZOOM_VOL]] : [[REDRESSE, ...posPiece(REDRESSE), ZOOM_VOL], ...CLES_SUITE];
+  t < REDRESSE ? [[0, ...posPiece(t), zoomVol(t)]] : [[REDRESSE, ...posPiece(REDRESSE), zoomVol(REDRESSE)], ...CLES_SUITE];
 
 const Frise: React.FC<{ t: number }> = ({ t }) => {
   const z = camera(t, clesTableau(t)).z;
@@ -278,6 +283,15 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
                   {signe(e.score)}
                 </text>
               </g>
+              {i === 2 && (
+                // « et le chiffre d'affaires en jeu » : le montant de la Livraison apparaît au-dessus de son score.
+                <g opacity={ressort(t, CA_LIVRAISON, 11)} transform={`translate(${x} ${y - 112}) scale(${0.6 + 0.4 * ressort(t, CA_LIVRAISON, 11)})`}>
+                  <rect x={-118} y={-25} width={236} height={50} rx={25} fill={C.encre} />
+                  <text x={0} y={9} textAnchor="middle" fontSize={25} fontWeight={800} fill={C.blanc} fontFamily="Figtree">
+                    61 800 € en jeu
+                  </text>
+                </g>
+              )}
               <g opacity={ressort(t, DEBUT_VOL - 0.5 + i * 0.05)}>
                 <circle cx={x} cy={452} r={18} fill={C.beurre} />
                 <text x={x} y={461} textAnchor="middle" fontSize={22} fontWeight={800} fill={C.encre} fontFamily="Figtree">
@@ -322,7 +336,7 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         opacity={Math.min(1, visible * 2)}
         transform={`translate(${xp} ${yp}) rotate(${(pente * 180) / Math.PI + secousseImpact}) scale(${taille * (0.5 + 0.5 * visible)})`}
       >
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );
@@ -405,6 +419,8 @@ const Tableau: React.FC<{ t: number }> = ({ t }) => {
           </Indicateur>
           <Indicateur t={t} i={3} libelle="Clients à risque de départ">
             <div style={{ fontSize: 64, fontWeight: 800, marginTop: 14, color: C.rougeTexte }}>{fmt(compte * 0.15)}</div>
+            {/* Chiffre d'affaires de ces clients, en gris neutre comme dans l'application. */}
+            <div style={{ fontSize: 22, fontWeight: 700, color: C.encreDouce, marginTop: 4 }}>{fmt((compte / 12480) * 284300)} € en jeu</div>
           </Indicateur>
         </div>
         <div
@@ -435,7 +451,7 @@ const projette = (sx: number, sy: number, angle: number) => {
   const a = (angle * Math.PI) / 180;
   const dx = sx - 960;
   const ox = 960 - DECALAGE_VOL;
-  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (angle / ANGLE_VOL);
+  const xr = 960 + dx * Math.cos(a) - DECALAGE_VOL * (ANGLE_VOL ? angle / ANGLE_VOL : 0);
   const profondeur = dx * Math.sin(a);
   const k = PERSPECTIVE / (PERSPECTIVE + profondeur);
   return { x: ox + (xr - ox) * k, y: 540 + (sy - 540) * k, k };
@@ -457,7 +473,7 @@ const PieceVol: React.FC<{ t: number }> = ({ t }) => {
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
       <g transform={`translate(${x} ${y}) rotate(${(rot * 180) / Math.PI}) scale(${s})`}>
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );
@@ -478,7 +494,7 @@ const Morphose: React.FC<{ t: number }> = ({ t }) => {
   const pts = carte.map(([a, b], i) => `${a + (tri[i][0] - a) * e},${b + (tri[i][1] - b) * e}`).join(" ");
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
-      <polygon points={pts} fill={e < 0.5 ? C.beurrePale : C.beurre} stroke={e < 0.5 ? C.beurre : C.encre} strokeWidth={e < 0.5 ? 4 : 0.14 * v.s} strokeLinejoin="round" />
+      <polygon points={pts} fill={e < 0.5 ? C.beurrePale : C.beurre} stroke={C.beurre} strokeWidth={4 + (0.34 * v.s - 4) * e} strokeLinejoin="round" />
     </svg>
   );
 };
@@ -504,7 +520,7 @@ export const PieceTransit: React.FC<{ t: number }> = ({ t }) => {
   return (
     <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
       <g transform={`translate(${x} ${y}) rotate(${tour}) scale(${taille})`}>
-        <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+        <Wagon />
       </g>
     </svg>
   );

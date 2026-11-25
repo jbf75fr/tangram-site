@@ -113,6 +113,16 @@ export const PIECES_LOGO: { points: string; couleur: string }[] = [
   { points: "0,32 8,24 24,24 16,32", couleur: C.beurre },
 ];
 
+// La pièce du parcours (le « wagon ») : triangle du logo aux coins arrondis, avec une ombre douce
+// et un reflet, dessiné dans un repère où il mesure 2 de large (à mettre à l'échelle par le parent).
+export const Wagon: React.FC = () => (
+  <g>
+    <polygon points="-0.92,0.1 1.08,0.1 -0.92,-1.68" transform="translate(0.06 0.16)" fill={C.encre} opacity={0.16} stroke={C.encre} strokeOpacity={0.16} strokeWidth={0.34} strokeLinejoin="round" />
+    <polygon points="-0.92,-0.2 0.92,-0.2 -0.92,-1.78" fill={C.beurre} stroke={C.beurre} strokeWidth={0.34} strokeLinejoin="round" />
+    <polygon points="-0.62,-0.62 -0.08,-0.62 -0.62,-1.1" fill={C.blanc} opacity={0.45} stroke={C.blanc} strokeOpacity={0.45} strokeWidth={0.12} strokeLinejoin="round" />
+  </g>
+);
+
 export const Logo: React.FC<{ taille: number; contour?: string }> = ({ taille, contour = C.blanc }) => (
   <svg width={taille} height={taille} viewBox="-1 -1 34 34">
     {PIECES_LOGO.map((p, i) => (

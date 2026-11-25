@@ -8,15 +8,15 @@ const TAILLE = 180;
 
 const LIGNE_1 = [
   { mot: "Et", t: 0.35 },
-  { mot: "si", t: 0.51 },
-  { mot: "vos", t: 0.63 },
-  { mot: "priorités", t: 0.81 },
+  { mot: "si", t: 0.48 },
+  { mot: "vos", t: 0.68 },
+  { mot: "priorités", t: 0.84 },
 ];
 const LIGNE_2 = [
-  { mot: "venaient", t: 1.43 },
-  { mot: "de", t: 1.71 },
-  { mot: "vos", t: 1.81, accent: true },
-  { mot: "clients ?", t: 2.03, accent: true },
+  { mot: "venaient", t: 1.8 },
+  { mot: "de", t: 2.06 },
+  { mot: "vos", t: 2.18, accent: true },
+  { mot: "clients ?", t: 2.34, accent: true },
 ];
 
 const Ligne: React.FC<{ t: number; mots: { mot: string; t: number; accent?: boolean }[] }> = ({ t, mots }) => (

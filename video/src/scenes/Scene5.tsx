@@ -110,9 +110,9 @@ const Mots: React.FC<{ t: number; mots: { mot: string; t: number }[] }> = ({ t, 
 // pièces deviennent les priorités vues dans la vidéo, numérotées, puis il se referme avant de monter.
 const ECLATE = [41.3, 41.65, 43.25, 43.6];
 const PRIORITES = [
-  { piece: 0, rang: 1, texte: "Délai de livraison", t: 41.6, x: 1230, y: 300, gauche: false },
-  { piece: 1, rang: 2, texte: "Suivi du colis", t: 41.95, x: 690, y: 470, gauche: true },
-  { piece: 2, rang: 3, texte: "Expédition", t: 42.3, x: 1230, y: 640, gauche: false },
+  { piece: 0, rang: 1, texte: "Délai de livraison", ca: "34 200 €", t: 41.6, x: 1230, y: 300, gauche: false },
+  { piece: 1, rang: 2, texte: "Suivi du colis", ca: "18 900 €", t: 41.95, x: 690, y: 470, gauche: true },
+  { piece: 2, rang: 3, texte: "Expédition", ca: "8 700 €", t: 42.3, x: 1230, y: 640, gauche: false },
 ];
 const centrePiece = (points: string) => {
   const p = points.split(" ").map((c) => c.split(",").map(Number));
@@ -202,6 +202,8 @@ export const Scene5: React.FC<{ t: number }> = ({ t }) => {
               >
                 <div style={{ width: 52, height: 52, borderRadius: 999, background: C.beurre, color: C.encre, fontSize: 32, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{p.rang}</div>
                 <div style={{ fontSize: 38, fontWeight: 700, color: C.encre }}>{p.texte}</div>
+                {/* Chiffre d'affaires en jeu de la priorité (fictif) : les trois font les 61 800 € de la Livraison. */}
+                <div style={{ fontSize: 32, fontWeight: 700, color: C.encreDouce, marginLeft: 6 }}>{p.ca}</div>
               </div>
             </React.Fragment>
           );

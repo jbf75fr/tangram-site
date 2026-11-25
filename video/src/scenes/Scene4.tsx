@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe } from "../commun";
+import { C, Camera, Carte, Cle, Curseur, POLICE, entre, ressort, secousse, signe, Wagon } from "../commun";
 import { ATTERRISSAGE, POUSSEE } from "./Scene3";
 
 // Scène 4 (30 à 42 s) : l'équipe agit, mesure l'effet, partage, et l'expert tangram.cx l'accompagne.
@@ -66,7 +66,7 @@ export const Scene4: React.FC<{ t: number }> = ({ t }) => {
           <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 24, color: C.encreDouce, fontWeight: 700 }}>
             {/* La pièce de tangram du parcours, posée ici à l'atterrissage de son saut. */}
             <svg width={30} height={30} viewBox="-1.1 -2 2.2 2.2" style={{ opacity: t >= ATTERRISSAGE ? 1 : 0, transform: `scale(${1 + 0.35 * Math.exp(-(t - ATTERRISSAGE) * 9) * (t >= ATTERRISSAGE ? 1 : 0)})` }}>
-              <polygon points="-1,-0.12 1,-0.12 -1,-1.9" fill={C.beurre} stroke={C.encre} strokeWidth={0.14} strokeLinejoin="round" />
+              <Wagon />
             </svg>
             Plan d'action
           </div>
