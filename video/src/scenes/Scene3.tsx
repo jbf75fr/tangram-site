@@ -165,7 +165,7 @@ const REVELATION = [21.8, 22.4];
 // Fin du parcours : la pièce saute du bout de la courbe et atterrit à côté du titre du plan d'action.
 export const DEPART_SAUT = 29.7;
 // Instant où la voix dit « chiffre d'affaires en jeu ».
-const CA_LIVRAISON = 28.55;
+const CA_LIVRAISON = 28.35;
 export const ATTERRISSAGE = 30.55;
 const REDRESSE = 23.9;
 const FIN_PP = 24.75;
@@ -265,17 +265,6 @@ const Frise: React.FC<{ t: number }> = ({ t }) => {
         <line key={i} x1={L0 + (i + 1) * SCOL} x2={L0 + (i + 1) * SCOL} y1={90} y2={410} stroke={C.blanc} strokeWidth={0.8} opacity={detail} />
       ))}
       <rect x={L0 + SCOL} y={ZERO} width={SCOL} height={410 - ZERO} fill={C.rouge} opacity={0.18 * alerte * detail} />
-      {t >= DEBUT_VOL && t < DEPART_SAUT + 0.3 && (
-        // Traînée de la pièce : le tracé déjà parcouru s'illumine en jaune derrière elle.
-        <g opacity={1 - entre(t, DEPART_SAUT, DEPART_SAUT + 0.3, 0, 1)}>
-          {Array.from({ length: 24 }, (_, i) => {
-            const x1 = Math.max(X0, xp - 300 + (i * 300) / 24);
-            const x2 = Math.max(X0, xp - 300 + ((i + 1) * 300) / 24);
-            if (x2 <= x1) return null;
-            return <line key={i} x1={x1} y1={yAuPoint(x1)} x2={x2} y2={yAuPoint(x2)} stroke={C.beurre} strokeWidth={14 / Math.max(1, z * 0.55)} strokeLinecap="round" opacity={((i + 1) / 24) * 0.9} />;
-          })}
-        </g>
-      )}
       <path d={chemin(pts)} fill="none" stroke={C.encre} strokeWidth={5 / Math.max(1, z * 0.55)} strokeLinecap="round" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - trace} />
 
       {/* Étapes principales : points, scores, numéros et noms. Ils s'effacent quand on s'approche. */}
